@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Controle de Estoque</title>
+    <!-- Bootstrap  -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <!-- css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stylesheet.css') }}">
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+</head>
+<body>
+<div class="container-fluid borda">
+
+
+{% include "navbar.html" %}
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    var submenus = document.querySelectorAll('.has-submenu .submenu');
+
+    // Adiciona um listener de clique para cada item pai dos submenus
+    submenus.forEach(function(submenu) {
+      var parentMenuItem = submenu.parentElement;
+      var parentMenuItemRect = parentMenuItem.getBoundingClientRect();
+
+      // Posiciona o submenu abaixo do item pai
+      submenu.style.top = (parentMenuItemRect.bottom - 1) + 'px';
+      submenu.style.left = parentMenuItemRect.left + 'px';
+
+      // Adiciona um listener de clique no item pai para alternar a exibição do submenu
+      parentMenuItem.addEventListener('click', function(event) {
+        // Evita que o clique no link redirecione a página
+        event.preventDefault();
+
+        // Alterna a exibição do submenu
+        if (submenu.style.display === 'block') {
+          submenu.style.display = 'none';
+        } else {
+          submenu.style.display = 'block';
+        }
+      });
+
+      // Adiciona um listener de clique no documento para fechar o submenu se o usuário clicar fora dele
+      document.addEventListener('click', function(event) {
+        // Verifica se o clique não está dentro do submenu ou do item pai
+        if (!submenu.contains(event.target) && !parentMenuItem.contains(event.target)) {
+          submenu.style.display = 'none';
+        }
+      });
+
+      // Adiciona um listener de clique no submenu para evitar que o clique propague para o item pai
+      submenu.addEventListener('click', function(event) {
+        event.stopPropagation(); // Impede a propagação do evento de clique
+      });
+    });
+  });
+</script>
+
+
+{% block content %}
+
+    {% endblock %}
+</div>
+</body>
+</html>
