@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+TELA GERAR ORDEM DE COMPRA
+<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
+    <form action="" method="POST">
+        {{ form_gerar_ordem_compra.csrf_token }}
+
+        <div class="mb-3">
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.data.label }}
+                {{ form_gerar_ordem_compra.data(class="form-control") }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.ordem_compra.label }}
+                {{  form_gerar_ordem_compra.ordem_compra(class="form-control") }}
+            </div>
+            </div>
+            <div></div>
+
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.descricao.label }}
+                {{  form_gerar_ordem_compra.descricao(class="form-control") }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.unidade.label }}
+                {{  form_gerar_ordem_compra.unidade(class="form-control") }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.categoria.label }}
+                {{  form_gerar_ordem_compra.categoria(class="form-control") }}
+            </div>
+           <div></div>
+                <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.codigo.label }}
+                {{  form_gerar_ordem_compra.codigo(class="form-control") }}
+            </div>
+
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.ean.label }}
+                {{  form_gerar_ordem_compra.ean(class="form-control") }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.quantidade.label }}
+                {{  form_gerar_ordem_compra.quantidade(class="form-control") }}
+            </div>
+            <div>
+                {{ form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3") }}
+            </div>
+        <div></div>
+        <div>
+            {{  form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3") }}
+        </div>
+    </form>
+    <div class="mt-5">
+        <table class="table table-striped" id="tabela-itens">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Unidade</th>
+                    <th>Categoria</th>
+                    <th>Código</th>
+                    <th>EAN</th>
+                    <th>Quantidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                crie um dicionário em python para armazenar cada linha da ordem de compra<br>
+                antes de serem armazenadas no bancodedados
+                aquim e na gerar ordem de saída, podemos pensar em criar uma div à esquerda, de modo <br>
+                que a tabela seja mostrada à direita
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
