@@ -8,7 +8,7 @@ TELA CADASTRAR CLIENTES
         <div class="mb-3">
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_cad_clientes.data.label }}
-                {{ form_cad_clientes.data(class="form-control") }}
+                {{ form_cad_clientes.data(class="form-control", value=data) }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_cad_clientes.razao_social.label }}
@@ -49,6 +49,10 @@ TELA CADASTRAR CLIENTES
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_cad_clientes.uf.label }}
                 {{ form_cad_clientes.uf(class="form-control") }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_cad_clientes.tabela.label }}
+                {{ form_cad_clientes.tabela(class="form-control") }}
             </div>
             <div>
                 {{ form_cad_clientes.botao_submit_cad_fornecedor(class="btn btn-primary") }}

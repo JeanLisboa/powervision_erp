@@ -5,14 +5,14 @@ from wtforms.validators import DataRequired, Email, Disabled, Length, ReadOnly, 
 from flask_wtf import FlaskForm
 from flask import Flask, render_template, redirect, url_for, request, jsonify, send_file, session, get_flashed_messages, flash
 from forms import Mod_Compras
-from datetime import date
 
-import forms
 
-os_date = date.today()
 
+
+
+
+"""
 class Compras:
-
     def cadastrar_fornecedores(self):
         print("class compras | method cadastrar_fornecedores")
         form_fornecedores = Mod_Compras.CadFornecedores()
@@ -78,3 +78,4 @@ class Compras:
         print("class compras | method relatorios_compras")
         pass
 
+"""
