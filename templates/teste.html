@@ -1,24 +1,142 @@
 {% extends "base.html" %}
 
 {% block content %}
-TELA teste
+TELA GERAR ORDEM DE COMPRA
+<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal"
+     xmlns="http://www.w3.org/1999/html">
+    <form action="" method="POST">
+        {{ form_gerar_ordem_compra.csrf_token }}
 
-{% endblock %}
+        <div class="mb-3">
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.data.label }}
+                {{ form_gerar_ordem_compra.data(class="form-control", value=data) }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.ordem_compra.label }}
+                {{ form_gerar_ordem_compra.ordem_compra(class="form-control", value=ordem_compra) }}
+            </div>
+            </div>
+            <div></div>
 
-<div class="container p-3 mb-2 border border-1 border-primary p-2 mb-2 div_principal">
-    <form action="/cadastrar_fornecedores" method="POST">
-        {{ form_fornecedores.csrf_token }}
-        <fieldset>
-
-
-        <div class="form-group row align-items-start">
-
-            <div class="col form-label mt-4">
-
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.descricao.label }}
+                {{ form_gerar_ordem_compra.descricao(class="form-control", value=resultado_pesquisa[2]) }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.unidade.label }}
+                {{ form_gerar_ordem_compra.unidade(class="form-control") }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.categoria.label }}
+                {{ form_gerar_ordem_compra.categoria(class="form-control") }}
+            </div>
+            <div></div>
+                <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.codigo.label }}
+                {{ form_gerar_ordem_compra.codigo(class="form-control") }}
             </div>
 
-        </div>
-</fieldset>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.ean.label }}
+                {{ form_gerar_ordem_compra.ean(class="form-control") }}
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.botao_pesquisar_item(class="btn btn-primary mt-3") }}
+            </div>
 
+        <div>
+            </div>
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3") }}
+
+            </div>
+        <button class="btn btn-primary mt-3" onclick="openPopup()"> Consulta</button>
+        <script>
+            function openPopup() {
+                // Define as dimensões do popup
+                var width = 600;
+                var height = 400;
+                // Calcula a posição para centralizar o popup
+                var left = (screen.width / 2) - (width / 2);
+                var top = (screen.height / 2) - (height / 2);
+
+                // Abre o popup e captura a referência
+                var popup = window.open("", "popup", "width=" + width + ",height=" + height + ",top=" + top + ",left=" + left);
+
+                // Verifica se o popup foi aberto com sucesso
+                if (popup) {
+                    // Define o conteúdo do popup
+                    var popupContent = `
+                        <!DOCTYPE html>
+                        <html lang="pt-br">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Tela de pesquisa</title>
+                        </head>
+                        <body>
+                            <form method="POST">
+                                <div class="collapse collapse-vertical" id="ocultar_pesquisa">
+                                    <table>
+                                        <tr>
+                                            <th>DESCRIÇÃO</th>
+                                            <th>UNIDADE</th>
+                                            <th>CATEGORIA</th>
+                                            <th>CÓDIGO</th>
+                                            <th>EAN</th>
+                                        </tr>
+                                        {% for i in relatorio_produtos %}
+                                            <tr>
+
+                                                <td>{{ i[4] }}</td>
+                                                <td>{{ i[5] }}</td>
+                                                <td>{{ i[6] }}</td>
+                                                <td>{{ i[1] }}</td>
+                                                <td>{{ i[3] }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </form>
+                        </body>
+                        </html>
+
+                    `;
+                    popup.document.open();
+                    popup.document.write(popupContent);
+                    popup.document.close();
+                } else {
+                    alert("O popup foi bloqueado pelo navegador. Por favor, permita popups para este site.");
+                }
+            }
+        </script>
+
+        <div></div>
+        <div>
+            {{  form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3") }}
+        </div>
     </form>
+    <div class="mt-5">
+        <table class="table table-striped" id="tabela-itens">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Unidade</th>
+                    <th>Categoria</th>
+                    <th>Código</th>
+                    <th>EAN</th>
+                    <th>Quantidade</th>
+                </tr>
+            </thead>
+            <tbody>
+                crie um dicionário em python para armazenar cada linha da ordem de compra<br>
+                antes de serem armazenadas no bancodedados
+                aquim e na gerar ordem de saída, podemos pensar em criar uma div à esquerda, de modo <br>
+                que a tabela seja mostrada à direita
+            </tbody>
+        </table>
+    </div>
+
 </div>
+{% endblock %}

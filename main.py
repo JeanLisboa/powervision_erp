@@ -104,11 +104,8 @@ class Compras:
         unidade = form_cad_produtos.unidade.data
         categoria = form_cad_produtos.categoria.data
         data = Formatadores.os_data()
-        # fornecedor = geral.Buscadores.buscar_fornecedor()
 
-
-
-        if 'botao_submit_cad_prod' in request.form and form_cad_produtos.validate_on_submit():
+        if 'botao_submit_cad_prod' in request.form:
             fornecedor = form_cad_produtos.fornecedor.data
 
             values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
@@ -142,12 +139,101 @@ class Compras:
                                cod_produto=AtualizaCodigo.cod_produto(),
                                data=Formatadores.formatar_data(Formatadores.os_data()))
 
+
+
+
     @staticmethod
     @app.route('/gerar_ordem_compra', methods=['POST', 'GET'])
     def gerar_ordem_compra():
+
+        global dicionario_ordem_compra
         form_gerar_ordem_compra = Mod_Compras.GerarOrdemCompra()
+        data = Formatadores.os_data()
+        ordem_compra = geral.AtualizaCodigo.ordem_compra()
+        descricao = form_gerar_ordem_compra.descricao.data
+        fornecedor = form_gerar_ordem_compra.fornecedor.data
+        unidade = form_gerar_ordem_compra.unidade.data
+        categoria = form_gerar_ordem_compra.categoria.data
+        codigo = form_gerar_ordem_compra.codigo.data
+        ean = form_gerar_ordem_compra.ean.data
+        quantidade = form_gerar_ordem_compra.quantidade.data
+        alert = geral.AlertaMsg.cad_fornecedor_realizado()
+        resultado = None
+        dicionario_ordem_compra = {}
+        dicionario_ordem_compra_temp = {}
+        lista_ordem_compra = []
+        if request.method == 'POST':
+            try:
+                if 'botao_pesquisar_item' in request.form:
+                    # descricao = ''
+                    # unidade = ''
+                    # categoria = ''
+                    # ean = ''
+
+                    item_ordem_compra = form_gerar_ordem_compra.data
+                    if descricao == '' and ean == '':
+                        resultado = Buscadores.buscar_produto_pelo_codigo(codigo)
+                        resultado = resultado[0]
+                        print(f'resultado buscando pelo código >>> {resultado}')
+                    if codigo == '' and descricao == '':
+                        resultado = Buscadores.buscar_produto_pelo_ean(ean)
+                        resultado = resultado[0]
+                        print(f'resultado buscando pelo ean >>> {resultado}')
+
+                    if resultado is None:
+                        pass
+                        alert = geral.AlertaMsg.cadastro_inexistente()
+                        # return redirect(url_for('gerar_ordem_compra'))
+
+
+            except:
+                print('except')
+                alert = geral.AlertaMsg.cadastro_inexistente()
+                pass
+
+
+            try:
+                if 'botao_incluir_item' in request.form:
+                    print('botao_incluir_item pressionado')
+
+                    lista_ordem_compra.append(Formatadores.formatar_data(data))
+                    lista_ordem_compra.append(descricao)
+                    lista_ordem_compra.append(unidade)
+                    lista_ordem_compra.append(categoria)
+                    lista_ordem_compra.append(codigo)
+                    lista_ordem_compra.append(ean)
+                    lista_ordem_compra.append(quantidade)
+
+                    print(f'lista ordem compra >>>> {lista_ordem_compra}')
+                    dicionario_ordem_compra = {ordem_compra: lista_ordem_compra}
+
+                    print(f'dicionario_ordem_compra_temp >>>> {dicionario_ordem_compra_temp}')
+
+                    print(f'dicionario_ordem_compra >>>> {dicionario_ordem_compra}')
+
+                    pass
+                    # values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
+                    #           f"'{ordem_compra}',"
+                    #           f"'{item_ordem_compra}',"
+                    #           f"'{codigo}',"
+                    #           f"'{descricao}',"
+                    #           f"'{unidade}',"
+                    #           f"'{ean}'")
+            except:
+                pass
+
+            query = f'SELECT * FROM PRODUTOS WHERE CODIGO = {codigo} or EAN = {ean} OR DESCRICAO = {descricao}'
+            print(f'query >>>> {query}')
+            alert = session.pop('alert', None)
+
         return render_template('compras/gerar_ordem_compra.html',
-                               form_gerar_ordem_compra=form_gerar_ordem_compra,
+                               alert=alert,
+                               dicionario_ordem_compra=dicionario_ordem_compra.values(), # informa os itens na ordem de compra para renderizar na tabela
+                               relatorio_produtos=Buscadores.mostrar_tabela_produtos(),  # serve para mostrar os produtos na tela popup
+                               resultado_pesquisa=resultado, # informa no html o resultado da busca pelo código
+                               form_gerar_ordem_compra=form_gerar_ordem_compra,  # renderiza os forms na pagina html
+                               cod_produto=AtualizaCodigo.cod_produto(),  # informa o proximo codigo do produto
+                               ordem_compra=AtualizaCodigo.ordem_compra(),  # informa o proximo numero da ordem de compra
                                data=Formatadores.formatar_data(Formatadores.os_data()))
 
     @staticmethod

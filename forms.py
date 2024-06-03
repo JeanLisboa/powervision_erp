@@ -47,8 +47,21 @@ class Mod_Compras:
         unidade = StringField("Unidade", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
         quantidade = IntegerField("Quantidade", validators=[DataRequired()])
+
+        botao_pesquisar_item = SubmitField('Pesquisar Código')
         botao_incluir_item = SubmitField('Incluir Item')
         botao_submit_compra = SubmitField('Gerar Ordem de Compra')
+
+    class BuscarItemOrdemCompra(FlaskForm):
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        codigo = StringField("Código")
+        ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
+        fornecedor = StringField("Fornecedor", validators=[ReadOnly()])
+        ean = StringField("EAN")
+        descricao = StringField("Descrição", validators=[ReadOnly()])
+        unidade = StringField("Unidade", validators=[ReadOnly()])
+        categoria = StringField("Categoria", validators=[ReadOnly()])
+        botao_pesquisar_item = SubmitField('Pesquisar')
 
     class RelatoriosCompras(FlaskForm):
           pass

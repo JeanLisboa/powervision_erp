@@ -9,7 +9,7 @@
     background-color: rgb(255, 242, 201);
 }
 .div_principal {
-    max-width: 1000px;
+    max-width: 1400px;
     border-width: 100px;
     background-color: rgb(255, 242, 201);
     border: 3px solid rgb(223, 230, 233);
@@ -99,3 +99,15 @@ position: absolute;
 .has-submenu:hover .submenu {
   display: block;
 }
+
+
+.cab_tabela {
+    font-size:15px;
+    background-color:#e9ecef;
+}
+
+
+th{font-family:calibri, roboto, sans-serif,tahoma;padding:5px 3px 3px 3px;color:#0B0B3B;font-size:17px;font-weight:normal;white-space:nowrap;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;box-shadow:1px 1px 1px #888888;}
+
+th:not([scope=row]){position:-webkit-sticky;position:sticky;top:0;}
+td{font-family:calibri, sans-serif,arial,tahoma;color:#2E2E2E;padding:0px;font-size:15px;font-weight:normal;white-space:nowrap;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;}
