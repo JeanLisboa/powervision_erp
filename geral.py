@@ -2,8 +2,51 @@ from datetime import datetime, timedelta, date
 import mysql.connector
 from pycpfcnpj import cpfcnpj as validador_cnpj
 from flask import session, redirect, url_for
+from wtforms import FloatField, ValidationError
 
-import geral
+"""
+
+CLASS Totais ???
+
+CLASS AlertaMsg
+    DEF CAD_FORNECEDOR_REALIZADO
+    DEF CNPJ_INVALIDO
+    DEF CNPJ_INEXISTENTE
+    DEF CNPJ_JA_EXISTENTE
+    DEF CADASTRO_INEXISTENTE
+    
+CLASS Formatadores
+    DEF FORMATAR_DATA
+    DEF DATA_FORMATO_DB
+    DEF OS_DATA
+    
+CLASS Validadores
+    DEF VALIDA_CNPJ
+    DEF VALIDA_INSCRICAO_ESTADUAL
+    
+CLASS AtualizaCodigo  - TRATA INFORMAÇÕES INCREMENTAIS
+    DEF COD_PRODUTO
+    DEF COD_FORNECEDOR
+    DEF ORDEM_COMPRA
+    DEF CONTADOR ??
+    
+CLASS Buscadores
+    CLASS OrdemCompra
+        DEF PRECO_MEDIO 
+        DEF ULTIMO_PRECO
+        DEF BUSCAR_FORNECEDOR
+        DEF BUSCAR_PRODUTO_PELO_EAN
+        DEF BUSCAR_PRODUTO_PELO_CODIGO
+        DEF BUSCAR_PRODUTO_PELA_DESCRICAO
+        DEF VALIDAR_EAN (EM ABERTO)
+        DEF MOSTRAR_TABELA_PRODUTOS ( PARA POPUP )
+            
+    
+
+         
+
+"""
+
 
 
 def acesso_db():
@@ -15,13 +58,10 @@ def acesso_db():
     )
     connect = mydb.connect()
     mycursor = mydb.cursor()
-
     return mydb, mycursor, connect
-
-
 global mydb, mycursor, connect
-
 mydb, mycursor, connect = acesso_db()
+
 
 class AlertaMsg:
     def __init__(self):
@@ -55,6 +95,12 @@ class AlertaMsg:
         # return redirect(url_for('gerar_ordem_de_compra'))
 
 
+class Totais:
+    @staticmethod
+    def atualiza_total_ordem_compra():
+        pass
+
+
 class Formatadores:
     @staticmethod
     def formatar_data(data):
@@ -68,6 +114,11 @@ class Formatadores:
     def os_data():
         agora = date.today()
         return agora
+
+    @staticmethod
+    def preparar_item_ordem_compra():
+        a = 'teste'
+        return a
 
 
 class Validadores:
@@ -148,41 +199,126 @@ class AtualizaCodigo:
     @staticmethod
     def ordem_compra():
         try:
-            query = "SELECT MAX(CODIGO) FROM ordem_compra"
+            query = "SELECT MAX(ORDEM_COMPRA) FROM ordem_compra"
             mydb.connect()
             mycursor.execute(query)
             myresult = mycursor.fetchall()
             mydb.commit()
-            max = 0
+            ordem_compra_atual = 0
             for x in myresult:
-                max = x[0]
-            max = int(max)
-            max = max + 1
-            max = str(max)
-            if len(max) == 1:
-                max = '00000' + max
-            if len(max) == 2:
-                max = '0000' + max
-            if len(max) == 3:
-                max = '000' + max
-            if len(max) == 4:
-                max = '00' + max
-            if len(max) == 5:
-                max = '0' + max
-            return max
+                ordem_compra_atual = x[0]
+            ordem_compra_atual = int(ordem_compra_atual)
+            ordem_compra_atual = ordem_compra_atual + 1
+            ordem_compra_atual = str(ordem_compra_atual)
+            if len(ordem_compra_atual) == 1:
+                ordem_compra_atual = '00000' + ordem_compra_atual
+            if len(ordem_compra_atual) == 2:
+                ordem_compra_atual = '0000' + ordem_compra_atual
+            if len(ordem_compra_atual) == 3:
+                ordem_compra_atual = '000' + ordem_compra_atual
+            if len(ordem_compra_atual) == 4:
+                ordem_compra_atual = '00' + ordem_compra_atual
+            if len(ordem_compra_atual) == 5:
+                ordem_compra_atual = '0' + ordem_compra_atual
+            return ordem_compra_atual
         except:
-            max = '000001'
-            return max
+            ordem_compra_atual = '000001'
+            return
+
 
 
 class Buscadores:
     def __init__(self):
         pass
 
+    class OrdemCompra:
+        @staticmethod
+        def preco_medio(codigo):
+            try:
+                query = f'select avg(preco) from ordem_compra where codigo = {codigo}'
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+
+
+                for i in myresult:
+                    myresult = round(i[0], 2)
+                if myresult is None:
+                    myresult = 0
+                return myresult
+            except Exception as e:
+                print(e)
+                pass
+
+
+
+        @staticmethod
+        def ordem_compra_em_aberto(codigo):
+            quantidade = 0
+            valor = 0
+            try:
+                quantidade_em_aberto = f'select sum(quantidade) from ordem_compra where CODIGO = "{codigo}";'
+                mydb.connect()
+                mycursor.execute(quantidade_em_aberto)
+                myresult_qtd = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+
+                for quantidade in myresult_qtd:
+                    myresult_qtd = quantidade[0]
+
+
+                valor_em_aberto = f'select sum(total_item) from ordem_compra where CODIGO = "{codigo}";'
+                mydb.connect()
+                mycursor.execute(valor_em_aberto)
+                myresult_val = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                # print(myresult)
+
+                if codigo == 0 :
+                    myresult_qtd = 0
+                    myresult_val = 0
+                    print(myresult_qtd, myresult_val)
+
+
+                for valor in myresult_val:
+                    myresult_val = round(valor[0], 2)
+                return myresult_qtd, myresult_val
+
+
+
+            except Exception as e:
+                print(e)
+
+            pass
+
+        @staticmethod
+        def ultimo_preco(codigo):
+            try:
+                query = f'select preco from ordem_compra where codigo = {codigo} order by ordem_compra desc limit 1;'
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                print(myresult)
+
+                for i in myresult:
+                    myresult = i[0]
+                if myresult is None:
+                    myresult = 0
+                return myresult
+            except Exception as e:
+                print(e)
+                pass
+
     @staticmethod
     def buscar_fornecedor():
         try:
-            query = f"select razaosocial from fornecedores"
+            query = f"select razaosocial from fornecedores order by razaosocial"
             mydb.connect()
             mycursor.execute(query)
             myresult = mycursor.fetchall()
@@ -195,8 +331,8 @@ class Buscadores:
             return lista_fornecedores
         except:
             myresult = ''
-            return myresult
 
+            return myresult
 
     def buscar_produto_pelo_ean(self):
         print('metodo buscar pelo ean')
@@ -209,8 +345,8 @@ class Buscadores:
             mydb.close()
             print(myresult)
             return myresult
-        except:
-            geral.AlertaMsg.cadastro_inexistente()
+        except Exception as e:
+            print(e)
 
     def buscar_produto_pelo_codigo(self):
         print('metodo buscar pelo codigo')
@@ -228,7 +364,6 @@ class Buscadores:
         except:
             pass
 
-
     def buscar_produto_pela_descricao(self):
         print('metodo buscar pelo descricao')
         try:
@@ -241,8 +376,8 @@ class Buscadores:
             print(myresult)
             return myresult
         except:
-            geral.AlertaMsg.cadastro_inexistente()
-
+           #geral.AlertaMsg.cadastro_inexistente()
+            pass
     @staticmethod
     def validar_ean():
         pass
@@ -257,7 +392,7 @@ class Buscadores:
         return myresult
 
 
-class BancoDeDados:
+class BancoDeDados:  # queries
 
 
     @staticmethod

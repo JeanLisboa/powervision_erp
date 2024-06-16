@@ -1,4 +1,4 @@
-from wtforms import StringField, SubmitField, SelectField, IntegerField
+from wtforms import StringField, SubmitField, SelectField, IntegerField, FloatField
 from wtforms.validators import DataRequired, Email, Disabled, Length, ReadOnly
 from flask_wtf import FlaskForm
 from datetime import date
@@ -44,10 +44,15 @@ class Mod_Compras:
         fornecedor = StringField("Fornecedor", validators=[ReadOnly()])
         ean = StringField("EAN")
         descricao = StringField("Descrição", validators=[ReadOnly()])
-        unidade = StringField("Unidade", validators=[ReadOnly()])
+        unidade = StringField("Un", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
         quantidade = IntegerField("Quantidade", validators=[DataRequired()])
+        preco_unitario = FloatField("Preço Unitário", validators=[DataRequired()])
+        preco_historico = FloatField("Preço Histórico", validators=[DataRequired(), ReadOnly()])
+        ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])
+        preco_medio = FloatField("Preço Médio", validators=[DataRequired(), ReadOnly()])
 
+        botao_limpar_ordem = SubmitField('Limpar Ordem')
         botao_pesquisar_item = SubmitField('Pesquisar Código')
         botao_incluir_item = SubmitField('Incluir Item')
         botao_submit_compra = SubmitField('Gerar Ordem de Compra')

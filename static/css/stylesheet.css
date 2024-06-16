@@ -1,3 +1,5 @@
+
+
 *{font-family: arial;
     font.size:12;
     font.color: rgb(45, 52, 54);
@@ -5,11 +7,28 @@
     }
 
 
+.select_field_customizada {
+    appearance: none; /* Remove default arrow */
+    -webkit-appearance: none; /* Remove default arrow in Chrome/Safari */
+    -moz-appearance: none; /* Remove default arrow in Firefox */
+    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDE0IDE0Ij48cGF0aCBkPSJNNC41IDRsMy41IDMuNSA0LTMuNSIgZmlsbD0iI0FBQUFBQiIvPjwvc3ZnPg==')
+     no-repeat right 10px center;
+    background-size: 30px 30px;
+    padding-right: 30px; /* Adjust to make room for the arrow */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.custom-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
 .background-color-formulario {
     background-color: rgb(255, 242, 201);
 }
 .div_principal {
-    max-width: 1400px;
+    max-width: 1600px;
     border-width: 100px;
     background-color: rgb(255, 242, 201);
     border: 3px solid rgb(223, 230, 233);
@@ -21,15 +40,23 @@
     width: 100px;
 }
 
-.tam_campo_geral {
-    width: 500px;
+.tam_campo_abrev {
+    width:50px
+}
+
+.tam_campo_data {
+    width: 105px;
 }
 
 
+.tam_campo_descricao {
+    width: 300px;
+}
+
+
+
 .borda {
-
-position: absolute;
-
+position:   absolute;
     top: 20px;
     left: 20px;
     right: 20px;
@@ -106,8 +133,84 @@ position: absolute;
     background-color:#e9ecef;
 }
 
+.borda_simples {
+    border: 2px solid rgb(223, 230, 233); /* Cor e espessura da borda */
+    padding: 10px; /* Espaço interno para afastar o conteúdo da borda */
+    border-radius: 10px; /* Bordas arredondadas, opcional */
+}
 
-th{font-family:calibri, roboto, sans-serif,tahoma;padding:5px 3px 3px 3px;color:#0B0B3B;font-size:17px;font-weight:normal;white-space:nowrap;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;box-shadow:1px 1px 1px #888888;}
+.botao_borda_customizada {
+    background-color: transparent; /* Remove o fundo do botão */
+    border: 2px solid #ffc107; /* Define a borda do botão */
+    border_radius: 10px;
+    color: black; /* Define a cor do texto */
+    padding: 10px 20px; /* Ajusta o padding  */
+    font-size: 18px; /* Ajusta o tamanho da fonte  */
+}
 
-th:not([scope=row]){position:-webkit-sticky;position:sticky;top:0;}
-td{font-family:calibri, sans-serif,arial,tahoma;color:#2E2E2E;padding:0px;font-size:15px;font-weight:normal;white-space:nowrap;border-radius:4px;-moz-border-radius:4px;-webkit-border-radius:4px;}
+.botao_valor_total {
+    background-color: transparent; /* Remove o fundo do botão */
+    border: 2px solid #ffc117; /* borda do botão */
+    color: black; /*cor do texto */
+    padding: 10px 20px;
+    font-size: 20px; /* Ajusta o tamanho da fonte */
+}
+
+.campo_data {
+  width: 50%; /* Ajuste a largura  */
+  font-size: 1.2rem; /* Ajuste o tamanho da fonte  */
+  padding: 2px; /* Ajuste o padding  */
+}
+
+
+th{font-family:calibri, roboto, sans-serif,tahoma;
+    padding:5px 3px 3px 3px;
+    color:#0B0B3B;
+    font-size:17px;
+    font-weight:normal;
+    white-space:nowrap;
+    border-radius:4px;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;
+    box-shadow:1px 1px 1px #888888;}
+
+th:not([scope=row]){
+    position:-webkit-sticky;
+    position:sticky;top:0;}
+td{
+    font-family:calibri, sans-serif,arial,tahoma;
+    color:#2E2E2E;
+    padding:0px;
+    font-size:15px;
+    font-weight:normal;
+    white-space:nowrap;
+    border-radius:4px;
+    -moz-border-radius:4px;
+    -webkit-border-radius:4px;}
+
+.float-child0 {
+    width: 100%;
+    float: right;
+    padding: 1px;
+    margin:0px;
+        ;
+}
+
+
+.float-child1 {
+    width: 70%;
+    float: left;
+    padding: 5px;
+    margin-top:13px;
+    font-size:14px;
+    ;
+}
+.float-child2 {
+    width: 30%;
+    float: right;
+    padding: 5px;
+    margin-top:13px;
+    font-size:14px;
+    ;
+}
+

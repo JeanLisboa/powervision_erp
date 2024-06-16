@@ -1,72 +1,102 @@
 {% extends "base.html" %}
+{% set total_geral = 0.00 %} <!-- Inicializa a variável total -->
+
+{% set total = 0.00 %}
+{% set total_historico = 0.00 %}
+{% set total_medio = 0.00 %}
 
 {% block content %}
-TELA GERAR ORDEM DE COMPRA
 <div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal"
      xmlns="http://www.w3.org/1999/html">
     <form action="" method="POST">
         {{ form_gerar_ordem_compra.csrf_token }}
 
-        <div class="mb-3">
+
+        <!-- div1 -->
+        <div class="mb-3 float-child1">
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_gerar_ordem_compra.data.label }}
-                {{ form_gerar_ordem_compra.data(class="form-control", value=data) }}
+                {{ form_gerar_ordem_compra.data.label(class="campo_data" ) }}
+                {{ form_gerar_ordem_compra.data(class="form-control tam_campo_data",  value=data) }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.ordem_compra.label }}
-                {{ form_gerar_ordem_compra.ordem_compra(class="form-control", value=ordem_compra) }}
+                {{ form_gerar_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra) }}
             </div>
-            <div></div>
             <div class="col form-label mt-4 btn btn-light"  >
                 {{ form_gerar_ordem_compra.fornecedor.label }}
                 {{ form_gerar_ordem_compra.fornecedor(class="form-control", value=resultado_pesquisa[2]) }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.categoria.label }}
-                {{ form_gerar_ordem_compra.categoria(class="form-control", value=resultado_pesquisa[6]) }}
+                {{ form_gerar_ordem_compra.categoria(class="form-control tam_campo_codigo", value=resultado_pesquisa[6]) }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.descricao.label }}
-                {{ form_gerar_ordem_compra.descricao(class="form-control", value=resultado_pesquisa[4]) }}
+                {{ form_gerar_ordem_compra.descricao(class="form-control tam_campo_descricao", value=resultado_pesquisa[4]) }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.unidade.label }}
-                {{ form_gerar_ordem_compra.unidade(class="form-control", value=resultado_pesquisa[5]) }}
-            </div>
-            <div></div>
-                <div class="col form-label mt-4 btn btn-light">
-                {{ form_gerar_ordem_compra.codigo.label }}
-                {{ form_gerar_ordem_compra.codigo(class="form-control", value=resultado_pesquisa[1]) }}
+                {{ form_gerar_ordem_compra.unidade(class="form-control tam_campo_abrev", value=resultado_pesquisa[5]) }}
             </div>
 
+            <br>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.ean.label }}
                 {{ form_gerar_ordem_compra.ean(class="form-control", value=resultado_pesquisa[3]) }}
             </div>
+
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_gerar_ordem_compra.botao_pesquisar_item(class="btn btn-primary mt-3") }}
+                {{ form_gerar_ordem_compra.codigo.label }}
+                {{ form_gerar_ordem_compra.codigo(class="form-control", value=resultado_pesquisa[1]) }}
             </div>
+
+                {{ form_gerar_ordem_compra.botao_pesquisar_item(class="btn btn-primary mt-3") }}
                 <button class="btn btn-primary mt-3" onclick="openPopup()"> Consulta</button>
-            <div></div>
+
+            <br>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.quantidade.label }}
                 {{ form_gerar_ordem_compra.quantidade(class="form-control", value=1) }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
+                {{ form_gerar_ordem_compra.preco_unitario.label }}
+                {{ form_gerar_ordem_compra.preco_unitario(class="form-control", value=0.00) }}
+            </div>
+
+            <div class="btn">
                 {{ form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3") }}
             </div>
+            <div>
+                {{  form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3") }}
+                {{ form_gerar_ordem_compra.botao_limpar_ordem(class="btn btn-secondary mt-3") }}
+
+            </div>
+
 
             <script src="static/js/pesquisa_produto.js" defer></script>
 
-            <div></div>
-            <div>
-                {{  form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3") }}
             </div>
+            <!-- div2 -->
 
-        </div>
+                <div class="float-child2">
+                    <div  class="borda_simples">
+                        <div class="col form-label  btn btn-alt">
+                            <button type="button" class="btn btn-success mt-3 btn-lg botao_borda_customizada"> ÚLTIMO PREÇO: R$ {{ ultimo_preco }}</button>
+                            <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> PREÇO MEDIO: R$ {{ preco_medio }}</button>
+                            <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> EM ABERTO: {{ ordens_em_aberto[0] }} R${{ ordens_em_aberto[1]  }}</button>
+                            <button type="button" class="btn btn-info mt-3 btn-lg botao_valor_total"> TOTAL DO PEDIDO: R$ {{ total_ordem_compra }}</button>
+                            <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE LIVRE:    </button>
+                            <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE EMPENHADO: </button>
+
+                        </div>
+                    </div>
+                </div>
+
     </form>
+
     <div class="mt-5">
         <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+
             <thead>
 
             </thead>
@@ -74,27 +104,38 @@ TELA GERAR ORDEM DE COMPRA
                 <tr>
                     <th>Data</th>
                     <th>Ordem de Compra</th>
+                    <th>Item</th>
                     <th>Descrição</th>
                     <th>Unidade</th>
                     <th>Categoria</th>
                     <th>Código</th>
                     <th>EAN</th>
                     <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Total Item</th>
+
                 </tr>
                 {% for i in dicionario_ordem_compra %}
+                    {% set contador_item = loop.index0 + 1 %}
+                    {% set total_item = i[7] * i[8] %}
+
                 <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                     <td>{{ i[0] }}</td>
                     <td>{{ ordem_compra }}</td>
-                    <td>{{ i[1] }}</td>
+                    <td>{{ contador_item }}</td>
                     <td>{{ i[2] }}</td>
                     <td>{{ i[3] }}</td>
                     <td>{{ i[4] }}</td>
                     <td>{{ i[5] }}</td>
                     <td>{{ i[6] }}</td>
+                    <td>{{ i[7] }}</td> <!--quantidade -->
+                    <td>{{ i[8] }}</td> <!--preco unitario -->
+                    <td>{{ total_item }}</td> <!--total item -->
+
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-</div>
+
 {% endblock %}
