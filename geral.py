@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta, date
+from datetime import date
 import mysql.connector
 from pycpfcnpj import cpfcnpj as validador_cnpj
 from flask import session, redirect, url_for
-from wtforms import FloatField, ValidationError
-
+import xml.etree.ElementTree as ET
+import os
 """
 
 CLASS Totais ???
@@ -16,9 +16,11 @@ CLASS AlertaMsg
     DEF CADASTRO_INEXISTENTE
     
 CLASS Formatadores
+    DEF FORMATAR_XML
     DEF FORMATAR_DATA
     DEF DATA_FORMATO_DB
     DEF OS_DATA
+    DEF FORMATAR_XML
     
 CLASS Validadores
     DEF VALIDA_CNPJ
@@ -33,20 +35,31 @@ CLASS AtualizaCodigo  - TRATA INFORMAÇÕES INCREMENTAIS
 CLASS Buscadores
     CLASS OrdemCompra
         DEF PRECO_MEDIO 
+        DEF BUSCAR_NF
+        DEF ANALISAR_NF  ??
+        DEF VISUALIZAR_NF ??
+        DEF ORDEM_COMPRA_EM_ABERTO ??
         DEF ULTIMO_PRECO
         DEF BUSCAR_FORNECEDOR
-        DEF BUSCAR_PRODUTO_PELO_EAN
-        DEF BUSCAR_PRODUTO_PELO_CODIGO
-        DEF BUSCAR_PRODUTO_PELA_DESCRICAO
-        DEF VALIDAR_EAN (EM ABERTO)
-        DEF MOSTRAR_TABELA_PRODUTOS ( PARA POPUP )
+    DEF BUSCAR_PRODUTO_PELO_EAN
+    DEF BUSCAR_PRODUTO_PELO_CODIGO
+    DEF BUSCAR_PRODUTO_PELA_DESCRICAO
+    DEF VALIDAR_EAN (EM ABERTO)
+    DEF MOSTRAR_TABELA_PRODUTOS ( PARA POPUP )
+    DEF BUSCAR_FORNECEDOR
+    DEF BUSCAR_PRODUTO_PELO_EAN
+    DEF BUSCAR_PRODUTO_PELO_CODIGO
+    DEF VALIDAR_EAN
+    DEF MOSTRAR_TABELA_PRODUTOS
+    
+       
+    
             
     
 
          
 
 """
-
 
 
 def acesso_db():
@@ -59,7 +72,8 @@ def acesso_db():
     connect = mydb.connect()
     mycursor = mydb.cursor()
     return mydb, mycursor, connect
-global mydb, mycursor, connect
+
+
 mydb, mycursor, connect = acesso_db()
 
 
@@ -87,7 +101,6 @@ class AlertaMsg:
             '<div id = "alert" class="alert alert-danger" role="alert">CNPJ JA EXISTENTE!</div>'
         return redirect(url_for('cadastrar_fornecedores'))
 
-
     @staticmethod
     def cadastro_inexistente():
         session['alert'] = \
@@ -95,13 +108,99 @@ class AlertaMsg:
         # return redirect(url_for('gerar_ordem_de_compra'))
 
 
-class Totais:
-    @staticmethod
-    def atualiza_total_ordem_compra():
-        pass
-
-
 class Formatadores:
+
+    @staticmethod
+    def formatar_xml(nf):
+        # Definir namespace
+        namespace = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
+
+        # Definir o caminho da pasta onde o arquivo XML está localizado
+        xml_directory = r'C:\relato'
+        xml_filename = f'{nf}.xml'
+        # xml_filename = '25240543587344000909550040000020511198893573-nfe.xml'
+        # Criar o caminho completo para o arquivo XML
+
+        xml_path = os.path.join(xml_directory, xml_filename)
+
+        # Verificar se o arquivo existe
+        if not os.path.isfile(xml_path):
+            print(f"Arquivo {xml_path} não encontrado.")
+        else:
+            try:
+                # Carregar e analisar o arquivo XML
+                tree = ET.parse(xml_path)
+                root = tree.getroot()
+
+                # Acessar informações gerais da nota fiscal
+                ide = root.find('.//nfe:ide', namespace)
+                emit = root.find('.//nfe:emit', namespace)
+                dest = root.find('.//nfe:dest', namespace)
+
+                #  nf_info = {uf, nf ,dta emissao, emitente{cnpj, nome}, destinatario {cnpj, nome}, produtos[] }
+                nf_info = {
+                    'UF': ide.find('nfe:cUF', namespace).text,
+                    'Número NF': ide.find('nfe:nNF', namespace).text,
+                    'Data de Emissão': ide.find('nfe:dhEmi', namespace).text,
+                    'Emitente': {
+                        'CNPJ': emit.find('nfe:CNPJ', namespace).text,
+                        'Nome': emit.find('nfe:xNome', namespace).text
+                    },
+                    'Destinatário': {
+                        'CNPJ': dest.find('nfe:CNPJ', namespace).text,
+                        'Nome': dest.find('nfe:xNome', namespace).text
+                    },
+                    'Produtos': []
+                }
+
+                produto_info = []
+                # Extrair todos os produtos
+                for det in root.findall('.//nfe:det', namespace):
+                    prod = det.find('nfe:prod', namespace)
+                    produto_info = {
+                        'Ean': prod.find('nfe:cEAN', namespace).text,
+                        # 'Código': prod.find('nfe:cProd', namespace).text,
+                        # 'Descrição': prod.find('nfe:xProd', namespace).text,
+                        'Quantidade': int(float(prod.find('nfe:qCom', namespace).text)),
+                        'Valor Unitário': int(float(prod.find('nfe:vUnCom', namespace).text)),
+                        'Valor Total': int(float(prod.find('nfe:vProd', namespace).text))
+                    }
+                    nf_info['Produtos'].append(produto_info)
+
+                lista_itens_nf = []
+                lista_itens_nf_temp = []
+                lista_itens_nf_nova = []
+                lista_itens_nf_temp_nova = []
+
+                # Imprimir as informações extraídas
+                for key, value in nf_info.items():
+                    if isinstance(value, list):
+                        for item in value:  # cada 'item' é uma linha contendo todos os campos de 'produto_info'
+                            item = dict(item)
+                            lista_itens_nf_temp.append(item)
+                            lista_itens_nf.append(lista_itens_nf_temp[:])
+                            lista_itens_nf_temp.clear()
+                        for lista_in_dict in lista_itens_nf:
+                            for i in lista_in_dict:
+                                lista_itens_nf_temp_nova.append(i['Ean'])
+                                lista_itens_nf_temp_nova.append(i['Quantidade'])
+                                lista_itens_nf_temp_nova.append(i['Valor Unitário'])
+                                lista_itens_nf_temp_nova.append(i['Valor Total'])
+                                lista_itens_nf_nova.append(lista_itens_nf_temp_nova[:])
+                                lista_itens_nf_temp_nova.clear()
+                        print('lista_itens_nf_nova >> finalizada')
+                        print(lista_itens_nf_nova)
+                        for i in lista_itens_nf_nova:
+                            print(i)
+
+            except ET.ParseError as e:
+                print(f"Erro ao analisar o arquivo XML: {e}")
+            except AttributeError as e:
+                print(f"Erro ao acessar elementos no XML: {e}")
+
+        return lista_itens_nf_nova
+
+
     @staticmethod
     def formatar_data(data):
         return data.strftime('%d/%m/%Y')
@@ -115,13 +214,12 @@ class Formatadores:
         agora = date.today()
         return agora
 
-    @staticmethod
-    def preparar_item_ordem_compra():
-        a = 'teste'
-        return a
-
 
 class Validadores:
+    @staticmethod
+    def analisar_nf_pedido():
+        pass
+
     @staticmethod
     def valida_cnpj(cnpj):
         print(f'cnpj original {cnpj}')
@@ -147,26 +245,26 @@ class AtualizaCodigo:
             mycursor.execute(query)
             myresult = mycursor.fetchall()
             mydb.commit()
-            max = 0
+            max_codigo = 0
             for x in myresult:
-                max = x[0]
-            max = int(max)
-            max = max + 1
-            max = str(max)
-            if len(max) == 1:
-                max = '00000' + max
-            if len(max) == 2:
-                max = '0000' + max
-            if len(max) == 3:
-                max = '000' + max
-            if len(max) == 4:
-                max = '00' + max
-            if len(max) == 5:
-                max = '0' + max
-            return max
+                max_codigo = x[0]
+            max_codigo = int(max_codigo)
+            max_codigo = max_codigo + 1
+            max_codigo = str(max_codigo)
+            if len(max_codigo) == 1:
+                max_codigo = '00000' + max_codigo
+            if len(max_codigo) == 2:
+                max_codigo = '0000' + max_codigo
+            if len(max_codigo) == 3:
+                max_codigo = '000' + max_codigo
+            if len(max_codigo) == 4:
+                max_codigo = '00' + max_codigo
+            if len(max_codigo) == 5:
+                max_codigo = '0' + max_codigo
+            return max_codigo
         except:
-            max = '000001'
-            return max
+            max_codigo = '000001'
+            return max_codigo
 
     @staticmethod
     def cod_fornecedor():
@@ -176,26 +274,27 @@ class AtualizaCodigo:
             mycursor.execute(query)
             myresult = mycursor.fetchall()
             mydb.commit()
-            tam_max = 0
+            max_codigo = 0
             for x in myresult:
-                tam_max = x[0]
-            tam_max = int(tam_max)
-            tam_max = tam_max + 1
-            tam_max = str(tam_max)
-            if len(tam_max) == 1:
-                tam_max = '00000' + tam_max
-            if len(tam_max) == 2:
-                tam_max = '0000' + tam_max
-            if len(tam_max) == 3:
-                tam_max = '000' + tam_max
-            if len(tam_max) == 4:
-                tam_max = '00' + tam_max
-            if len(tam_max) == 5:
-                tam_max = '0' + tam_max
-            return tam_max
+                max_codigo = x[0]
+            max_codigo = int(max_codigo)
+            max_codigo = max_codigo + 1
+            max_codigo = str(max_codigo)
+            if len(max_codigo) == 1:
+                max_codigo = '00000' + max_codigo
+            if len(max_codigo) == 2:
+                max_codigo = '0000' + max_codigo
+            if len(max_codigo) == 3:
+                max_codigo = '000' + max_codigo
+            if len(max_codigo) == 4:
+                max_codigo = '00' + max_codigo
+            if len(max_codigo) == 5:
+                max_codigo = '0' + max_codigo
+            return max_codigo
         except:
-            max = '000001'
-            return max
+            max_codigo = '000001'
+            return max_codigo
+
     @staticmethod
     def ordem_compra():
         try:
@@ -221,10 +320,10 @@ class AtualizaCodigo:
             if len(ordem_compra_atual) == 5:
                 ordem_compra_atual = '0' + ordem_compra_atual
             return ordem_compra_atual
-        except:
+        except Exception as e:
+            print(e)
             ordem_compra_atual = '000001'
             return
-
 
 
 class Buscadores:
@@ -242,7 +341,6 @@ class Buscadores:
                 mydb.commit()
                 mydb.close()
 
-
                 for i in myresult:
                     myresult = round(i[0], 2)
                 if myresult is None:
@@ -252,8 +350,25 @@ class Buscadores:
                 print(e)
                 pass
 
+        @staticmethod
+        def buscar_nf(nf):
+            """
+                O objetivo é buscar a NF na pasta especificada e retornar verdadeiro
+            ou falso.
+                1 - chamar a função buscar_cnpj
+                caso verdadeiro:
+                - chamar a função Formatadores.formatar_xml
+                - chamar a funçao visualizar nf (logistica)  ** qual classe ?? **
+                - chamar a função Validadores.analisar_nf
+            """
+            pass
+        @staticmethod
+        def analisar_nf(nf):
 
-
+            pass
+        @staticmethod
+        def visualizar_nf(nf):
+            pass
         @staticmethod
         def ordem_compra_em_aberto(codigo):
             quantidade = 0
@@ -269,7 +384,6 @@ class Buscadores:
                 for quantidade in myresult_qtd:
                     myresult_qtd = quantidade[0]
 
-
                 valor_em_aberto = f'select sum(total_item) from ordem_compra where CODIGO = "{codigo}";'
                 mydb.connect()
                 mycursor.execute(valor_em_aberto)
@@ -278,23 +392,19 @@ class Buscadores:
                 mydb.close()
                 # print(myresult)
 
-                if codigo == 0 :
+                if codigo == 0:
                     myresult_qtd = 0
                     myresult_val = 0
                     print(myresult_qtd, myresult_val)
-
 
                 for valor in myresult_val:
                     myresult_val = round(valor[0], 2)
                 return myresult_qtd, myresult_val
 
-
-
             except Exception as e:
                 print(e)
 
             pass
-
         @staticmethod
         def ultimo_preco(codigo):
             try:
@@ -315,24 +425,26 @@ class Buscadores:
                 print(e)
                 pass
 
-    @staticmethod
-    def buscar_fornecedor():
-        try:
-            query = f"select razaosocial from fornecedores order by razaosocial"
-            mydb.connect()
-            mycursor.execute(query)
-            myresult = mycursor.fetchall()
-            mydb.commit()
-            mydb.close()
-            lista_fornecedores = []
-            for i in myresult:
-                lista_fornecedores.append(i)
-                lista_fornecedores = list(lista_fornecedores)
-            return lista_fornecedores
-        except:
-            myresult = ''
 
-            return myresult
+
+        @staticmethod
+        def buscar_fornecedor():
+            try:
+                query = f"select razaosocial from fornecedores order by razaosocial"
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                lista_fornecedores = []
+                for i in myresult:
+                    lista_fornecedores.append(i)
+                    lista_fornecedores = list(lista_fornecedores)
+                return lista_fornecedores
+            except:
+                myresult = ''
+                return myresult
+
 
     def buscar_produto_pelo_ean(self):
         print('metodo buscar pelo ean')
@@ -376,8 +488,9 @@ class Buscadores:
             print(myresult)
             return myresult
         except:
-           #geral.AlertaMsg.cadastro_inexistente()
+            # geral.AlertaMsg.cadastro_inexistente()
             pass
+
     @staticmethod
     def validar_ean():
         pass
@@ -391,9 +504,8 @@ class Buscadores:
         myresult = mycursor.fetchall()
         return myresult
 
-
 class BancoDeDados:  # queries
-
+    pass
 
     @staticmethod
     def listar_produtos():

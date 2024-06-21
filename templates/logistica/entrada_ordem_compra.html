@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal"
+     xmlns="http://www.w3.org/1999/html">
+  <form action="" method="POST">
+    {{ form_entrada_ordem_compra.csrf_token }}
+
+  </form>
+
+<div class="mb-3 float-child1">
+  <div class="col form-label mt-4 btn btn-light">
+    {{ form_entrada_ordem_compra.ordem_compra.label }}
+    {{ form_entrada_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra) }}
+    {{ form_entrada_ordem_compra.nome_fantasia.label }}
+    {{ form_entrada_ordem_compra.nome_fantasia(class="form-control", value=nome_fantasia) }}
+
+    {{ form_entrada_ordem_compra.botao_pesquisar_ordem(class="btn btn-primary mt-3") }}
+
+  </div>
+</div>
+
+  <pre>
+  data
+
+  pesquisar ordem de compra
+
+  visualizar itens da ordem de compra apos confirmar pesquisa.
+
+  realizar a conferencia cega do pedido
+
+  critica se os itens recebidos estão de acordo com o pedido, quantidade e preço
+
+  em caso de recebimento parcial, o saldo deverá constar em aberto no sistema
+
+  após a finalização da internalização do pedido, um log deverá ser gerado, informando data, hora e login de quem recebeu
+
+  os itens recebidos devem constar no estoque.
+
+  </pre>
+
+</div>
+
+{% endblock %}

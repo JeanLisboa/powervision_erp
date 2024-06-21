@@ -6,6 +6,7 @@
 {% set total_medio = 0.00 %}
 
 {% block content %}
+
 <div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal"
      xmlns="http://www.w3.org/1999/html">
     <form action="" method="POST">
@@ -38,7 +39,6 @@
                 {{ form_gerar_ordem_compra.unidade.label }}
                 {{ form_gerar_ordem_compra.unidade(class="form-control tam_campo_abrev", value=resultado_pesquisa[5]) }}
             </div>
-
             <br>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.ean.label }}
@@ -49,14 +49,14 @@
                 {{ form_gerar_ordem_compra.codigo.label }}
                 {{ form_gerar_ordem_compra.codigo(class="form-control", value=resultado_pesquisa[1]) }}
             </div>
-
                 {{ form_gerar_ordem_compra.botao_pesquisar_item(class="btn btn-primary mt-3") }}
-                <button class="btn btn-primary mt-3" onclick="openPopup()"> Consulta</button>
+                <button class="btn btn-primary mt-3" type="button"  onclick="openPopup() "> Consulta</button>
+                {{ form_gerar_ordem_compra.botao_consulta(class="btn btn-primary mt-3")  }}
 
             <br>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.quantidade.label }}
-                {{ form_gerar_ordem_compra.quantidade(class="form-control", value=1) }}
+               {{ form_gerar_ordem_compra.quantidade(class="form-control", value=1) }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.preco_unitario.label }}
@@ -75,22 +75,22 @@
 
             <script src="static/js/pesquisa_produto.js" defer></script>
 
-            </div>
+        </div>
             <!-- div2 -->
 
-                <div class="float-child2">
-                    <div  class="borda_simples">
-                        <div class="col form-label  btn btn-alt">
-                            <button type="button" class="btn btn-success mt-3 btn-lg botao_borda_customizada"> ÚLTIMO PREÇO: R$ {{ ultimo_preco }}</button>
-                            <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> PREÇO MEDIO: R$ {{ preco_medio }}</button>
-                            <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> EM ABERTO: {{ ordens_em_aberto[0] }} R${{ ordens_em_aberto[1]  }}</button>
-                            <button type="button" class="btn btn-info mt-3 btn-lg botao_valor_total"> TOTAL DO PEDIDO: R$ {{ total_ordem_compra }}</button>
-                            <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE LIVRE:    </button>
-                            <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE EMPENHADO: </button>
+        <div class="float-child2">
+            <div  class="borda_simples">
+                <div class="col form-label  btn btn-alt">
+                    <button type="button" class="btn btn-success mt-3 btn-lg botao_borda_customizada"> ÚLTIMO PREÇO: R$ {{ ultimo_preco }}</button>
+                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> PREÇO MEDIO: R$ {{ preco_medio }}</button>
+                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> EM ABERTO: {{ ordens_em_aberto[0] }} R${{ ordens_em_aberto[1]  }}</button>
+                    <button type="button" class="btn btn-info mt-3 btn-lg botao_valor_total"> TOTAL DO PEDIDO: R$ {{ total_ordem_compra }}</button>
+                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE LIVRE:    </button>
+                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE EMPENHADO: </button>
 
-                        </div>
-                    </div>
                 </div>
+            </div>
+        </div>
 
     </form>
 
@@ -137,5 +137,8 @@
             </tbody>
         </table>
     </div>
-
 {% endblock %}
+
+
+
+</div>

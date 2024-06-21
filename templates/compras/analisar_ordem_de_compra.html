@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+TELA ANALISAR ORDEM DE COMPRA
+<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
+    <form action="" method="POST">
+
+        {{ form_analisar_ordem_de_compra.csrf_token }}
+
+        {{ form_analisar_ordem_de_compra.data.label(class="campo_data" ) }}
+        {{ form_analisar_ordem_de_compra.data(class="form-control tam_campo_data",  value=data) }}
+
+
+        <div class="mb-3">
+         <div class="col form-label mt-4 btn btn-light">
+            {{ form_analisar_ordem_de_compra.botao_pesquisar_ordem_de_compra(class="btn btn-primary mt-3")  }}
+            {{ form_analisar_ordem_de_compra.botao_liberar_recebimento(class="btn btn-primary mt-3")  }}
+            {{ form_analisar_ordem_de_compra.botao_recusar_recebimento(class="btn btn-primary mt-3")  }}
+
+
+        </div>
+            <br>
+            <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+            <thead>
+            <tr>
+                <th>EAN</th>
+                <th>QUANTIDADE</th>
+                <th>VALOR UNITARIO</th>
+                <th>VALOR TOTAL</th>
+            </tr>
+
+            {% for i in xml %}
+            <tr>
+                <td>{{ i[0] }}</td>
+                <td>{{"%.2f" %  i[1] }}</td>
+                <td>{{"%.2f" %  i[2] }}</td>
+                <td>{{"%.2f" %  i[3] }}</td>
+
+            </tr>
+            {% endfor %}
+
+            </thead>
+
+            </table>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

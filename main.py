@@ -3,7 +3,7 @@ import mysql.connector
 from flask import Flask, render_template, redirect, url_for, request, session
 import geral
 from flask_wtf.csrf import CSRFProtect
-from forms import Mod_Compras, Mod_Comercial, Mod_Pricing
+from forms import ModCompras, Mod_Comercial, Mod_Pricing, Mod_Logistica
 from geral import buscar_cnpj
 
 from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores, Totais
@@ -38,11 +38,19 @@ def admin():
 
 
 class Compras:
+
+    @staticmethod
+    def analisar_nf_pedido_recebido():
+        # chamar a função visualizar xml
+        # chamar a ordem de compra
+        # realizar a análise
+        pass
+
     @staticmethod
     @app.route('/cadastrar_fornecedores', methods=['POST', 'GET'])
     def cadastrar_fornecedores():
         cod_fornecedor = geral.AtualizaCodigo.cod_fornecedor()
-        form_fornecedores = Mod_Compras.CadFornecedores()
+        form_fornecedores = ModCompras.CadFornecedores()
         razao_social = form_fornecedores.razao_social.data
         nome_fantasia = form_fornecedores.nome_fantasia.data
         cnpj = form_fornecedores.cnpj.data
@@ -104,7 +112,7 @@ class Compras:
     @staticmethod
     @app.route('/cadastrar_produtos', methods=['POST', 'GET'])
     def cadastrar_produtos():
-        form_cad_produtos = Mod_Compras.CadProduto()
+        form_cad_produtos = ModCompras.CadProduto()
         fornecedores = geral.Buscadores.buscar_fornecedor()
         form_cad_produtos.fornecedor.choices = [('Selecionar um fornecedor', 'Selecionar um fornecedor')] + [
             (f[0], f[0]) for f in fornecedores]
@@ -124,7 +132,7 @@ class Compras:
                       f"'{ean}',"
                       f"'{descricao}',"
                       f"'{unidade}',"
-                          f"'{categoria}'")
+                      f"'{categoria}'")
             query = (f'INSERT INTO PRODUTOS '
                      f'(DATA, CODIGO, FORNECEDOR, '
                      f'EAN, DESCRICAO, UNIDADE, CATEGORIA) '
@@ -149,6 +157,41 @@ class Compras:
                                cod_produto=AtualizaCodigo.cod_produto(),
                                data=Formatadores.formatar_data(Formatadores.os_data()))
 
+
+    @staticmethod
+    @app.route('/analisar_ordem_de_compra', methods=['POST', 'GET'])
+    def analisar_ordem_de_compra():
+        form_analisar_ordem_de_compra = ModCompras.AnalisarOrdemCompra()
+
+        xml = ''
+        if request.method == 'POST':
+            try:
+                if 'botao_pesquisar_ordem_de_compra' in request.form:
+                    print('botao_pesquisar_ordem_de_compra ACIONADO')
+                    # executar função xml
+                    xml = Formatadores.formatar_xml('25240643587344000909550040000020641598383396-nfe')
+            except Exception as e:
+                print(e)
+
+            try:
+                if 'botao_liberar_recebimento' in request.form:
+                    print('botao_liberar recebimento ACIONADO')
+
+            except Exception as e:
+                print(e)
+
+            try:
+                if 'botao_recusar_recebimento' in request.form:
+                    print('botao_recusar_recebimento ACIONADO')
+            except Exception as e:
+                print(e)
+
+        return render_template('compras/analisar_ordem_de_compra.html',
+                               xml=xml,
+                               data=Formatadores.formatar_data(Formatadores.os_data()),
+                               form_analisar_ordem_de_compra=form_analisar_ordem_de_compra
+                               )
+
     @staticmethod
     @app.route('/gerar_ordem_compra', methods=['POST', 'GET'])
     def gerar_ordem_compra():
@@ -157,11 +200,11 @@ class Compras:
         global total_ordem_compra
 
         item_ordem_compra = []
-        form_gerar_ordem_compra = Mod_Compras.GerarOrdemCompra()
+        form_gerar_ordem_compra = ModCompras.GerarOrdemCompra()
         data = Formatadores.os_data()
-        ordem_compra = geral.AtualizaCodigo.ordem_compra()
         descricao = form_gerar_ordem_compra.descricao.data
-        fornecedor = form_gerar_ordem_compra.fornecedor.data
+        ordem_compra = form_gerar_ordem_compra.ordem_compra.data
+        # fornecedor = form_gerar_ordem_compra.fornecedor.data
         unidade = form_gerar_ordem_compra.unidade.data
         categoria = form_gerar_ordem_compra.categoria.data
         codigo = form_gerar_ordem_compra.codigo.data
@@ -182,6 +225,8 @@ class Compras:
             session['ultimo_preco'] = 0
         if 'preco_historico' not in session:
             session['preco_historico'] = 0
+        if 'ordens_em_aberto' not in session:
+            session['ordens_em_aberto'] = 0
 
         try:
             total_item = quantidade * preco_unitario
@@ -256,6 +301,13 @@ class Compras:
                     print(lista_ordem_compra)
                     item_ordem_compra.clear()
                     total_ordem_compra += lista_ordem_compra[-1][9]
+            except Exception as e:
+                print(e)
+
+            try:
+                if 'botao_consulta' in request.form:
+                    print('botao_consulta pressionado')
+
             except Exception as e:
                 print(e)
 
@@ -337,6 +389,25 @@ class Compras:
                                data=Formatadores.formatar_data(Formatadores.os_data()))
 
 
+class Logistica:
+    @staticmethod
+    @app.route('/entrada_ordem_compra', methods=['POST', 'GET'])
+    def entrada_ordem_compra():
+
+        form_entrada_ordem_compra = Mod_Logistica.EntradaOrdemCompra()
+        nome_fantasia = form_entrada_ordem_compra.nome_fantasia.data
+        ordem_compra = form_entrada_ordem_compra.ordem_compra.data
+
+
+
+
+        return render_template('logistica/entrada_ordem_compra.html',
+                               form_entrada_ordem_compra=form_entrada_ordem_compra,
+                               nome_fantasia=nome_fantasia,
+                               ordem_compra=ordem_compra,
+                               data=Formatadores.formatar_data(Formatadores.os_data()))
+
+
 class Comercial:
     @staticmethod
     @app.route('/cadastrar_clientes', methods=['POST', 'GET'])
@@ -364,18 +435,9 @@ class Pricing:
                                data=Formatadores.formatar_data(Formatadores.os_data()))
 
 
-class Logistica:
-    pass
-
-
 @app.route('/financeiro', methods=['POST', 'GET'])
 def financeiro():
     return render_template('financeiro.html', data=Formatadores.formatar_data(Formatadores.os_data()))
-
-
-@app.route('/logistica', methods=['POST', 'GET'])
-def logistica():
-    return render_template('logistica.html', data=Formatadores.formatar_data(Formatadores.os_data()))
 
 
 @app.route('/fiscal', methods=['POST', 'GET'])

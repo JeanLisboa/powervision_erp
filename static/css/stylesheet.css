@@ -3,10 +3,24 @@
 *{font-family: arial;
     font.size:12;
     font.color: rgb(45, 52, 54);
-
     }
 
 
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+}
+#hot {
+    width: 80%;
+    margin: auto;
+}
+    </style>
 .select_field_customizada {
     appearance: none; /* Remove default arrow */
     -webkit-appearance: none; /* Remove default arrow in Chrome/Safari */

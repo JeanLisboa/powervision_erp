@@ -8,7 +8,14 @@ import geral
 os_date = date.today()
 
 
-class Mod_Compras:
+class ModCompras:
+    class AnalisarOrdemCompra(FlaskForm):
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        pesquisar_nf = StringField("Pesquisar Nota Fiscal")
+        ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
+        botao_pesquisar_ordem_de_compra = SubmitField('Pesquisar Ordem de Compra')
+        botao_liberar_recebimento = SubmitField('Liberar Para Recebimento')
+        botao_recusar_recebimento = SubmitField('Recusar')
 
     class CadFornecedores(FlaskForm):
         cod_fornecedor = StringField("Código", validators=[ReadOnly()])
@@ -26,14 +33,14 @@ class Mod_Compras:
         botao_submit_cad_fornecedor = SubmitField('Cadastrar')
 
     class CadProduto(FlaskForm):
-        buscar_fornecedor = geral.Buscadores.buscar_fornecedor()
+        buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         cod_produto = StringField("Código: ", validators=[Disabled()])
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ean = StringField("EAN", validators=[DataRequired(), Length(13)])
         descricao = StringField("Descrição", validators=[DataRequired()])
         fornecedor = SelectField("Fornecedor", choices=['Selecionar um fornecedor'] + [f[0] for f in buscar_fornecedor], validators=[DataRequired()])
         unidade = SelectField(coerce=str, choices=['', 'KG', 'G', 'CX', 'UN', 'L', 'M', 'CM'],
-                                validators=[DataRequired(), ReadOnly()])
+                              validators=[DataRequired(), ReadOnly()])
         categoria = SelectField(coerce=str, choices=['','VESTUARIO', 'BEBIDAS', 'ALIMENTOS', 'HIGIENE', 'OUTROS'])
         botao_submit_cad_prod = SubmitField('Cadastrar')
 
@@ -51,7 +58,7 @@ class Mod_Compras:
         preco_historico = FloatField("Preço Histórico", validators=[DataRequired(), ReadOnly()])
         ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])
         preco_medio = FloatField("Preço Médio", validators=[DataRequired(), ReadOnly()])
-
+        botao_consulta = SubmitField('Consulta')
         botao_limpar_ordem = SubmitField('Limpar Ordem')
         botao_pesquisar_item = SubmitField('Pesquisar Código')
         botao_incluir_item = SubmitField('Incluir Item')
@@ -69,7 +76,7 @@ class Mod_Compras:
         botao_pesquisar_item = SubmitField('Pesquisar')
 
     class RelatoriosCompras(FlaskForm):
-          pass
+        pass
 
 class Mod_Comercial:
 
@@ -115,3 +122,10 @@ class Mod_Pricing:
         nome_tabela = StringField("Nome da Tabela", validators=[DataRequired()])
         botao_incluir_tabela = SubmitField('Incluir Tabela')
         botao_submit_cad_fornecedor = SubmitField('Cadastrar')
+
+class Mod_Logistica:
+    class EntradaOrdemCompra(FlaskForm):
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        nome_fantasia = StringField("Nome Fantasia", validators=[DataRequired()])
+        ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
+        botao_pesquisar_ordem = SubmitField('Pesquisar Ordem')
