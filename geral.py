@@ -116,7 +116,7 @@ class Formatadores:
         namespace = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
 
         # Definir o caminho da pasta onde o arquivo XML está localizado
-        xml_directory = r'C:\relato'
+        xml_directory = r'C:\relato\xml'
         xml_filename = f'{nf}.xml'
         # xml_filename = '25240543587344000909550040000020511198893573-nfe.xml'
         # Criar o caminho completo para o arquivo XML
@@ -331,6 +331,44 @@ class Buscadores:
         pass
 
     class OrdemCompra:
+
+        @staticmethod
+        def buscar_ordem_compra2(ordem_compra):
+            try:
+                query = (f'SELECT '
+                         f'ORDEM_COMPRA.DATA, '
+                         f'ORDEM_COMPRA.CODIGO, '
+                         f'FORNECEDORES.RAZAOSOCIAL, '
+                         f'ORDEM_COMPRA.ORDEM_COMPRA, '
+                         f'ORDEM_COMPRA.TOTAL_ITEM '
+                         f'FROM ORDEM_COMPRA '
+                         f'INNER JOIN FORNECEDORES '
+                         f'ON ORDEM_COMPRA.CODIGO = FORNECEDORES.CODIGO '
+                         f'WHERE ORDEM_COMPRA = "{ordem_compra}";')
+
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                return myresult
+            except Exception as e:
+                print(e)
+
+        @staticmethod
+        def buscar_ordem_compra(ordem_compra):
+            try:
+                query = f'select * from ordem_compra where ordem_compra = {ordem_compra}'
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                return myresult
+            except Exception as e:
+                print(e)
+                pass
+
         @staticmethod
         def preco_medio(codigo):
             try:

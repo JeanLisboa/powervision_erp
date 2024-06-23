@@ -11,11 +11,14 @@ os_date = date.today()
 class ModCompras:
     class AnalisarOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        pesquisar_nf = StringField("Pesquisar Nota Fiscal")
-        ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
-        botao_pesquisar_ordem_de_compra = SubmitField('Pesquisar Ordem de Compra')
+        pesquisar_nf = StringField("Nota Fiscal")
+        pesquisar_fornecedor = StringField("Fornecedor")
+        ordem_compra = StringField("Ordem", validators=[DataRequired()])
+        botao_pesquisar_notafiscal = SubmitField('Pesquisar Nota Fiscal')
+        botao_pesquisar_ordem_de_compra = SubmitField('Pesquisar')
         botao_liberar_recebimento = SubmitField('Liberar Para Recebimento')
         botao_recusar_recebimento = SubmitField('Recusar')
+
 
     class CadFornecedores(FlaskForm):
         cod_fornecedor = StringField("Código", validators=[ReadOnly()])

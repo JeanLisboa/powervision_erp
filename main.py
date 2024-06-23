@@ -6,7 +6,7 @@ from flask_wtf.csrf import CSRFProtect
 from forms import ModCompras, Mod_Comercial, Mod_Pricing, Mod_Logistica
 from geral import buscar_cnpj
 
-from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores, Totais
+from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores
 usuario = 'ADMIN'
 
 app = Flask(__name__)
@@ -161,15 +161,33 @@ class Compras:
     @staticmethod
     @app.route('/analisar_ordem_de_compra', methods=['POST', 'GET'])
     def analisar_ordem_de_compra():
+        resultado = 0
         form_analisar_ordem_de_compra = ModCompras.AnalisarOrdemCompra()
+        ordem_compra = form_analisar_ordem_de_compra.ordem_compra.data
+        pesquisar_nf = form_analisar_ordem_de_compra.pesquisar_nf.data
+
+        if pesquisar_nf:
+            form_analisar_ordem_de_compra.ordem_compra.data = ''
+
 
         xml = ''
         if request.method == 'POST':
             try:
+                if 'botao_pesquisar_notafiscal' in request.form:
+                    print('botao_pesquisar_notafiscal ACIONADO')
+                    xml = Formatadores.formatar_xml('25240543587344000909550040000020461934533155-nfe')
+                    # executar função xml
+            except Exception as e:
+                print(e)
+
+            try:
                 if 'botao_pesquisar_ordem_de_compra' in request.form:
                     print('botao_pesquisar_ordem_de_compra ACIONADO')
-                    # executar função xml
-                    xml = Formatadores.formatar_xml('25240643587344000909550040000020641598383396-nfe')
+                    print(f'Ordem a pesquisar >>> {ordem_compra}')
+                    xml = Formatadores.formatar_xml('25240543587344000909550040000020461934533155-nfe')
+
+                    resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra)
+                    print(resultado)
             except Exception as e:
                 print(e)
 
@@ -188,6 +206,7 @@ class Compras:
 
         return render_template('compras/analisar_ordem_de_compra.html',
                                xml=xml,
+                               retorno_ordem_compra=resultado,
                                data=Formatadores.formatar_data(Formatadores.os_data()),
                                form_analisar_ordem_de_compra=form_analisar_ordem_de_compra
                                )

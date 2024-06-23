@@ -1,10 +1,8 @@
 
-
 *{font-family: arial;
     font.size:12;
     font.color: rgb(45, 52, 54);
     }
-
 
 body {
     font-family: Arial, sans-serif;
@@ -16,6 +14,7 @@ body {
     height: 100vh;
     background-color: #f7f7f7;
 }
+
 #hot {
     width: 80%;
     margin: auto;
@@ -41,15 +40,9 @@ body {
 .background-color-formulario {
     background-color: rgb(255, 242, 201);
 }
-.div_principal {
-    max-width: 1600px;
-    border-width: 100px;
-    background-color: rgb(255, 242, 201);
-    border: 3px solid rgb(223, 230, 233);
-    padding: 50px;
-    margin-bottom: 2px;
-                }
 
+
+/* CONFIGURAÇÕES DE CAMPOS */
 .tam_campo_codigo {
     width: 100px;
 }
@@ -70,11 +63,11 @@ body {
 
 
 .borda {
-position:   absolute;
+position: absolute;
     top: 20px;
     left: 20px;
     right: 20px;
-    bottom: 20px;
+    bottom: 50px;
     border: 2px solid rgb(253, 203, 110);
     background-color: (1,1,1);
     box-sizing: border-box;
@@ -88,15 +81,16 @@ position:   absolute;
   border: 10px solid #333; /* Adiciona uma borda de 10px sólida com a cor #333 */
 }
 
-* Estilo básico da navbar */
+
+
+/* configuração da NAVBAR */
 .navbar {
-  background-color: #333;
   display: flex;
+  background-color: #B3D4FF;
   justify-content: space-between;
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
-/* Estilo dos links da navbar */
 .navbar a {
   text-align: center;
   padding: 14px 20px;
@@ -142,11 +136,6 @@ position:   absolute;
 }
 
 
-.cab_tabela {
-    font-size:15px;
-    background-color:#e9ecef;
-}
-
 .borda_simples {
     border: 2px solid rgb(223, 230, 233); /* Cor e espessura da borda */
     padding: 10px; /* Espaço interno para afastar o conteúdo da borda */
@@ -176,6 +165,13 @@ position:   absolute;
   padding: 2px; /* Ajuste o padding  */
 }
 
+/* CONFIGURAÇÕES DE TABELA*/
+
+.cab_tabela {
+    font-size:15px;
+    background-color:#e9ecef;
+}
+
 
 th{font-family:calibri, roboto, sans-serif,tahoma;
     padding:5px 3px 3px 3px;
@@ -202,6 +198,38 @@ td{
     -moz-border-radius:4px;
     -webkit-border-radius:4px;}
 
+/* CONFIGURAÇOES DAS DIV*/
+
+/*CONFIGURAÇÃO DA DIV QUE PRECISA TER OS ITENS LADO A LADO*/
+.form-inline {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+.form-inline .campo_data,
+.form-inline .form-control,
+.form-inline .form-label,
+.form-inline .btn {
+    margin-right: 10px; /* Espaçamento entre os elementos */
+}
+
+.form-inline .btn {
+    margin-top: 0; /* Remover a margem superior para alinhar o botão */
+}
+
+
+
+.div_principal {
+    max-width: 1600px;
+    border-width: 100px;
+    background-color: rgb(255, 242, 201);
+    border: 3px solid rgb(223, 230, 233);
+    padding: 50px;
+    margin-bottom: 2px;
+                }
+
+
 .float-child0 {
     width: 100%;
     float: right;
@@ -211,14 +239,28 @@ td{
 }
 
 
+.float-child-tela-pesquisa {
+    width: 50%;
+    float: left;
+    padding: 5px;
+    margin-top:13px;
+}
+
+.float-child-resultado-busca-pedidos {
+    width: 50%;
+    float: right;
+    padding: 5px;
+    margin-top:13px;
+}
+
 .float-child1 {
     width: 70%;
     float: left;
     padding: 5px;
     margin-top:13px;
     font-size:14px;
-    ;
 }
+
 .float-child2 {
     width: 30%;
     float: right;
@@ -228,3 +270,20 @@ td{
     ;
 }
 
+.float-child-analise-ordem-1 {
+    width: 50%;
+    float: left;
+    padding: 5px;
+    margin-top:13px;
+    font-size:14px;
+    ;
+}
+
+.float-child-analise-ordem-2 {
+    width: 50%;
+    float: right;
+    padding: 5px;
+    margin-top:13px;
+    font-size:14px;
+    ;
+}
