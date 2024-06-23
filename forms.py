@@ -12,13 +12,12 @@ class ModCompras:
     class AnalisarOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         pesquisar_nf = StringField("Nota Fiscal")
-        pesquisar_fornecedor = StringField("Fornecedor")
-        ordem_compra = StringField("Ordem", validators=[DataRequired()])
+        razao_social = StringField("Fornecedor")
+        ordem_compra = StringField("Ordem")
         botao_pesquisar_notafiscal = SubmitField('Pesquisar Nota Fiscal')
         botao_pesquisar_ordem_de_compra = SubmitField('Pesquisar')
         botao_liberar_recebimento = SubmitField('Liberar Para Recebimento')
         botao_recusar_recebimento = SubmitField('Recusar')
-
 
     class CadFornecedores(FlaskForm):
         cod_fornecedor = StringField("Código", validators=[ReadOnly()])

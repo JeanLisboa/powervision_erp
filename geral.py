@@ -333,18 +333,43 @@ class Buscadores:
     class OrdemCompra:
 
         @staticmethod
-        def buscar_ordem_compra2(ordem_compra):
+        def buscar_ordem_compra2(ordem_compra, razaosocial):
+            query = ''
             try:
-                query = (f'SELECT '
-                         f'ORDEM_COMPRA.DATA, '
-                         f'ORDEM_COMPRA.CODIGO, '
-                         f'FORNECEDORES.RAZAOSOCIAL, '
-                         f'ORDEM_COMPRA.ORDEM_COMPRA, '
-                         f'ORDEM_COMPRA.TOTAL_ITEM '
-                         f'FROM ORDEM_COMPRA '
-                         f'INNER JOIN FORNECEDORES '
-                         f'ON ORDEM_COMPRA.CODIGO = FORNECEDORES.CODIGO '
-                         f'WHERE ORDEM_COMPRA = "{ordem_compra}";')
+                if ordem_compra == '':
+                    query = (f'SELECT '
+                             f'ORDEM_COMPRA.DATA, '
+                             f'ORDEM_COMPRA.CODIGO, '
+                             f'FORNECEDORES.RAZAOSOCIAL, '
+                             f'ORDEM_COMPRA.ORDEM_COMPRA, '
+                             f'ORDEM_COMPRA.TOTAL_ITEM '
+                             f'FROM ORDEM_COMPRA '
+                             f'INNER JOIN FORNECEDORES '
+                             f'ON ORDEM_COMPRA.CODIGO = FORNECEDORES.CODIGO '
+                             f'WHERE RAZAOSOCIAL like "%{razaosocial}%";')
+                if razaosocial == '':
+                    query = (f'SELECT '
+                             f'ORDEM_COMPRA.DATA, '
+                             f'ORDEM_COMPRA.CODIGO, '
+                             f'FORNECEDORES.RAZAOSOCIAL, '
+                             f'ORDEM_COMPRA.ORDEM_COMPRA, '
+                             f'ORDEM_COMPRA.TOTAL_ITEM '
+                             f'FROM ORDEM_COMPRA '
+                             f'INNER JOIN FORNECEDORES '
+                             f'ON ORDEM_COMPRA.CODIGO = FORNECEDORES.CODIGO '
+                             f'WHERE ORDEM_COMPRA like "%{ordem_compra}%";')
+
+                else:
+                    query = (f'SELECT '
+                             f'ORDEM_COMPRA.DATA, '
+                             f'ORDEM_COMPRA.CODIGO, '
+                             f'FORNECEDORES.RAZAOSOCIAL, '
+                             f'ORDEM_COMPRA.ORDEM_COMPRA, '
+                             f'ORDEM_COMPRA.TOTAL_ITEM '
+                             f'FROM ORDEM_COMPRA '
+                             f'INNER JOIN FORNECEDORES '
+                             f'ON ORDEM_COMPRA.CODIGO = FORNECEDORES.CODIGO '
+                             f'WHERE ORDEM_COMPRA like "%{ordem_compra}%" AND RAZAOSOCIAL like "%{razaosocial}%" ;')
 
                 mydb.connect()
                 mycursor.execute(query)
@@ -354,6 +379,8 @@ class Buscadores:
                 return myresult
             except Exception as e:
                 print(e)
+                # resultado = '0', '0', '0', '0', '0'
+                return
 
         @staticmethod
         def buscar_ordem_compra(ordem_compra):

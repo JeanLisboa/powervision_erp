@@ -113,7 +113,7 @@ class Compras:
     @app.route('/cadastrar_produtos', methods=['POST', 'GET'])
     def cadastrar_produtos():
         form_cad_produtos = ModCompras.CadProduto()
-        fornecedores = geral.Buscadores.buscar_fornecedor()
+        fornecedores = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         form_cad_produtos.fornecedor.choices = [('Selecionar um fornecedor', 'Selecionar um fornecedor')] + [
             (f[0], f[0]) for f in fornecedores]
         cod_produto = geral.AtualizaCodigo.cod_produto()
@@ -161,16 +161,18 @@ class Compras:
     @staticmethod
     @app.route('/analisar_ordem_de_compra', methods=['POST', 'GET'])
     def analisar_ordem_de_compra():
-        resultado = 0
+        resultado = ''
+        ordem_compra = ''
+        razao_social = ''
+        xml = ''
         form_analisar_ordem_de_compra = ModCompras.AnalisarOrdemCompra()
         ordem_compra = form_analisar_ordem_de_compra.ordem_compra.data
+        razao_social = form_analisar_ordem_de_compra.razao_social.data
         pesquisar_nf = form_analisar_ordem_de_compra.pesquisar_nf.data
 
         if pesquisar_nf:
             form_analisar_ordem_de_compra.ordem_compra.data = ''
 
-
-        xml = ''
         if request.method == 'POST':
             try:
                 if 'botao_pesquisar_notafiscal' in request.form:
@@ -183,10 +185,9 @@ class Compras:
             try:
                 if 'botao_pesquisar_ordem_de_compra' in request.form:
                     print('botao_pesquisar_ordem_de_compra ACIONADO')
-                    print(f'Ordem a pesquisar >>> {ordem_compra}')
+                    print(f'Ordem a pesquisar >>> {ordem_compra, razao_social}')
                     xml = Formatadores.formatar_xml('25240543587344000909550040000020461934533155-nfe')
-
-                    resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra)
+                    resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra, razao_social)
                     print(resultado)
             except Exception as e:
                 print(e)
