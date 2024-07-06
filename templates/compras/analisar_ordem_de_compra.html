@@ -4,6 +4,7 @@
 
 TELA ANALISAR ORDEM DE COMPRA
 <div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
+
     <form action="" method="POST">
         {{ form_analisar_ordem_de_compra.csrf_token }}
         <div class="float-child0"> <!-- tela de pesquisa -->
@@ -32,7 +33,7 @@ TELA ANALISAR ORDEM DE COMPRA
                     <thead>
                         <tr class="cab_tabela">
                             <th>DATA</th>
-                            <th>CODIGO</th>
+                            <th>COD FORNEC</th>
                             <th>FORNECEDOR</th>
                             <th>ORDEM</th>
                             <th>VALOR TOTAL</th>
@@ -45,7 +46,8 @@ TELA ANALISAR ORDEM DE COMPRA
                             <td>{{ i[0] }}</td>
                             <td>{{ i[1] }}</td>
                             <td>{{ i[2] }}</td>
-                            <td><a href="#" title="clique para abrir">{{ i[3] }}</a></td>
+<!--                            <td><a href="#" title="clique para abrir" id="teste">{{ i[3] }}</a></td>-->
+                            <td><button name="ordem_para_analise" type="submit" class="btn btn-success"  style="--bs-btn-padding-y: .02rem; --bs-btn-padding-x: 1.0rem; --bs-btn-font-size: 1.1rem;" value="{{ i[3] }}">{{ i[3] }}</button></td>
                             <td>{{ i[4] }}</td>
                             <td></td>
                         </tr>
@@ -62,27 +64,33 @@ TELA ANALISAR ORDEM DE COMPRA
         </div>
         <br>
         <div class="mb-3 float-child-analise-ordem-1"> <!-- pedido -->
+            ORDEM DE COMPRA
             <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
                 <thead>
                     <tr>
                         <th>EAN</th>
+                        <th>DESCRIÇÃO</th>
                         <th>QUANTIDADE</th>
                         <th>VALOR UNITARIO</th>
                         <th>VALOR TOTAL</th>
                     </tr>
                 </thead>
                 <tbody>
+                {% for i in detalhamento_ordem %}
                     <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>{{i[7]}}</td>
+                        <td>{{i[3]}}</td>
+                        <td>{{i[8]}}</td>
+                        <td>{{i[9]}}</td>
+                        <td>{{i[10]}}</td>
                     </tr>
+                {% endfor %}
                 </tbody>
             </table>
         </div>
 
         <div class="mb-3 float-child-analise-ordem-2"> <!-- nota fiscal -->
+            NOTA FISCAL
             <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" >
                 <thead>
                     <tr class="cab_tabela">

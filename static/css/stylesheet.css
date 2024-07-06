@@ -52,7 +52,7 @@ body {
 }
 
 .tam_campo_data {
-    width: 105px;
+    width: 130px;
 }
 
 
@@ -240,14 +240,14 @@ td{
 
 
 .float-child-tela-pesquisa {
-    width: 50%;
+    width: 40%;
     float: left;
     padding: 5px;
     margin-top:13px;
 }
 
 .float-child-resultado-busca-pedidos {
-    width: 50%;
+    width: 59%;
     float: right;
     padding: 5px;
     margin-top:13px;
@@ -287,3 +287,14 @@ td{
     font-size:14px;
     ;
 }
+
+
+
+.btn-editar {
+            background: url('/editar.svg') no-repeat center center;
+            background-size: contain;
+            border: none;
+            width: 50px;  /* ajuste conforme necessário */
+            height: 50px;  /* ajuste conforme necessário */
+            text-indent: -9999px;  /* esconder o texto */
+        }

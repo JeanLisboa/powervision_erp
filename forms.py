@@ -1,5 +1,5 @@
-from wtforms import StringField, SubmitField, SelectField, IntegerField, FloatField
-from wtforms.validators import DataRequired, Email, Disabled, Length, ReadOnly
+from wtforms import StringField, SubmitField, SelectField, IntegerField, FloatField, HiddenField
+from wtforms.validators import DataRequired, Email, Disabled, Length, ReadOnly, NumberRange
 from flask_wtf import FlaskForm
 from datetime import date
 
@@ -38,13 +38,22 @@ class ModCompras:
         buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         cod_produto = StringField("Código: ", validators=[Disabled()])
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        ean = StringField("EAN", validators=[DataRequired(), Length(13)])
-        descricao = StringField("Descrição", validators=[DataRequired()])
+        ean = StringField("EAN", validators=[Length(13)])
+        descricao = StringField("Descrição")
         fornecedor = SelectField("Fornecedor", choices=['Selecionar um fornecedor'] + [f[0] for f in buscar_fornecedor], validators=[DataRequired()])
         unidade = SelectField(coerce=str, choices=['', 'KG', 'G', 'CX', 'UN', 'L', 'M', 'CM'],
-                              validators=[DataRequired(), ReadOnly()])
+                              validators=[ReadOnly()])
+
+        valor = FloatField("Valor", validators=[NumberRange(min=0.01)])
         categoria = SelectField(coerce=str, choices=['','VESTUARIO', 'BEBIDAS', 'ALIMENTOS', 'HIGIENE', 'OUTROS'])
+        botao_incluir_item = SubmitField('Incluir Item')
         botao_submit_cad_prod = SubmitField('Cadastrar')
+        botao_cancelar_cad_prod = SubmitField('cancelar')
+        botao_excluir_cad_prod = SubmitField('excluir')
+
+        # esta linha serve para armazenar o valor do produto para utilizar no botao editar linha do cadastro produto
+        botao_editar_cad_prod = SubmitField('Editar')
+        valor_produto = HiddenField('Valor do Produto')
 
     class GerarOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
@@ -55,7 +64,7 @@ class ModCompras:
         descricao = StringField("Descrição", validators=[ReadOnly()])
         unidade = StringField("Un", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
-        quantidade = IntegerField("Quantidade", validators=[DataRequired()])
+        quantidade = IntegerField("Quantidade", validators=[DataRequired(), NumberRange(min=1)])
         preco_unitario = FloatField("Preço Unitário", validators=[DataRequired()])
         preco_historico = FloatField("Preço Histórico", validators=[DataRequired(), ReadOnly()])
         ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])

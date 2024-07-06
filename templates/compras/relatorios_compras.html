@@ -2,6 +2,45 @@
 
 {% block content %}
 TELA RELATORIOS COMPRAS
-<div class="container p-3 mb-2 border border-3 border-secondary p-2 mb-2 div_principal">
-</div>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ag-Grid Example</title>
+  <!-- Ag-Grid CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-grid.css">
+  <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-theme-alpine.css">
+</head>
+<body>
+  <h1>Ag-Grid Example</h1>
+  <div id="myGrid" class="ag-theme-alpine" style="height: 500px; width: 600px;"></div>
+
+  <!-- Ag-Grid JavaScript -->
+  <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
+  <script>
+    // Especificação das colunas
+    const columnDefs = [
+      { headerName: 'Make', field: 'make' },
+      { headerName: 'Model', field: 'model' },
+      { headerName: 'Price', field: 'price' }
+    ];
+
+    // Dados da tabela
+    const rowData = [
+      { make: 'Toyota', model: 'Celica', price: 35000 },
+      { make: 'Ford', model: 'Mondeo', price: 32000 },
+      { make: 'Porsche', model: 'Boxster', price: 72000 }
+    ];
+
+    // Criação do grid
+    const gridOptions = {
+      columnDefs: columnDefs,
+      rowData: rowData
+    };
+
+    // Obtenção do elemento HTML e inicialização do grid
+    const eGridDiv = document.querySelector('#myGrid');
+    new agGrid.Grid(eGridDiv, gridOptions);
+  </script>
+
 {% endblock %}

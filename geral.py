@@ -83,11 +83,53 @@ class AlertaMsg:
         self.cnpj_ja_existente = self.cnpj_ja_existente
         self.cad_fornecedor_realizado = self.cad_fornecedor_realizado
 
+
+
+    @staticmethod
+    def produto_ja_cadastrado(ean):
+        session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">PRODUTO JÁ CADASTRADO EAN {ean}</div>'
+        return redirect(url_for('cadastrar_produtos'))
+    @staticmethod
+    def produto_incluido_na_tabela(ean, descricao):
+        session['alert'] = f'<div id = "alert" class="alert alert-success", role="alert">PRODUTO INCLUIDO NA TABELA: EAN {ean} | {descricao}</div>'
+        return redirect(url_for('cadastrar_produtos'))
+
+
+    @staticmethod
+    def produto_ja_digitado():
+        session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">PRODUTO JÁ DIGITADO</div>'
+        return redirect(url_for('cadastrar_produtos'))
+    @staticmethod
+    def campos_em_branco():
+        session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>'
+        return redirect(url_for('cadastrar_produtos'))
+
+    @staticmethod
+    def ean_ja_digitado(ean):
+        session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>'
+        return redirect(url_for('cadastrar_produtos'))
+
+    @staticmethod
+    def produto_cadastrado_com_sucesso():
+        session['alert'] = \
+            '<div id = "alert" class="alert alert-success", role="alert">PRODUTO CADASTRADO COM SUCESSO</div>'
+        return redirect(url_for('cadastrar_produtos'))
+
+    @staticmethod
+    def fornecedor_invalido_cad_prod():
+        session['alert'] = '<div id="alert" class="alert alert-danger" role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>'
+        return redirect(url_for('cadastrar_produtos'))
+
     @staticmethod
     def cad_fornecedor_realizado():
-        session['alert'] = \
-            '<div id = "alert" class="alert alert-success", role="alert">CADASTRO REALIZADO!</div>'
+        session['alert'] \
+            = '<div id="alert" class="alert alert-success", role="alert">CADASTRO REALIZADO!</div>'
         return redirect(url_for('cadastrar_fornecedores'))
+    @staticmethod
+    def fornecedor_invalido():
+        session['alert'] = '<div id="alert" class="alert alert-danger" role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>'
+        return redirect(url_for('cadastrar_fornecedores'))
+
 
     @staticmethod
     def cnpj_invalido():
@@ -189,9 +231,6 @@ class Formatadores:
                                 lista_itens_nf_nova.append(lista_itens_nf_temp_nova[:])
                                 lista_itens_nf_temp_nova.clear()
                         print('lista_itens_nf_nova >> finalizada')
-                        print(lista_itens_nf_nova)
-                        for i in lista_itens_nf_nova:
-                            print(i)
 
             except ET.ParseError as e:
                 print(f"Erro ao analisar o arquivo XML: {e}")
@@ -216,6 +255,13 @@ class Formatadores:
 
 
 class Validadores:
+
+    @staticmethod
+    def valida_item_a_cadastrar(ean):
+        print(f'função_item_a_cadastrar >>> {ean}')
+
+        return False
+        pass
     @staticmethod
     def analisar_nf_pedido():
         pass
@@ -351,25 +397,27 @@ class Buscadores:
                     query = (f'SELECT '
                              f'ORDEM_COMPRA.DATA, '
                              f'ORDEM_COMPRA.CODIGO, '
-                             f'FORNECEDORES.RAZAOSOCIAL, '
+                             f'PRODUTOS.FORNECEDOR, '
                              f'ORDEM_COMPRA.ORDEM_COMPRA, '
                              f'ORDEM_COMPRA.TOTAL_ITEM '
                              f'FROM ORDEM_COMPRA '
-                             f'INNER JOIN FORNECEDORES '
-                             f'ON ORDEM_COMPRA.CODIGO = FORNECEDORES.CODIGO '
-                             f'WHERE ORDEM_COMPRA like "%{ordem_compra}%";')
+                             f'INNER JOIN PRODUTOS '
+                             f'ON ORDEM_COMPRA.DESCRICAO = PRODUTOS.DESCRICAO '
+                             f'WHERE ORDEM_COMPRA like "%{ordem_compra}%" '
+                             f'ORDER BY ORDEM_COMPRA DESC;')
 
                 else:
                     query = (f'SELECT '
                              f'ORDEM_COMPRA.DATA, '
                              f'ORDEM_COMPRA.CODIGO, '
-                             f'FORNECEDORES.RAZAOSOCIAL, '
+                             f'PRODUTOS.FORNECEDOR, '
                              f'ORDEM_COMPRA.ORDEM_COMPRA, '
                              f'ORDEM_COMPRA.TOTAL_ITEM '
                              f'FROM ORDEM_COMPRA '
-                             f'INNER JOIN FORNECEDORES '
-                             f'ON ORDEM_COMPRA.CODIGO = FORNECEDORES.CODIGO '
-                             f'WHERE ORDEM_COMPRA like "%{ordem_compra}%" AND RAZAOSOCIAL like "%{razaosocial}%" ;')
+                             f'INNER JOIN PRODUTOS '
+                             f'ON ORDEM_COMPRA.DESCRICAO = PRODUTOS.DESCRICAO '
+                             f'WHERE ORDEM_COMPRA like "%{ordem_compra}%" AND FORNECEDOR like "%{razaosocial}%" '
+                             f'ORDER BY ORDEM_COMPRA DESC;')
 
                 mydb.connect()
                 mycursor.execute(query)
@@ -511,19 +559,27 @@ class Buscadores:
                 return myresult
 
 
-    def buscar_produto_pelo_ean(self):
+    def buscar_produto_pelo_ean(ean):
         print('metodo buscar pelo ean')
         try:
-            query = f'select * from produtos where ean = "{self}"'
+            query = f'select * from produtos where ean = "{ean}"'
             mydb.connect()
             mycursor.execute(query)
             myresult = mycursor.fetchall()
             mydb.commit()
             mydb.close()
-            print(myresult)
-            return myresult
+            # print(myresult)
+            try:
+                print(len(myresult))
+
+                if len(myresult) > 0:
+                    return False
+                else:
+                    return True
+            except Exception as e:
+                return len(myresult), e
         except Exception as e:
-            print(e)
+            return e
 
     def buscar_produto_pelo_codigo(self):
         print('metodo buscar pelo codigo')

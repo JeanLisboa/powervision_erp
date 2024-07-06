@@ -6,15 +6,21 @@
 {% set total_medio = 0.00 %}
 
 {% block content %}
-
+TELA GERAR ORDEM DE COMPRA
 <div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal"
      xmlns="http://www.w3.org/1999/html">
     <form action="" method="POST">
         {{ form_gerar_ordem_compra.csrf_token }}
-
-
         <!-- div1 -->
         <div class="mb-3 float-child1">
+            <pre>
+                1 - INSERIR OPÇÃO DE PESQUISAR PELO FORNECEDOR. O FORNECEDOR DEVE SER MANTIDO EM TELA ATÉ FINALIZAR A ORDEM DE COMPRA
+                2 - INSERIR OPÇÃO DE INSERIR PREÇO MANUALMENTE, AO INVES DE PUXAR DO CADASTRO
+                3 - INSERIR OPÇÃO PARA EDITAR A ORDEM DE COMPRA
+                4 - AJUSTAR CAMPO PARA RECEBER VIRGULA NO LUGAR DE PONTO
+                5 - LIMPAR TODOS OS CAMPOS AO GERAR ORDEM DE COMPRA
+                6 - CONFIGURAR PESQUISA PELO EAN
+            </pre>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_gerar_ordem_compra.data.label(class="campo_data" ) }}
                 {{ form_gerar_ordem_compra.data(class="form-control tam_campo_data",  value=data) }}
@@ -83,7 +89,7 @@
                 <div class="col form-label  btn btn-alt">
                     <button type="button" class="btn btn-success mt-3 btn-lg botao_borda_customizada"> ÚLTIMO PREÇO: R$ {{ ultimo_preco }}</button>
                     <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> PREÇO MEDIO: R$ {{ preco_medio }}</button>
-                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> EM ABERTO: {{ ordens_em_aberto[0] }} R${{ ordens_em_aberto[1]  }}</button>
+                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> EM ABERTO: {{ ordens_em_aberto[0] }} R${{ ordens_em_aberto[1] }}</button>
                     <button type="button" class="btn btn-info mt-3 btn-lg botao_valor_total"> TOTAL DO PEDIDO: R$ {{ total_ordem_compra }}</button>
                     <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE LIVRE:    </button>
                     <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE EMPENHADO: </button>
@@ -98,9 +104,6 @@
         <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
 
             <thead>
-
-            </thead>
-            <tbody>
                 <tr>
                     <th>Data</th>
                     <th>Ordem de Compra</th>
@@ -115,6 +118,9 @@
                     <th>Total Item</th>
 
                 </tr>
+            </thead>
+            <tbody>
+
                 {% for i in dicionario_ordem_compra %}
                     {% set contador_item = loop.index0 + 1 %}
                     {% set total_item = i[7] * i[8] %}

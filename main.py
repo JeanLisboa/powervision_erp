@@ -6,12 +6,13 @@ from flask_wtf.csrf import CSRFProtect
 from forms import ModCompras, Mod_Comercial, Mod_Pricing, Mod_Logistica
 from geral import buscar_cnpj
 
-from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores
+from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores, AlertaMsg
 usuario = 'ADMIN'
-
+global alert
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "f92ed5835155e99cc60e328de2cce349830e28984c160jj3gg2"
 csrf = CSRFProtect(app)
+
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -21,10 +22,17 @@ mydb = mysql.connector.connect(
 )
 mycursor = mydb.cursor()
 
+# as 4 linhas abaixo são utilizadas na ordem de compra
 total_ordem_compra = 0
 contador_item = 0
-lista_contador_item = []
+lista_contador_item_compra = []
 lista_ordem_compra = []  # UTILIZADO EM compras/gerar_ordem_compra
+
+
+total_cadastro_produto = 0
+contador_item_cadastro_produto = 0
+lista_contador_cadastro_produto = []
+lista_cadastro_produto = []
 
 
 @app.route('/')
@@ -109,9 +117,17 @@ class Compras:
                                cod_fornecedor=AtualizaCodigo.cod_fornecedor(),
                                data=Formatadores.formatar_data(Formatadores.os_data()))
 
+
     @staticmethod
     @app.route('/cadastrar_produtos', methods=['POST', 'GET'])
     def cadastrar_produtos():
+        alert = None
+        # global contador_item_cadastro
+        global lista_cadastro_produto
+        global total_cadastro_produto
+        global lista_contador_cadastro_produto
+        contador_item_cadastro_produto = 0
+        item_cadastro_produto = []
         form_cad_produtos = ModCompras.CadProduto()
         fornecedores = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         form_cad_produtos.fornecedor.choices = [('Selecionar um fornecedor', 'Selecionar um fornecedor')] + [
@@ -120,43 +136,242 @@ class Compras:
         ean = form_cad_produtos.ean.data
         descricao = form_cad_produtos.descricao.data
         unidade = form_cad_produtos.unidade.data
+        valor = form_cad_produtos.valor.data
         categoria = form_cad_produtos.categoria.data
         data = Formatadores.os_data()
+        fornecedor = form_cad_produtos.fornecedor.data
 
-        if 'botao_submit_cad_prod' in request.form:
-            fornecedor = form_cad_produtos.fornecedor.data
+        if request.method == 'POST':
+            fornecedor = ''
+            if 'botao_incluir_item' in request.form: # inclui o item na tabela
+                print('botao_incluir_item pressionado')
+                fornecedor = request.form.get('fornecedor')  # retorna o fornecedor selecionado e instacia na variável
+                try:
 
-            values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
-                      f"'{cod_produto}',"
-                      f"'{fornecedor}',"
-                      f"'{ean}',"
-                      f"'{descricao}',"
-                      f"'{unidade}',"
-                      f"'{categoria}'")
-            query = (f'INSERT INTO PRODUTOS '
-                     f'(DATA, CODIGO, FORNECEDOR, '
-                     f'EAN, DESCRICAO, UNIDADE, CATEGORIA) '
-                     f'VALUES ({values})')
-            print(query)
-            mycursor.execute(query)
-            mycursor.fetchall()
-            fechadb = 'SET SQL_SAFE_UPDATES = 1'
-            mycursor.execute(fechadb)
-            mycursor.fetchall()
-            mydb.commit()
+                    print(lista_cadastro_produto)
 
-            alert = geral.AlertaMsg.cad_fornecedor_realizado()
-            # AtualizaCodigo.cod_produto()
-            # Buscadores.buscar_fornecedor()
-            return redirect(url_for('cadastrar_produtos'))
+                    def valida_ean_na_lista():
+                        print('def verifica_ean_na_lista')
+                        if not lista_cadastro_produto: # ou if lista_cadastro_produto == []
+                            print('lista vazia')
+                            return True
+                        for i in lista_cadastro_produto:  # verifica se o item ja existe no pedido
+                            print(f'for lista_cadastro_produto {i}')
+                            if i[1][1] == ean:
+                                print('ean ja existente na lista de itens a cadastrar')
+                                return False
+                            else:
+                                print('ean ainda nao digitado.')
+                                return True
 
-        alert = session.pop('alert', None)
+                    def valida_campos():
+                        print('função valida_campos (verifica se todos os campos foram preenchidos)')
+                        if (fornecedor == 'Selecionar um fornecedor'
+                                or ean == '' or ean is None
+                                or descricao == '' or descricao is None
+                                or unidade == '' or unidade is None
+                                or valor == '' or valor is None
+                                or categoria == '' or categoria is None):
+                                alert = geral.AlertaMsg.campos_em_branco()
+                                print('>>há um ou mais campos em branco ')
+                                return False
+                        else:
+                            print('>>todos os campos preenchidos')
+                            return True
+
+                    def valida_ean_no_banco():
+                        print('função valida_ean_no_banco')
+                        # valida se o ean existe no banco de dados
+                        if geral.Buscadores.buscar_produto_pelo_ean(ean) is False:
+                            alert = geral.AlertaMsg.produto_ja_cadastrado(ean)
+                            print('>>ean ja existente no banco de dados')
+                            return False
+                        else:
+                            print('>>ean disponível para cadastro')
+                            return True
+                    print('----------------------')
+                    valida_campos = valida_campos()
+                    print('----------------------')
+                    valida_ean_na_lista = valida_ean_na_lista()
+                    print('----------------------')
+                    valida_ean_no_banco = valida_ean_no_banco()
+
+                    if valida_campos is True and valida_ean_na_lista is True and valida_ean_no_banco is True:
+                        print('Todas as validações foram executadas corretamente')
+                        contador_item_cadastro = len(lista_contador_cadastro_produto)
+                        contador_item_cadastro_produto += 1
+                        lista_contador_cadastro_produto.append(contador_item_cadastro_produto)
+                        item_cadastro_produto.append(Formatadores.data_formato_db(data))
+                        item_cadastro_produto.append([fornecedor, ean, descricao, unidade, categoria, valor, usuario])
+                        lista_cadastro_produto.append(item_cadastro_produto[:])
+                        item_cadastro_produto.clear()
+
+                        print(f'lista_cadastro_produto {lista_cadastro_produto}')
+                        # A LINHA ABAIXO SERVE PARA SALVAR O FORNECEDOR NA SESSÃO E,
+                        # MANTÊ-LO NA TELA AO INCLUIR O ITEM NA TABELA
+                        #   (obs.: DEVE SER PASSADO NO RENDER TEMPLATE)
+                        session['fornecedor'] = fornecedor
+                        alert = geral.AlertaMsg.produto_incluido_na_tabela(ean,descricao)
+                        return redirect(url_for('cadastrar_produtos', session=session))
+                #
+                except Exception as e:
+                    print(e)
+
+
+            if 'botao_submit_cad_prod' in request.form: # inclui as linhas da tabela no banco de dados
+                print('botao_submit_cad_prod pressionado')
+                try:
+                    for i in lista_cadastro_produto:
+                        print(i[1][0])
+                        print(i[1][1])
+                        print(i[1][2])
+                        print(i[1][3])
+                        print(i[1][4])
+                        print(i[1][5])
+                        print(i[1][6])
+                        data = data
+                        # codigo = cod_produto
+                        fornecedor = i[1][0]
+                        ean = i[1][1]
+                        descricao = i[1][2]
+                        unidade = i[1][3]
+                        categoria = i[1][4]
+                        valor = i[1][5]
+                        # usuario = i[1][6]
+                        #
+                        # print(f'cod_produto {cod_produto}')
+                        # print(f'fornecedor {fornecedor}')
+                        # print(f'ean {ean}')
+                        # print(f'descricao {descricao}')
+                        # print(f'unidade {unidade}')
+                        # print(f'categoria {categoria}')
+
+                        values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
+                                  f"'{cod_produto}',"
+                                  f"'{fornecedor}',"
+                                  f"'{ean}',"
+                                  f"'{descricao}',"
+                                  f"'{unidade}',"
+                                  f"'{categoria}'")
+                        query = (f'INSERT INTO PRODUTOS '
+                                 f'(DATA, CODIGO, FORNECEDOR, '
+                                 f'EAN, DESCRICAO, UNIDADE, CATEGORIA) '
+                                 f'VALUES ({values})')
+                        input('continue para atualizar o bd')
+                        print(query)
+                        mycursor.execute(query)
+                        mycursor.fetchall()
+                        fechadb = 'SET SQL_SAFE_UPDATES = 1'
+                        mycursor.execute(fechadb)
+                        mycursor.fetchall()
+                        mydb.commit()
+                        alert = AlertaMsg.produto_cadastrado_com_sucesso()
+
+                    lista_cadastro_produto.clear()
+                    redirect(url_for('cadastrar_produtos'))
+                    return render_template('compras/cadastrar_produtos.html',
+                                           alert=alert,
+                                           fornecedor=fornecedor,
+                                           form_cad_produtos=form_cad_produtos,
+                                           cod_produto=AtualizaCodigo.cod_produto(),
+                                           data=Formatadores.formatar_data(Formatadores.os_data()))
+
+                except Exception as e:
+                    print(e)
+
+                #     if fornecedor == 'Selecionar um fornecedor':
+                #         AlertaMsg.fornecedor_invalido_cad_prod()
+                #
+                #     else:
+                #         values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
+                #                   f"'{cod_produto}',"
+                #                   f"'{fornecedor}',"
+                #                   f"'{ean}',"
+                #                   f"'{descricao}',"
+                #                   f"'{unidade}',"
+                #                   f"'{categoria}'")
+                #         query = (f'INSERT INTO PRODUTOS '
+                #                  f'(DATA, CODIGO, FORNECEDOR, '
+                #                  f'EAN, DESCRICAO, UNIDADE, CATEGORIA) '
+                #                  f'VALUES ({values})')
+                #         print(query)
+                #         mycursor.execute(query)
+                #         mycursor.fetchall()
+                #         fechadb = 'SET SQL_SAFE_UPDATES = 1'
+                #         mycursor.execute(fechadb)
+                #         mycursor.fetchall()
+                #         mydb.commit()
+                #         alert = AlertaMsg.produto_cadastrado_com_sucesso()
+                #         lista_cadastro_produto.clear()
+                #         redirect(url_for('cadastrar_produtos'))
+                #         # return render_template('compras/cadastrar_produtos.html',
+                #         #                        alert=alert,
+                #         #                        fornecedor=fornecedor,
+                #         #                        form_cad_produtos=form_cad_produtos,
+                #         #                        cod_produto=AtualizaCodigo.cod_produto(),
+                #         #                        data=Formatadores.formatar_data(Formatadores.os_data()))
+                except Exception as e:
+                    print('erro ao cadastrar')
+                    print(e)
+                    AlertaMsg.produto_ja_cadastrado(ean)
+                    if 'alert' in session:
+                        alert = session.pop('alert', None)
+                        return render_template('compras/cadastrar_produtos.html',
+                                               alert=alert,
+                                               form_cad_produtos=form_cad_produtos,
+                                               cod_produto=AtualizaCodigo.cod_produto(),
+                                               data=Formatadores.formatar_data(Formatadores.os_data()))
+
+            if 'botao_cancelar_cad_prod' in request.form: # limpa os campos do formulário
+                print('botao_cancelar_cad_prod pressionado')
+                cod_produto = ean = descricao = unidade = categoria = valor = fornecedor = ''
+                lista_cadastro_produto.clear()
+
+            if 'botao_editar_cad_prod' in request.form:
+                valor_produto = request.form.getlist('valor_produto')
+                for i in valor_produto:
+                    if i != '':
+                        valor_produto = i
+                        print(f'valor_produto {i}')
+
+                print('---------teste com for simples----------')
+                print(f' Itens da lista >>> {len(lista_cadastro_produto)}')
+
+                print(lista_cadastro_produto)
+                print(f'Valor produto >>> {valor_produto}')
+                for i in lista_cadastro_produto:
+                    if valor_produto == i[1][1]:
+
+                        lista_cadastro_produto.remove(i)
+                        redirect(url_for('cadastrar_produtos'))
+                    # print(f'linha tabela = {linha_tabela} | {i[1][1]} | {i}')
+
+
+
+
+                #     for i in lista_cadastro_produto:
+                #         if i[1][1] == valor_produto:
+                #             print('for i in lista_cadastro_produto')
+                #             print(len(lista_cadastro_produto))
+
+                print('---------fim do teste----------')
+
+
+                # for i in valor_produto:
+                #     print(f'valor_produto {i}')
+                # print(f'botao_editar_cad_prod pressionado com valor {valor_produto}')
+
+
+
+        if 'alert' in session:  # Verifica se o alerta existe na sessão, ou seja, verifica se existe alguma condição para envio de 'alert' ser renderizada
+            alert = session.pop('alert', None)
         return render_template('compras/cadastrar_produtos.html',
                                alert=alert,
+                               fornecedor=fornecedor,
                                form_cad_produtos=form_cad_produtos,
+                               dicionario_cad_produtos=lista_cadastro_produto,  # lista_cadastro_produto_cpp
                                cod_produto=AtualizaCodigo.cod_produto(),
                                data=Formatadores.formatar_data(Formatadores.os_data()))
-
 
     @staticmethod
     @app.route('/analisar_ordem_de_compra', methods=['POST', 'GET'])
@@ -165,6 +380,7 @@ class Compras:
         ordem_compra = ''
         razao_social = ''
         xml = ''
+        detalhamento_ordem = ''
         form_analisar_ordem_de_compra = ModCompras.AnalisarOrdemCompra()
         ordem_compra = form_analisar_ordem_de_compra.ordem_compra.data
         razao_social = form_analisar_ordem_de_compra.razao_social.data
@@ -181,14 +397,19 @@ class Compras:
                     # executar função xml
             except Exception as e:
                 print(e)
-
             try:
                 if 'botao_pesquisar_ordem_de_compra' in request.form:
                     print('botao_pesquisar_ordem_de_compra ACIONADO')
                     print(f'Ordem a pesquisar >>> {ordem_compra, razao_social}')
-                    xml = Formatadores.formatar_xml('25240543587344000909550040000020461934533155-nfe')
                     resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra, razao_social)
-                    print(resultado)
+
+                if 'ordem_para_analise' in request.form: # retorna a opção selecionada na tela
+                    ordem_para_analise = request.form.get('ordem_para_analise')
+                    detalhamento_ordem = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_para_analise)
+                    xml = Formatadores.formatar_xml('25240543587344000909550040000020461934533155-nfe')
+                    print(ordem_para_analise)
+
+
             except Exception as e:
                 print(e)
 
@@ -208,6 +429,7 @@ class Compras:
         return render_template('compras/analisar_ordem_de_compra.html',
                                xml=xml,
                                retorno_ordem_compra=resultado,
+                               detalhamento_ordem=detalhamento_ordem,
                                data=Formatadores.formatar_data(Formatadores.os_data()),
                                form_analisar_ordem_de_compra=form_analisar_ordem_de_compra
                                )
@@ -218,6 +440,7 @@ class Compras:
         global contador_item
         global lista_ordem_compra
         global total_ordem_compra
+
 
         item_ordem_compra = []
         form_gerar_ordem_compra = ModCompras.GerarOrdemCompra()
@@ -247,9 +470,9 @@ class Compras:
             session['preco_historico'] = 0
         if 'ordens_em_aberto' not in session:
             session['ordens_em_aberto'] = 0
-
         try:
             total_item = quantidade * preco_unitario
+
         except:
             total_item = 0
 
@@ -290,20 +513,17 @@ class Compras:
                 if 'botao_incluir_item' in request.form:
                     try:
                         Formatadores.preparar_item_ordem_compra()
-                        # print('teste')
+                        print('teste')
+                        contador_item = len(lista_contador_item_compra)
+                        print(f'max lista contador item {max(lista_contador_item_compra)}')
 
-                        contador_item = len(lista_contador_item)
-                        print(f'max lista contador item {max(lista_contador_item)}')
-
-                    except:
+                    except Exception as e:
+                        print(e)
                         contador_item = 0
-
                     #  TRANSFORMAR EM FUNÇÃO
-
                     contador_item += 1
                     print(contador_item)
-                    lista_contador_item.append(contador_item)
-                    # item_ordem_compra.append(Formatadores.formatar_data(data))
+                    lista_contador_item_compra.append(contador_item)
                     item_ordem_compra.append(Formatadores.data_formato_db(data))
                     item_ordem_compra.append(ordem_compra)
                     item_ordem_compra.append(descricao)
@@ -336,6 +556,7 @@ class Compras:
                     print('botao_submit_compra pressionado')
                     cont_temp = 1
                     while cont_temp <= len(lista_ordem_compra):
+                        print(f' len de lista_ordem_compra >>>> {len(lista_ordem_compra)}')
                         for i in lista_ordem_compra:
                             print(f'i  linha {cont_temp} >>>> {i}')
                             values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
@@ -355,12 +576,14 @@ class Compras:
                                      f'(DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, USUARIO)'
                                      f' VALUES ({values});')
                             print(f'Query {cont_temp} >>>> {query}')
+                            mydb.connect()
                             mycursor.execute(query)
                             mycursor.fetchall()
                             fechadb = 'SET SQL_SAFE_UPDATES = 1'
                             mycursor.execute(fechadb)
                             mycursor.fetchall()
                             mydb.commit()
+                            mydb.close()
                             cont_temp += 1
                     lista_ordem_compra.clear() # limpa a lista para a proxima ordem de compra
 
@@ -379,7 +602,6 @@ class Compras:
 
             except Exception as e:
                 print(e)
-
 
             alert = session.pop('alert', None)
 
