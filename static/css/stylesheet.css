@@ -270,6 +270,23 @@ td{
     ;
 }
 
+
+.float-child-ordem-compra1 {
+    width: 50%;
+    float: left;
+    padding: 5px;
+    margin-top:13px;
+    font-size:14px;
+}
+
+.float-child-ordem-compra2 {
+    width: 50%;
+    float: right;
+    margin-top:13px;
+
+
+    ;
+}
 .float-child-analise-ordem-1 {
     width: 50%;
     float: left;

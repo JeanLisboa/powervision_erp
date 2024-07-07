@@ -559,6 +559,25 @@ class Buscadores:
                 return myresult
 
 
+        @staticmethod
+        def buscar_pelo_fornecedor(fornecedor):
+            print('função pesquisar pelo fornecedor')
+            try:
+                query = f"select * from produtos where fornecedor = '{fornecedor}' order by DESCRICAO"
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                lista_produtos = []
+                for i in myresult:
+                    lista_produtos.append(i)
+                    lista_produtos = list(lista_produtos)
+                return lista_produtos
+            except:
+                myresult = ''
+                return myresult
+
     def buscar_produto_pelo_ean(ean):
         print('metodo buscar pelo ean')
         try:

@@ -140,7 +140,7 @@ class Compras:
         categoria = form_cad_produtos.categoria.data
         data = Formatadores.os_data()
         fornecedor = form_cad_produtos.fornecedor.data
-
+        usuario = "ADMIN"
         if request.method == 'POST':
             fornecedor = ''
             if 'botao_incluir_item' in request.form: # inclui o item na tabela
@@ -237,14 +237,7 @@ class Compras:
                         unidade = i[1][3]
                         categoria = i[1][4]
                         valor = i[1][5]
-                        # usuario = i[1][6]
-                        #
-                        # print(f'cod_produto {cod_produto}')
-                        # print(f'fornecedor {fornecedor}')
-                        # print(f'ean {ean}')
-                        # print(f'descricao {descricao}')
-                        # print(f'unidade {unidade}')
-                        # print(f'categoria {categoria}')
+                        usuario = i[1][6]
 
                         values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
                                   f"'{cod_produto}',"
@@ -252,12 +245,14 @@ class Compras:
                                   f"'{ean}',"
                                   f"'{descricao}',"
                                   f"'{unidade}',"
-                                  f"'{categoria}'")
+                                  f"'{categoria}',"
+                                  f"'{valor}',"
+                                  f"'{usuario}'")
                         query = (f'INSERT INTO PRODUTOS '
                                  f'(DATA, CODIGO, FORNECEDOR, '
-                                 f'EAN, DESCRICAO, UNIDADE, CATEGORIA) '
+                                 f'EAN, DESCRICAO, UNIDADE, CATEGORIA, VALOR, USUARIO) '
                                  f'VALUES ({values})')
-                        input('continue para atualizar o bd')
+
                         print(query)
                         mycursor.execute(query)
                         mycursor.fetchall()
@@ -279,37 +274,6 @@ class Compras:
                 except Exception as e:
                     print(e)
 
-                #     if fornecedor == 'Selecionar um fornecedor':
-                #         AlertaMsg.fornecedor_invalido_cad_prod()
-                #
-                #     else:
-                #         values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
-                #                   f"'{cod_produto}',"
-                #                   f"'{fornecedor}',"
-                #                   f"'{ean}',"
-                #                   f"'{descricao}',"
-                #                   f"'{unidade}',"
-                #                   f"'{categoria}'")
-                #         query = (f'INSERT INTO PRODUTOS '
-                #                  f'(DATA, CODIGO, FORNECEDOR, '
-                #                  f'EAN, DESCRICAO, UNIDADE, CATEGORIA) '
-                #                  f'VALUES ({values})')
-                #         print(query)
-                #         mycursor.execute(query)
-                #         mycursor.fetchall()
-                #         fechadb = 'SET SQL_SAFE_UPDATES = 1'
-                #         mycursor.execute(fechadb)
-                #         mycursor.fetchall()
-                #         mydb.commit()
-                #         alert = AlertaMsg.produto_cadastrado_com_sucesso()
-                #         lista_cadastro_produto.clear()
-                #         redirect(url_for('cadastrar_produtos'))
-                #         # return render_template('compras/cadastrar_produtos.html',
-                #         #                        alert=alert,
-                #         #                        fornecedor=fornecedor,
-                #         #                        form_cad_produtos=form_cad_produtos,
-                #         #                        cod_produto=AtualizaCodigo.cod_produto(),
-                #         #                        data=Formatadores.formatar_data(Formatadores.os_data()))
                 except Exception as e:
                     print('erro ao cadastrar')
                     print(e)
@@ -327,7 +291,7 @@ class Compras:
                 cod_produto = ean = descricao = unidade = categoria = valor = fornecedor = ''
                 lista_cadastro_produto.clear()
 
-            if 'botao_editar_cad_prod' in request.form:
+            if 'botao_excluir_cad_prod' in request.form:
                 valor_produto = request.form.getlist('valor_produto')
                 for i in valor_produto:
                     if i != '':
@@ -344,24 +308,7 @@ class Compras:
 
                         lista_cadastro_produto.remove(i)
                         redirect(url_for('cadastrar_produtos'))
-                    # print(f'linha tabela = {linha_tabela} | {i[1][1]} | {i}')
-
-
-
-
-                #     for i in lista_cadastro_produto:
-                #         if i[1][1] == valor_produto:
-                #             print('for i in lista_cadastro_produto')
-                #             print(len(lista_cadastro_produto))
-
                 print('---------fim do teste----------')
-
-
-                # for i in valor_produto:
-                #     print(f'valor_produto {i}')
-                # print(f'botao_editar_cad_prod pressionado com valor {valor_produto}')
-
-
 
         if 'alert' in session:  # Verifica se o alerta existe na sessão, ou seja, verifica se existe alguma condição para envio de 'alert' ser renderizada
             alert = session.pop('alert', None)
@@ -437,12 +384,16 @@ class Compras:
     @staticmethod
     @app.route('/gerar_ordem_compra', methods=['POST', 'GET'])
     def gerar_ordem_compra():
+
         global contador_item
         global lista_ordem_compra
         global total_ordem_compra
+        global result_pesq_forn
+        # formatação dos campos
 
-
+        result_pesq_forn = []
         item_ordem_compra = []
+        linha_selecionada = []
         form_gerar_ordem_compra = ModCompras.GerarOrdemCompra()
         data = Formatadores.os_data()
         descricao = form_gerar_ordem_compra.descricao.data
@@ -457,7 +408,6 @@ class Compras:
         preco_historico = form_gerar_ordem_compra.preco_historico.data
         preco_medio = form_gerar_ordem_compra.preco_medio.data
         ultimo_preco = form_gerar_ordem_compra.ultimo_preco.data
-
         alert = geral.AlertaMsg.cad_fornecedor_realizado()
 
         if 'total_ordem_compra' not in session:
@@ -484,10 +434,64 @@ class Compras:
             ultimo_preco = 0
 
         resultado = None
+
         if request.method == 'POST':
             item_ordem_compra.clear()
+            result_pesq_forn = ''
             try:
+
+                if 'botao_pesquisar_fornecedor' in request.form:
+                    print('botao_pesquisar_fornecedor ACIONADO')
+                    fornecedor = form_gerar_ordem_compra.fornecedor.data
+                    result_pesq_forn = Buscadores.OrdemCompra.buscar_pelo_fornecedor(fornecedor)
+                    print(f'result_pesq_forn SESSION >>> {result_pesq_forn}')
+                    session['result_pesq_forn'] = result_pesq_forn
+            except Exception as e:
+                print(e)
+
+            try:
+                if 'botao_selecionar_item' in request.form:
+
+                    result_pesq_forn = session.get('result_pesq_forn', [])  # Recupera da sessão
+                    print('botao_selecionar_item ACIONADO')
+                    print(f'result_pesq_forn recuperado do botão pesquisar fornecedor {result_pesq_forn}' )
+
+                print('------------------busca ean selecionado-------------------')
+                item_selecionado = request.form.getlist('incluir_item')
+                for i in item_selecionado:
+                    if i != '':
+                        item_selecionado = i
+                print(item_selecionado)
+                print('--------------------xxxxxxxxxxxx--------------------------')
+                print('-------FORMATA LINHAS PARA IDENTIFICAR A POSIÇÃO----------')
+                conta_linha = 0
+                pos_pesquisa = ''
+                linha_selecionada = []
+                print(result_pesq_forn)
+                for i in result_pesq_forn:
+                    # print(item_selecionado, i)
+                    if i[3] == item_selecionado:
+                        # print(i[3])
+                        pos_pesquisa = conta_linha
+                        linha_selecionada.append(i)
+                        print(f'o item selecionado está na linha {conta_linha}')
+                        print(f'linha selecionada >>>{linha_selecionada[0]}')
+                    conta_linha += 1
+                # # print(f'o item está na linha {pos_pesquisa}')
+                # print(f'lista_itens >>> {item_selecionado}')
+                print('--------------------xxxxxxxxxxxx--------------------------')
+                print('------RETORNAR INFORMAÇÕES SELECIONADAS PARA O HTML-------')
+                linha_selecionada = linha_selecionada[0]
+                print(linha_selecionada)
+
+
+            except Exception as e:
+                print(e)
+            # pesquisar item pelo código. no momento está sem uso
+            try:
+                result_pesq_forn = session.get('result_pesq_forn', [])  # Recupera da sessão
                 if 'botao_pesquisar_item' in request.form:
+                    print('botao_pesquisar_item ACIONADO')
                     if descricao == '' and ean == '':
                         resultado = Buscadores.buscar_produto_pelo_codigo(codigo)
                         resultado = resultado[0]
@@ -496,6 +500,7 @@ class Compras:
                         resultado = resultado[0]
                     if resultado is None:
                         pass
+                    print(resultado)
 
                     # TRANSFORMAR EM FUNÇÃO
                     preco_medio = Buscadores.OrdemCompra.preco_medio(codigo)
@@ -509,10 +514,14 @@ class Compras:
                 alert = geral.AlertaMsg.cadastro_inexistente()
                 pass
 
+            # inclui o item pesquisado na tabela que conterá os itens da ordem de compra
             try:
+                result_pesq_forn = session.get('result_pesq_forn', [])  # Recupera da sessão
                 if 'botao_incluir_item' in request.form:
+                    print('botao_incluir_item ACIONADO')
                     try:
-                        Formatadores.preparar_item_ordem_compra()
+
+                        # Formatadores.preparar_item_ordem_compra()
                         print('teste')
                         contador_item = len(lista_contador_item_compra)
                         print(f'max lista contador item {max(lista_contador_item_compra)}')
@@ -605,8 +614,13 @@ class Compras:
 
             alert = session.pop('alert', None)
 
+            if result_pesq_forn is None:
+                result_pesq_forn = 0
+
+
         return render_template('compras/gerar_ordem_compra.html',
                                alert=alert,
+                               linha_selecionada=linha_selecionada,
                                total_ordem_compra=total_ordem_compra,
                                preco_medio=preco_medio,
                                ultimo_preco=ultimo_preco,
@@ -618,6 +632,7 @@ class Compras:
                                relatorio_produtos=Buscadores.mostrar_tabela_produtos(),
                                # serve para mostrar os produtos na tela popup
                                resultado_pesquisa=resultado,  # informa no html o resultado da busca pelo código
+                               result_pesq_forn=result_pesq_forn,
                                form_gerar_ordem_compra=form_gerar_ordem_compra,  # renderiza os forms na pagina html
                                cod_produto=AtualizaCodigo.cod_produto(),  # informa o proximo codigo do produto
                                ordem_compra=AtualizaCodigo.ordem_compra(),
