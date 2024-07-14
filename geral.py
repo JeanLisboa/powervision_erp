@@ -83,41 +83,46 @@ class AlertaMsg:
         self.cnpj_ja_existente = self.cnpj_ja_existente
         self.cad_fornecedor_realizado = self.cad_fornecedor_realizado
 
-
-
     @staticmethod
     def produto_ja_cadastrado(ean):
-        session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">PRODUTO JÁ CADASTRADO EAN {ean}</div>'
-        return redirect(url_for('cadastrar_produtos'))
-    @staticmethod
-    def produto_incluido_na_tabela(ean, descricao):
-        session['alert'] = f'<div id = "alert" class="alert alert-success", role="alert">PRODUTO INCLUIDO NA TABELA: EAN {ean} | {descricao}</div>'
+        session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
+                            f'role="alert">PRODUTO JÁ CADASTRADO EAN {ean}</div>')
         return redirect(url_for('cadastrar_produtos'))
 
+    @staticmethod
+    def produto_incluido_na_tabela(ean, descricao):
+        session['alert'] = (f'<div id = "alert" class="alert alert-success", '
+                            f'role="alert">PRODUTO INCLUIDO NA TABELA: EAN {ean} | {descricao}</div>')
+        return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def produto_ja_digitado():
         session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">PRODUTO JÁ DIGITADO</div>'
         return redirect(url_for('cadastrar_produtos'))
+
     @staticmethod
     def campos_em_branco():
-        session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>'
+        session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
+                            f'role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def ean_ja_digitado(ean):
-        session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>'
+        session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
+                            f'role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def produto_cadastrado_com_sucesso():
         session['alert'] = \
-            '<div id = "alert" class="alert alert-success", role="alert">PRODUTO CADASTRADO COM SUCESSO</div>'
+            ('<div id = "alert" class="alert alert-success", '
+             'role="alert">PRODUTO CADASTRADO COM SUCESSO</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def fornecedor_invalido_cad_prod():
-        session['alert'] = '<div id="alert" class="alert alert-danger" role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>'
+        session['alert'] = ('<div id="alert" class="alert alert-danger" '
+                            'role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
@@ -147,7 +152,7 @@ class AlertaMsg:
     def cadastro_inexistente():
         session['alert'] = \
             '<div id = "alert" class="alert alert-danger" role="alert">CADASTRO INEXISTENTE</div>'
-        # return redirect(url_for('gerar_ordem_de_compra'))
+        return redirect(url_for('gerar_ordem_de_compra'))
 
 
 class Formatadores:
@@ -155,16 +160,13 @@ class Formatadores:
     @staticmethod
     def formatar_xml(nf):
         # Definir namespace
+        lista_itens_nf_nova = ''
         namespace = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
 
         # Definir o caminho da pasta onde o arquivo XML está localizado
         xml_directory = r'C:\relato\xml'
         xml_filename = f'{nf}.xml'
-        # xml_filename = '25240543587344000909550040000020511198893573-nfe.xml'
-        # Criar o caminho completo para o arquivo XML
-
         xml_path = os.path.join(xml_directory, xml_filename)
-
         # Verificar se o arquivo existe
         if not os.path.isfile(xml_path):
             print(f"Arquivo {xml_path} não encontrado.")
@@ -255,6 +257,8 @@ class Formatadores:
 
 
 class Validadores:
+
+
 
     @staticmethod
     def valida_item_a_cadastrar(ean):
@@ -427,7 +431,7 @@ class Buscadores:
                 return myresult
             except Exception as e:
                 print(e)
-                # resultado = '0', '0', '0', '0', '0'
+
                 return
 
         @staticmethod

@@ -7,72 +7,70 @@
 
 {% block content %}
 TELA GERAR ORDEM DE COMPRA
-<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal"
+<div class="container p-3 mb-3 border border-primary div_principal"
      xmlns="http://www.w3.org/1999/html">
     <form action="" method="POST">
         {{ form_gerar_ordem_compra.csrf_token }}
         <!-- div1 -->
-        <div class="mb-3 float-child-ordem-compra1">
+        <div class="mb-1 float-child-ordem-compra1">
             <pre>
-                2 - INSERIR OPÇÃO DE INSERIR PREÇO MANUALMENTE, AO INVES DE PUXAR DO CADASTRO
-                3 - INSERIR OPÇÃO PARA EDITAR A ORDEM DE COMPRA
-                4 - AJUSTAR CAMPO PARA RECEBER VIRGULA NO LUGAR DE PONTO
-                5 - LIMPAR TODOS OS CAMPOS AO GERAR ORDEM DE COMPRA
-                6 - CONFIGURAR PESQUISA PELO EAN
+                1 - (B)INSERIR OPÇÃO PARA EDITAR A ORDEM DE COMPRA
+                2 - (B)AJUSTAR CAMPO PARA RECEBER VIRGULA NO LUGAR DE PONTO
+                3 - (B)BLOQUEAR A ENTRADA DE EAN JÁ DIGITADO NA ORDEM
+                4 - (F) INCLUIR BARRA DE ROLAGEM NA ORDEM DE COMPRA
+
             </pre>
-            <div class="col form-label mt-2 btn btn-light">
-                {{ form_gerar_ordem_compra.data.label(class="campo_data" ) }}
+            <div class="col form-label btn btn-light">
+                {{ form_gerar_ordem_compra.data.label }}
                 {{ form_gerar_ordem_compra.data(class="form-control tam_campo_data",  value=data) }}
             </div>
-            <div class="col form-label mt-2 btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_compra.ordem_compra.label }}
                 {{ form_gerar_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra) }}
             </div>
-            <br>
-            <div class="col form-label mt-2 btn btn-light">
+
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_compra.codigo.label }}
 <!--                {{ form_gerar_ordem_compra.codigo(class="form-control", value=resultado_pesquisa[1]) }}-->
-                {{ form_gerar_ordem_compra.codigo(class="form-control", value=linha_selecionada[1]) }}
+                {{ form_gerar_ordem_compra.codigo(class="form-control tam_campo_codigo", value=linha_selecionada[1]) }}
             </div>
 
-            <div class="col form-label mt-2 btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_compra.categoria.label }}
                 {{ form_gerar_ordem_compra.categoria(class="form-control tam_campo_codigo", value=linha_selecionada[6]) }}
-
             </div>
-            <div class="col form-label mt-2 btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_compra.unidade.label }}
                 {{ form_gerar_ordem_compra.unidade(class="form-control tam_campo_abrev", value=linha_selecionada[5]) }}
             </div>
             <br>
-            <div class="col form-label mt-2 btn btn-light"  >
+            <div class="col form-label btn btn-light"  >
                 {{ form_gerar_ordem_compra.fornecedor.label }}
                 {{ form_gerar_ordem_compra.fornecedor(class="form-control", value=linha_selecionada[2]) }}
             </div>
             {{ form_gerar_ordem_compra.botao_pesquisar_fornecedor(class="btn btn-primary mt-4") }}
 
             <br>
-            <div class="col form-label mt-2 btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_compra.ean.label }}
                 {{ form_gerar_ordem_compra.ean(class="form-control", value=linha_selecionada[3]) }}
             </div>
-            <div class="col form-label mt-2 btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_compra.descricao.label }}
                 {{ form_gerar_ordem_compra.descricao(class="form-control tam_campo_descricao", value=linha_selecionada[4]) }}
             </div>
             <br>
-
-
 <!--                {{ form_gerar_ordem_compra.botao_consulta(class="btn btn-primary mt-3")  }}-->
-
             <br>
-            <div class="col form-label mt-4 btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_compra.quantidade.label }}
                {{ form_gerar_ordem_compra.quantidade(class="form-control", value=1) }}
             </div>
-            <div class="col form-label mt-4 btn btn-light">
+
+
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_compra.preco_unitario.label }}
-                {{ form_gerar_ordem_compra.preco_unitario(class="form-control", value=linha_selecionada[7]) }}
+                {{ form_gerar_ordem_compra.preco_unitario(class="form-control", value=linha_selecionada[7], id="preco_unitario") }}
             </div>
 
             <div class="btn">
@@ -81,17 +79,13 @@ TELA GERAR ORDEM DE COMPRA
             <div>
                 {{  form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3") }}
                 {{ form_gerar_ordem_compra.botao_limpar_ordem(class="btn btn-secondary mt-3") }}
-
             </div>
-
-
             <script src="static/js/pesquisa_produto.js" defer></script>
-
         </div>
             <!-- div2 -->
 
         <div class="float-child-ordem-compra2">
-            <div  class="borda_simples">
+            <div  class="borda_simples  container_com_barra_rolagem">
                 <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="">
                     <thead>
                         <tr>
@@ -146,7 +140,7 @@ TELA GERAR ORDEM DE COMPRA
 
     </form>
 
-    <div class="mt-5">
+    <div class="mt-5 float-child-ordem-compra">
         <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
 
             <thead>
@@ -181,6 +175,7 @@ TELA GERAR ORDEM DE COMPRA
                     <td>{{ i[5] }}</td>
                     <td>{{ i[6] }}</td>
                     <td>{{ i[7] }}</td> <!--quantidade -->
+
                     <td>{{ i[8] }}</td> <!--preco unitario -->
                     <td>{{ total_item }}</td> <!--total item -->
 

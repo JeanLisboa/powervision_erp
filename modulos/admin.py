@@ -21,3 +21,6 @@ class Admin:
         self.datacadastro = datacadastro
         self.ativo = ativo
         self.observacoes = observacoes
+
+
+usuario = 'admin'

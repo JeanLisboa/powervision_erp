@@ -68,7 +68,7 @@ class ModCompras:
         unidade = StringField("Un", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
         quantidade = IntegerField("Quantidade", validators=[DataRequired(), NumberRange(min=1)])
-        preco_unitario = FloatField("Preço Unitário")
+        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00 )])
         preco_historico = FloatField("Preço Histórico", validators=[DataRequired(), ReadOnly()])
         ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])
         preco_medio = FloatField("Preço Médio", validators=[DataRequired(), ReadOnly()])

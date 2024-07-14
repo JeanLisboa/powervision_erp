@@ -1,3 +1,6 @@
+from flask import render_template
+from forms import Mod_Logistica
+from geral import Formatadores
 # COMO CALCULAR OS IMPOSTOS NA VENDA DE UM PRODUTO PARA A EMISSAO DA NOTA FISCAL
 
 

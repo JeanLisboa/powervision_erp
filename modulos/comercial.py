@@ -36,23 +36,6 @@
 # INSERE PEDIDO DE VENDAS
 #
 # RELATORIO DE PEDIDOS DE VENDAS. COM POSSIBILIDADE DE EDITAR, CASO O PEDIDO AINDA NÃO TENHA SIDO SEPARADO
-
-class Comercial:
-    def __init__(self, banco, prazo_pagamento,  nome, tipo_pessoa, nome_fantasia, cep, endereco, numero, complemento, bairro, cidade, codmunicipio, estado, telefone, email, observacoes, ativo):
-        self.banco = banco
-        self.prazo = prazo_pagamento
-        self.nome = nome
-        self.tipo_pessoa = tipo_pessoa
-        self.nome_fantasia = nome_fantasia
-        self.cep = cep
-        self.endereco = endereco
-        self.numero = numero
-        self.complemento = complemento
-        self.bairro = bairro
-        self.cidade = cidade
-        self.codmunicipio = codmunicipio
-        self.estado = estado
-        self.telefone = telefone
-        self.email = email
-        self.observacoes = observacoes
-        self.ativo = ativo
+from flask import render_template
+from forms import Mod_Logistica
+from geral import Formatadores

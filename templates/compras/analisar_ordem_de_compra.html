@@ -10,19 +10,19 @@ TELA ANALISAR ORDEM DE COMPRA
         <div class="float-child0"> <!-- tela de pesquisa -->
             <div class="mb-3 float-child-tela-pesquisa">
                 PESQUISA<BR>
-                <div  class="col form-label mt-4 btn btn-light">
+                <div  class="col form-label  btn btn-light">
                     {{ form_analisar_ordem_de_compra.data.label(class="form-label" ) }}
                     {{ form_analisar_ordem_de_compra.data(class="form-control tam_campo_data",  value=data) }}
                 </div>
-                <div  class="col form-label mt-4 btn btn-light">
+                <div  class="col form-label  btn btn-light">
                     {{ form_analisar_ordem_de_compra.ordem_compra.label(class="form-label") }}
                     {{ form_analisar_ordem_de_compra.ordem_compra(class="form-control tam_campo_codigo") }}
                 </div>
-                <div  class="col form-label mt-4 btn btn-light">
+                <div  class="col form-label  btn btn-light">
                     {{ form_analisar_ordem_de_compra.razao_social.label(class="form-label") }}
                     {{ form_analisar_ordem_de_compra.razao_social(class="form-control tam_campo_descricao") }}
                 </div>
-                <div class="col form-label mt-4 btn btn-light">
+                <div class="col form-label  btn btn-light">
                     {{ form_analisar_ordem_de_compra.botao_pesquisar_ordem_de_compra(class="btn btn-primary mt-3")  }}
                 </div>
             </div>
@@ -57,7 +57,7 @@ TELA ANALISAR ORDEM DE COMPRA
             </div>
         </div>
         <div class="mb-3">
-            <div class="col form-label mt-4">
+            <div class="col form-label ">
                  {{ form_analisar_ordem_de_compra.botao_liberar_recebimento(class="btn btn-primary mt-3")  }}
                  {{ form_analisar_ordem_de_compra.botao_recusar_recebimento(class="btn btn-primary mt-3")  }}
             </div>
@@ -104,7 +104,7 @@ TELA ANALISAR ORDEM DE COMPRA
                     {% for i in xml %}
                     <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                         <td>{{ i[0] }}</td>
-                        <td>{{"%.2f" %  i[1] }}</td>
+                        <td>{{"%.0f" %  i[1] }}</td>
                         <td>{{"%.2f" %  i[2] }}</td>
                         <td>{{"%.2f" %  i[3] }}</td>
                     </tr>

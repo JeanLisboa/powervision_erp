@@ -274,15 +274,15 @@ td{
 .float-child-ordem-compra1 {
     width: 50%;
     float: left;
-    padding: 5px;
-    margin-top:13px;
+    padding: 0px;
+    margin-top:-10px;
     font-size:14px;
 }
 
 .float-child-ordem-compra2 {
     width: 50%;
     float: right;
-    margin-top:13px;
+    margin-top:-10px;
 
 
     ;
@@ -315,3 +315,53 @@ td{
             height: 50px;  /* ajuste conforme necessário */
             text-indent: -9999px;  /* esconder o texto */
         }
+
+
+.container_com_barra_rolagem {
+            max-height: 400px; /* Altura máxima do contêiner */
+            overflow-y: auto; /* Adiciona rolagem vertical */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .width-100 {
+            width: 100%;
+        }
+
+        .height-100 {
+            height: 100%;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table-bordered {
+            border: 1px solid #ddd;
+        }
+
+        .table-striped tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+
+        .table-sm td, .table-sm th {
+            padding: .3rem;
+        }
+
+        .table-layout-fixed {
+            table-layout: fixed;
+        }
+    </style>

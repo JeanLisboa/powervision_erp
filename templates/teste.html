@@ -1,56 +1,63 @@
-<html>
-<script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
-<link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
+{% extends "base.html" %}
+{% block content %}
 
-<script src="https://jsuites.net/v4/jsuites.js"></script>
-<link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
 
-<div id="spreadsheet"></div>
+
+<p>Área para criação de telas</p>
+<div>
+    Sites para estudo:
+    html:
+    <a href="">https://www.w3schools.com/</a><br>
+
+    css:
+ <a href="">https://getbootstrap.com/</a><br>
+ <a href="">https://tailwindcss.com/</a>
+
+
+</div>
+
+
+<canvas id="animationCanvas" width="800" height="600"></canvas>
+    <script src="animation.js"></script>
+
 
 <script>
-var data = [
-    ['Jazz', 'Honda', '2019-02-12', '', true, '$ 2.000,00', '#777700'],
-    ['Civic', 'Honda', '2018-07-11', '', true, '$ 4.000,01', '#007777'],
-];
 
-jspreadsheet(document.getElementById('spreadsheet'), {
-    data:data,
-    columns: [
-        {
-            type: 'text',
-            title:'Data',
-            width:90
-        },
-        {
-            type: 'dropdown',
-            title:'Fornecedor',
-            width:120,
-            source:[]
-        },
-        {
-            type: 'calendar',
-            title:'Available',
-            width:120
-        },
+    const canvas = document.getElementById('animationCanvas');
+const ctx = canvas.getContext('2d');
 
-        {
-            type: 'checkbox',
-            title:'Stock',
-            width:80
-        },
-        {
-            type: 'numeric',
-            title:'Valor',
-            mask:'$ #.##,00',
-            width:80,
-            decimal:','
-        },
-        {
-            type: 'color',
-            width:80,
-            render:'square',
-        },
-     ]
-});
+let x = canvas.width / 2;
+let y = canvas.height / 2;
+let dx = 2;
+let dy = 2;
+const ballRadius = 10;
+
+function drawBall() {
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+}
+
+function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBall();
+
+    // Verificar colisão com as bordas e inverter a direção se necessário
+    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+        dx = -dx;
+    }
+    if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
+        dy = -dy;
+    }
+
+    x += dx;
+    y += dy;
+
+    requestAnimationFrame(update);
+}
+
+update();
 </script>
-</html>
+{% endblock %}

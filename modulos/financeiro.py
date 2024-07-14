@@ -17,7 +17,9 @@ RAZAO SOCIAL
 VALOR DA COMPRA
 
 """
-
+from flask import render_template
+from forms import Mod_Logistica
+from geral import Formatadores
 class Contas_a_pagar:
     def __init__(self, data, codfornecedor, nomefantasia, razao, valor):
         self.data = data

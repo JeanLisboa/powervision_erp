@@ -1,3 +1,6 @@
+from flask import render_template
+from forms import Mod_Logistica
+from geral import Formatadores
 # CADASTRA TABELA DE PRECOS DE VENDAS
 # DIV 1
 # COD DA TABELA: INCREMENTAL
