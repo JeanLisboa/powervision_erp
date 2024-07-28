@@ -8,7 +8,10 @@ TELA CADASTRAR PRODUTOS
         {{ form_cad_produtos.csrf_token }}
         <pre>
                 1 - AJUSTAR CODIGO PARA NÃO PRECISAR INSERIR FORNECEDOR A CADA LINHA DE PRODUTO CADASTRADA.
-                3 - INSERIR OPÇÃO PARA SUBIR AJUSTE DE PREÇO DIRETO NA TELA, OU BAIXAR PLANILHA
+                2 - MANTER SESSÃO COM INFORMAÇÃO DO FORNECEDOR, ATÉ QUE SE CLIQUE EM CADASTRAR
+                3 - LIMPAR A TELA AO CLICAR EM CADASTRAR
+                4 - AO ENTRAR NA TELA NÃO DEVE APARECER NENHUM ALERT
+                5 - INSERIR OPÇÃO PARA SUBIR AJUSTE DE PREÇO DIRETO NA TELA, OU BAIXAR PLANILHA
             </pre>
             {% if alert %}
                         {{ alert | safe }}

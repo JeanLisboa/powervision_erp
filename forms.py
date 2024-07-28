@@ -8,6 +8,18 @@ import geral
 os_date = date.today()
 
 
+class ModAdmin:
+    class RegraNegocio(FlaskForm):
+        recebe_parcial_item = SelectField("Recebe Parcial do Item", choices=['Sim', 'Não'], validate_choice='sim')
+        recebe_parcial_pedido = SelectField("Recebe Parcial do Pedido", choices=['Sim', 'Não'], validate_choice='sim')
+        min_prazo_pag = IntegerField("Prazo Minimo de Pagamento (Em Dias)", validators=[DataRequired(), NumberRange(min=0)])
+        maior_dif_permitida = FloatField("Maior diferença permitida", validators=[DataRequired(), NumberRange(min=0.01)])
+        menor_dif_permitida = FloatField("Menor diferença permitida", validators=[DataRequired(), NumberRange(min=0.01)])
+
+        botao_salvar = SubmitField('Salvar Alterações')
+        botao_editar = SubmitField('Editar')
+
+
 class ModCompras:
     class AnalisarOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
@@ -21,8 +33,8 @@ class ModCompras:
 
     class CadFornecedores(FlaskForm):
         cod_fornecedor = StringField("Código", validators=[ReadOnly()])
-        nome_fantasia = StringField("Nome Fantasia", validators=[DataRequired()])
-        razao_social = StringField("Razão Social", validators=[DataRequired()])
+        razao_social = StringField("Nome Fantasia", validators=[DataRequired()])
+        # razao_social = StringField("Razão Social", validators=[DataRequired()])
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cnpj = StringField("CNPJ", validators=[DataRequired(), Length(14)])
         insc_estadual = IntegerField("Insc. Estadual", validators=[DataRequired(), Length(9)])
@@ -68,7 +80,7 @@ class ModCompras:
         unidade = StringField("Un", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
         quantidade = IntegerField("Quantidade", validators=[DataRequired(), NumberRange(min=1)])
-        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00 )])
+        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00)])
         preco_historico = FloatField("Preço Histórico", validators=[DataRequired(), ReadOnly()])
         ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])
         preco_medio = FloatField("Preço Médio", validators=[DataRequired(), ReadOnly()])
@@ -94,13 +106,14 @@ class ModCompras:
     class RelatoriosCompras(FlaskForm):
         pass
 
+
 class Mod_Comercial:
 
     class CadastrarCliente(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cod_cliente = StringField("Código", validators=[Disabled()])
         razao_social = StringField("Razão Social", validators=[DataRequired()])
-        nome_fantasia = StringField("Nome Fantasia", validators=[DataRequired()])
+        razao_social = StringField("Nome Fantasia", validators=[DataRequired()])
         cnpj = IntegerField("CNPJ", validators=[DataRequired(), Length(11, 14)], render_kw={'placeholder': '__.___.___/____-__'})
         insc_estadual = IntegerField("Insc. Estadual", validators=[DataRequired(), Length(14)])
         email = StringField("Email", validators=[DataRequired(), Email()])
@@ -116,7 +129,7 @@ class Mod_Comercial:
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cod_pedido = StringField("Código", validators=[Disabled()])
         cliente = StringField("Cliente", validators=[ReadOnly()])
-        nome_fantasia = StringField("Nome Fantasia", validators=[ReadOnly()])
+        razao_social = StringField("Nome Fantasia", validators=[ReadOnly()])
         cod_produto = StringField("Código", validators=[])
         ean = StringField("EAN", validators=[])
         descricao = StringField("Descrição", validators=[])
@@ -130,7 +143,6 @@ class Mod_Comercial:
         pass
 
 
-
 class Mod_Pricing:
     class CadastrarTabela(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
@@ -142,6 +154,15 @@ class Mod_Pricing:
 class Mod_Logistica:
     class EntradaOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        nome_fantasia = StringField("Nome Fantasia", validators=[DataRequired()])
-        ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
-        botao_pesquisar_ordem = SubmitField('Pesquisar Ordem')
+        nf = IntegerField("NF", validators=[NumberRange(min=1)])
+        razao_social = StringField("Nome Fantasia")
+        ordem_compra = IntegerField("Ordem de Compra", validators=[NumberRange(min=1)])
+        cnpj = IntegerField("CNPJ", validators=[Length(14, 14)])
+        botao_pesquisar_ordem_compra = SubmitField('Pesquisar Ordem')
+        botao_limpar_pesquisa = SubmitField('Limpar')
+
+    class Realizar_conferencia(FlaskForm):
+        ordem_compra = StringField("Ordem de Compra")
+        fornecedor = StringField("Fornecedor")
+        botao_pesquisar_ordem_compra = SubmitField('Pesquisar')
+        botao_limpar_pesquisa = SubmitField('Limpar')

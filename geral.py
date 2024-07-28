@@ -1,65 +1,12 @@
 from datetime import date
 import mysql.connector
 from pycpfcnpj import cpfcnpj as validador_cnpj
-from flask import session, redirect, url_for
+from flask import session, redirect, url_for, request
 import xml.etree.ElementTree as ET
 import os
-"""
+import forms
 
-CLASS Totais ???
-
-CLASS AlertaMsg
-    DEF CAD_FORNECEDOR_REALIZADO
-    DEF CNPJ_INVALIDO
-    DEF CNPJ_INEXISTENTE
-    DEF CNPJ_JA_EXISTENTE
-    DEF CADASTRO_INEXISTENTE
-    
-CLASS Formatadores
-    DEF FORMATAR_XML
-    DEF FORMATAR_DATA
-    DEF DATA_FORMATO_DB
-    DEF OS_DATA
-    DEF FORMATAR_XML
-    
-CLASS Validadores
-    DEF VALIDA_CNPJ
-    DEF VALIDA_INSCRICAO_ESTADUAL
-    
-CLASS AtualizaCodigo  - TRATA INFORMAÇÕES INCREMENTAIS
-    DEF COD_PRODUTO
-    DEF COD_FORNECEDOR
-    DEF ORDEM_COMPRA
-    DEF CONTADOR ??
-    
-CLASS Buscadores
-    CLASS OrdemCompra
-        DEF PRECO_MEDIO 
-        DEF BUSCAR_NF
-        DEF ANALISAR_NF  ??
-        DEF VISUALIZAR_NF ??
-        DEF ORDEM_COMPRA_EM_ABERTO ??
-        DEF ULTIMO_PRECO
-        DEF BUSCAR_FORNECEDOR
-    DEF BUSCAR_PRODUTO_PELO_EAN
-    DEF BUSCAR_PRODUTO_PELO_CODIGO
-    DEF BUSCAR_PRODUTO_PELA_DESCRICAO
-    DEF VALIDAR_EAN (EM ABERTO)
-    DEF MOSTRAR_TABELA_PRODUTOS ( PARA POPUP )
-    DEF BUSCAR_FORNECEDOR
-    DEF BUSCAR_PRODUTO_PELO_EAN
-    DEF BUSCAR_PRODUTO_PELO_CODIGO
-    DEF VALIDAR_EAN
-    DEF MOSTRAR_TABELA_PRODUTOS
-    
-       
-    
-            
-    
-
-         
-
-"""
+pasta_xml = r'C:\relato\xml'
 
 
 def acesso_db():
@@ -72,8 +19,6 @@ def acesso_db():
     connect = mydb.connect()
     mycursor = mydb.cursor()
     return mydb, mycursor, connect
-
-
 mydb, mycursor, connect = acesso_db()
 
 
@@ -164,9 +109,9 @@ class Formatadores:
         namespace = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
 
         # Definir o caminho da pasta onde o arquivo XML está localizado
-        xml_directory = r'C:\relato\xml'
+
         xml_filename = f'{nf}.xml'
-        xml_path = os.path.join(xml_directory, xml_filename)
+        xml_path = os.path.join(pasta_xml, xml_filename)
         # Verificar se o arquivo existe
         if not os.path.isfile(xml_path):
             print(f"Arquivo {xml_path} não encontrado.")
@@ -257,7 +202,62 @@ class Formatadores:
 
 
 class Validadores:
+    @staticmethod
+    def valida_pedido_recebido(pedido):
+        lista_itens = []
+        # 1 faz a query no banco de dados e retorna uma lista com os itens do pedido
+        print('def valida_nf_recebida')
+        print("query = SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA  = '{pedido}'")
+        query = f"SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA  = '{pedido}'"
+        mydb.connect()
+        mycursor.execute(query)
+        itens_ordem_de_compra = mycursor.fetchall()
+        mydb.commit()
+        valida_itens = ''
+        import modulos.logistica
+        try:
+            if itens_ordem_de_compra:
+                print('chama função lista_itens_de_compra...'
+                      'esta função serve para criar uma lista '
+                      'e comparar com as linhas do xml, afim '
+                      'de validar os itens de acordo com a política')
+                print('------------retorno da função -----------')
+                print('Validadores.lista_itens_ordem_de_compra(itens_ordem_de_compra)')
+                # Validadores.lista_itens_ordem_de_compra(itens_ordem_de_compra)
+                print('-----------------------------------------')
 
+                for i in itens_ordem_de_compra:
+                    item_zip = (i[7], i[9])
+                    lista_itens.append(item_zip)
+
+                   # print(f'{i[7]} - {i[9]}')
+
+            return lista_itens
+        except Exception as e:
+            print(f'Erro: {e}')
+            return False
+
+    # @staticmethod
+    # def lista_itens_ordem_de_compra(itens_ordem_de_compra):
+    #     print('função_lista_itens_ordem_de_compra')
+    #     lst_itens_ordem_de_compra = []
+    #     try:
+    #         if itens_ordem_de_compra:
+    #             for i in itens_ordem_de_compra:
+    #                 item = i[7], i[8], i[9]
+    #                 lst_itens_ordem_de_compra.append(item)
+    #             # print(lst_itens_ordem_de_compra)
+    #         return lst_itens_ordem_de_compra
+    #     except Exception as e:
+    #         print(e)
+
+    ordem_compra = ''
+    @staticmethod
+    def lista_itens_nf(nf):
+        print('função_lista_itens_nf')
+        print('BUSCAR FUNÇÃO DA TELA ANALISAR ORDEM DE COMPRA')
+
+        return
 
 
     @staticmethod
@@ -380,7 +380,310 @@ class Buscadores:
     def __init__(self):
         pass
 
+    def buscar_cnpj(cnpj):
+        mydb.connect()
+        query = f"SELECT * FROM fornecedores WHERE CNPJ = '{cnpj}'"
+        mycursor.execute(query)
+        myresult = mycursor.fetchall()
+
+        if len(myresult) == 0:
+            return False
+        else:
+            return True
+    class Xml:
+        chave_nf = ''
+        nome_arquivo =''
+
+        pasta_xml = r'C:\relato\xml'
+
+        @staticmethod
+        def buscar_linhas_nf(nf):
+            print('Método buscar_linhas_nf')
+            pasta_xml = r'C:\relato\xml'
+            namespaces = {'ns1': 'http://www.portalfiscal.inf.br/nfe'}
+            arquivo_encontrado = None
+            lst_zipada = []
+            # Procura pelo arquivo na pasta especificada
+            for arquivo in os.listdir(pasta_xml):
+                if nf in arquivo[26:34] and arquivo.endswith('-nfe.xml'):
+                    arquivo_encontrado = os.path.join(pasta_xml, arquivo)
+                    print(f'arquivo encontrado >> {arquivo_encontrado}')
+                    break
+            # Verifica se o arquivo foi encontrado
+            if arquivo_encontrado:
+                xNome4 = ''
+                lst_produto = []
+                lst_ean = []
+                lst_icms = []
+                lst_val_compra = []
+                tree = ET.parse(arquivo_encontrado)
+                root = tree.getroot()
+                for det in root.findall('.//ns1:det', namespaces):
+                    # xNome4 = det.find('.//ns1:xNome4', namespaces)
+                    cProd = det.find('.//ns1:cProd', namespaces)
+                    cEAN = det.find('.//ns1:cEANTrib', namespaces)
+                    pICMS = det.find('.//ns1:pICMS', namespaces)
+                    vUnCom = det.find('.//ns1:vUnCom', namespaces)
+                    vUnCom.text = vUnCom.text.replace('.', ',')
+                    vUnCom.text = vUnCom.text.replace(',', '.')
+                    vUnCom.text = vUnCom.text.replace(' ', '')
+                    vUnCom.text = vUnCom.text.rstrip('0')
+
+                    item_zip = (cEAN.text, float(vUnCom.text))
+                    lst_zipada.append(item_zip)
+
+            else:
+                print('Arquivo não encontrado')
+                return None
+            return lst_zipada
+
+        @staticmethod
+        def buscar_arquivo(nf):
+            print('Método buscar_xml', end=' - ')
+            nf = str(nf)
+            for nome_arquivo in os.listdir(pasta_xml):
+                i = nome_arquivo
+                i = i[25:34]  # pegar apenas o num da nf
+                i = i.lstrip('0')# tirar zeros a esquerda
+                if i == nf:
+                    print(f'NFO {i}/{nf} localizada na pasta')
+                    return nome_arquivo
+
+        @staticmethod
+        def buscar_colunas_xml(nome_arquivo):
+            print('Método buscar colunas')
+            nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
+
+            def extrair_tags(element, prefix=''):
+                tags = set()
+                for child in element:
+                    tag_name = f"{prefix}/{child.tag.split('}')[-1]}"
+                    print('tag_name >>>', tag_name)
+                    tags.add(tag_name)
+                    tags.update(extrair_tags(child, tag_name))
+                return tags
+
+            # /NFe/infNFe/dest/CNPJ
+
+            try:
+                # Parse do XML
+                tree = ET.parse(nome_arquivo)
+                root_element = tree.getroot()
+
+                # Extrair todas as tags
+                colunas = extrair_tags(root_element)
+
+                print(f'Colunas encontradas: {colunas}')
+                return colunas
+
+            except ET.ParseError:
+                print(f"Erro ao analisar o arquivo: {nome_arquivo}")
+                return None
+        @staticmethod
+        def buscar_cnpj(nome_arquivo):
+            print('Método buscar_cnpj', end=' - ')
+            nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
+            try:
+                # Parse do XML
+                tree = ET.parse(nome_arquivo)
+                root_element = tree.getroot()
+
+                # Obter namespace
+                namespaces = {node[0]: node[1] for _, node in ET.iterparse(nome_arquivo, events=['start-ns'])}
+
+                # Buscar o elemento CNPJ específico
+                cnpj_element = root_element.find(
+                    './/{http://www.portalfiscal.inf.br/nfe}CNPJ',namespaces)
+
+                # USE O CODIGO ABAIXO PARA EXTRAIR O CNPJ DO DESTINATÁRIO
+                # cnpj_element = root_element.find(
+                #     './/{http://www.portalfiscal.inf.br/nfe}NFe/'
+                #     '{http://www.portalfiscal.inf.br/nfe}infNFe/'
+                #     '{http://www.portalfiscal.inf.br/nfe}dest/'
+                #     '{http://www.portalfiscal.inf.br/nfe}CNPJ',
+                #     namespaces)
+
+                if cnpj_element is not None:
+                    cnpj = cnpj_element.text
+                    print(f' CNPJ: {cnpj}')
+                    return cnpj
+                else:
+                    print('CNPJ não encontrado')
+                    return None
+
+            except ET.ParseError:
+                print(f"Erro ao analisar o arquivo: {nome_arquivo}")
+                return None
+
+        @staticmethod
+        def buscar_pedido(nome_arquivo):
+            print('Método buscar_ordem_compra', end=' - ')
+            nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
+            try:
+                # Parse do XML
+                tree = ET.parse(nome_arquivo)
+                root_element = tree.getroot()
+
+                # Obter namespace
+                namespaces = {node[0]: node[1] for _, node in ET.iterparse(nome_arquivo, events=['start-ns'])}
+                # print(f'Namespaces: {namespaces}')
+
+                # # Imprimir a estrutura do XML
+                # for elem in root_element.iter():
+                #     print(f'{elem.tag} - {elem.attrib} - {elem.text}')
+
+                # Buscar o elemento xPed específico
+                xped_element = root_element.find('.//{http://www.portalfiscal.inf.br/nfe}xPed', namespaces)
+                if xped_element is not None:
+                    pedido = xped_element.text
+                    # print(f'Ordem de Compra com namespace: {pedido}')
+                    return pedido
+                else:
+                    print('Ordem de Compra não encontrada com namespace')
+
+                    # Buscar o elemento xPed específico sem considerar namespace
+                xped_element_no_ns = root_element.find('.//xPed')
+                if xped_element_no_ns is not None:
+                    print(f'xPed encontrado sem namespace: {xped_element_no_ns.text}')
+                    return xped_element_no_ns.text
+                else:
+                    print('xPed não encontrado sem namespace')
+
+                return None
+
+            except ET.ParseError:
+                print(f"Erro ao analisar o arquivo: {nome_arquivo}")
+                return None
+
+        @staticmethod
+        def buscar_razao_social(nome_arquivo):
+            print('Método buscar_razao_social', end=' - ')
+            nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
+            try:
+                # Parse do XML
+                tree = ET.parse(nome_arquivo)
+                root_element = tree.getroot()
+                # Obter namespace
+                namespaces = {node[0]: node[1] for _, node in ET.iterparse(nome_arquivo, events=['start-ns'])}
+                # Buscar o elemento CNPJ específico
+                razao_social = root_element.find('.//{http://www.portalfiscal.inf.br/nfe}xNome', namespaces)
+                # USE O CODIGO ABAIXO PARA EXTRAIR A RAZAO SOCIAL DO DESTINATÁRIO
+                # razao_social = root_element.find('.//{http://www.portalfiscal.inf.br/nfe}NFe/'
+                #                                  '{http://www.portalfiscal.inf.br/nfe}infNFe/'
+                #                                  '{http://www.portalfiscal.inf.br/nfe}dest/'
+                #                                  '{http://www.portalfiscal.inf.br/nfe}xNome', namespaces)
+                if razao_social is not None:
+                    razao_social_ = razao_social.text
+                    print(f'RAZAO SOCIAL: {razao_social_}')
+                    return razao_social_
+                else:
+                    print('RAZAO SOCIAL não encontrado')
+                    return None
+            except ET.ParseError:
+                print(f"Erro ao analisar o arquivo: {nome_arquivo}")
+                return None
+
     class OrdemCompra:
+        @staticmethod
+        def verifica_status_ordem(ordem_compra):
+            print(f'Verifica status_ordem_compra: {ordem_compra}')
+            query = (f'SELECT SUM(SALDO_QTD) FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = "{ordem_compra}";')
+            # print(query)
+            mydb.connect()
+            mycursor.execute(query)
+            resultado = mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+            i = 0
+            for i in resultado:
+                # print(i[0])
+                if i[0] > 0:
+                    return True
+                else:
+                    return False
+
+
+        @staticmethod
+        def buscar_nf2(nf):
+            nf = str(nf)
+            cnpj_encontrado = []
+
+            for chave_nf in os.listdir(pasta_xml):
+                i = chave_nf
+                i = i[25:34]  # pegar apenas o num da nf
+                i = i.lstrip('0')# tirar zeros a esquerda
+                if i == nf:
+                    print(f'nfo {i}/{nf} localizada na pasta')
+                    print(chave_nf)
+                    for root, dirs, files in os.walk(pasta_xml):
+                        for file in files:
+                            caminho_arquivo = os.path.join(root, file)
+                            if file.endswith('.xml'):
+                                if file == chave_nf:
+                                    print(f'Arquivo encontrado nf >> {nf} | chave >> {chave_nf} | caminho >>> {caminho_arquivo}')
+                                    tree = ET.parse(caminho_arquivo)  ##
+                                    print(f'tree >>> {tree}')
+                                    root_element = tree.getroot()
+                                    namespaces = {'ns1': root_element.tag.split('}')[0].strip('{')}
+                                    for det in root_element.findall('.//ns1:det', namespaces):
+                                        cnpj = det.find('.//ns1:CNPJ3', namespaces)
+                                        razao_social = det.find('.//ns1:xNome4', namespaces)
+                                        print(f'cnpj det >>> {cnpj}')
+                                        print(f'razao_social >>> {razao_social}')
+                                    break
+
+                    return cnpj_encontrado
+        chave_nf = ''
+        def buscar_nf(pasta_xml, chave_nf, nf):
+            cnpjs_encontrados = []
+            nf = str(nf)
+            # Definir o caminho da pasta onde o arquivo XML está localizado
+            for chave_nf in os.listdir(pasta_xml):
+                i = chave_nf
+                i = i[25:34]  # pegar apenas o num da nf
+                i = i.lstrip('0')# tirar zeros a esquerda
+                if i == nf:
+                    print(f'nfo {i}/{nf} localizada na pasta')
+                    print(chave_nf)
+
+            # Navegar pela pasta
+            for root, dirs, files in os.walk(pasta_xml):
+                for file in files:
+                    if file.endswith('.xml'):
+                        caminho_arquivo = os.path.join(root, file)
+                        if file == chave_nf:
+                            try:
+                                tree = ET.parse(caminho_arquivo)
+                                root_element = tree.getroot()
+                                # Para ver o conteúdo do XML (opcional)
+                                xml_string = ET.tostring(root_element, encoding='utf-8').decode('utf-8')
+                                # print(f'Conteúdo do XML:\n{xml_string}')
+
+                                # Obter namespace
+                                namespaces = {'ns1': root_element.tag.split('}')[0].strip('{')}
+
+                                # Buscar elementos com namespace
+                                for det in root_element.findall('.//ns1:det', namespaces):
+                                    cnpj_element = det.find('.//ns1:CNPJ', namespaces)
+                                    razao_social_element = det.find('.//ns1:xNome', namespaces)
+
+                                    if cnpj_element is not None:
+                                        cnpj = cnpj_element.text
+                                        print(f'CNPJ: {cnpj}')
+                                    else:
+                                        print('CNPJ não encontrado')
+
+                                    if razao_social_element is not None:
+                                        razao_social = razao_social_element.text
+                                        print(f'Razão Social: {razao_social}')
+                                    else:
+                                        print('Razão Social não encontrada')
+
+                                    cnpjs_encontrados.append((file, cnpj, razao_social))
+                            except ET.ParseError:
+                                print(f"Erro ao analisar o arquivo: {caminho_arquivo}")
+
+            return cnpjs_encontrados, chave_nf
 
         @staticmethod
         def buscar_ordem_compra2(ordem_compra, razaosocial):
@@ -449,6 +752,22 @@ class Buscadores:
                 pass
 
         @staticmethod
+        def buscar_ordem_compra_pela_razaosocial(razaosocial):
+            print('Buscadores.OrdemCompra.buscar_ordem_compra_pela_razaosocial()')
+            try:
+                query = f'select * from ordem_compra where FORNECEDOR like "%{razaosocial}%"'
+                print(query)
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                return myresult
+            except Exception as e:
+                print(e)
+                pass
+
+        @staticmethod
         def preco_medio(codigo):
             try:
                 query = f'select avg(preco) from ordem_compra where codigo = {codigo}'
@@ -467,22 +786,6 @@ class Buscadores:
                 print(e)
                 pass
 
-        @staticmethod
-        def buscar_nf(nf):
-            """
-                O objetivo é buscar a NF na pasta especificada e retornar verdadeiro
-            ou falso.
-                1 - chamar a função buscar_cnpj
-                caso verdadeiro:
-                - chamar a função Formatadores.formatar_xml
-                - chamar a funçao visualizar nf (logistica)  ** qual classe ?? **
-                - chamar a função Validadores.analisar_nf
-            """
-            pass
-        @staticmethod
-        def analisar_nf(nf):
-
-            pass
         @staticmethod
         def visualizar_nf(nf):
             pass
@@ -542,8 +845,6 @@ class Buscadores:
                 print(e)
                 pass
 
-
-
         @staticmethod
         def buscar_fornecedor():
             try:
@@ -561,7 +862,6 @@ class Buscadores:
             except:
                 myresult = ''
                 return myresult
-
 
         @staticmethod
         def buscar_pelo_fornecedor(fornecedor):
@@ -636,10 +936,6 @@ class Buscadores:
             pass
 
     @staticmethod
-    def validar_ean():
-        pass
-
-    @staticmethod
     def mostrar_tabela_produtos():
         mydb.connect()
         query = 'select * from produtos'
@@ -647,6 +943,30 @@ class Buscadores:
         mycursor.execute(query)
         myresult = mycursor.fetchall()
         return myresult
+
+    @staticmethod
+    def buscar_nf_pelo_cnpj(cnpj):
+
+        nfs_encontradas = []
+        print('metodo buscar nf pelo cnpj')
+        print(f'buscar pelo cnpj >> {cnpj}')
+
+
+        for root, dirs, files in os.walk(pasta_xml):
+            for file in files:
+                if file.endswith('.xml'):
+                    caminho_arquivo = os.path.join(root, file)
+                    try:
+                        tree = ET.parse(caminho_arquivo)
+                        root_element = tree.getroot()
+
+                        # Ajuste o nome da tag conforme necessário
+                        cnpj_element = root_element.find('.//CNPJ')
+                        if cnpj_element is not None:
+                            nfs_encontradas.append((file, cnpj_element.text))
+                    except ET.ParseError:
+                        print(f"Erro ao analisar o arquivo: {caminho_arquivo}")
+
 
 class BancoDeDados:  # queries
     pass
@@ -666,14 +986,3 @@ class BancoDeDados:  # queries
         # mycursor.execute(query)
         pass
 
-
-def buscar_cnpj(cnpj):
-    mydb.connect()
-    query = f"SELECT * FROM fornecedores WHERE CNPJ = '{cnpj}'"
-    mycursor.execute(query)
-    myresult = mycursor.fetchall()
-
-    if len(myresult) == 0:
-        return False
-    else:
-        return True

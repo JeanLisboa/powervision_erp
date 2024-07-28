@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+TELA DE REALIZAR CONFERÊNCIA
+
+<div class="container p-3 mb-3 border border-primary div_principal"
+     xmlns="http://www.w3.org/1999/html">
+  <form action="" method="POST">
+    {{ form_pesquisar_ordem_compra.csrf_token }}
+    <pre>
+      1 - visualizar itens da nf com os campos para inserir a quantidade
+      2 - opção para imprimir a folha de conferencia
+
+    </pre>
+  <div class="col form-label mt-4 btn btn-light">
+    {{ form_pesquisar_ordem_compra.botao_pesquisar_ordem_compra (class="btn btn-primary") }}
+
+  <div class="mb-3 float-child-resultado-busca-pedidos"> <!-- resultado da busca -->
+    <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2">
+      <thead>
+          <tr class="cab_tabela">
+            <th>DATA</th>
+            <th>COD FORNEC</th>
+            <th>FORNECEDOR</th>
+            <th>ORDEM</th>
+            <th>VALOR TOTAL</th>
+            <th>STATUS</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for i in retorno_ordem_compra %}
+            <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed">
+              <td>{{ i[0] }}</td>
+              <td>{{ i[1] }}</td>
+              <td>{{ i[2] }}</td>
+<!--          <td><a href="#" title="clique para abrir" id="teste">{{ i[3] }}</a></td>-->
+              <td><button name="ordem_para_analise" type="submit" class="btn btn-success"  style="--bs-btn-padding-y: .02rem; --bs-btn-padding-x: 1.0rem; --bs-btn-font-size: 1.1rem;" value="{{ i[3] }}">{{ i[3] }}</button></td>
+              <td>{{ i[4] }}</td>
+              <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </div>
+</div>
+  </form>
+
+</div>
+{% endblock %}

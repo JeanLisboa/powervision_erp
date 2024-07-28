@@ -1,44 +1,65 @@
 {% extends "base.html" %}
 {% block content %}
+TELA ENTRADA ORDEM DE COMPRA
 
-<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal"
+<div class="container p-3 mb-3 border border-primary div_principal"
      xmlns="http://www.w3.org/1999/html">
-  <form action="" method="POST">
-    {{ form_entrada_ordem_compra.csrf_token }}
-
-  </form>
-
-<div class="mb-3 float-child1">
-  <div class="col form-label mt-4 btn btn-light">
-    {{ form_entrada_ordem_compra.ordem_compra.label }}
-    {{ form_entrada_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra) }}
-    {{ form_entrada_ordem_compra.nome_fantasia.label }}
-    {{ form_entrada_ordem_compra.nome_fantasia(class="form-control", value=nome_fantasia) }}
-
-    {{ form_entrada_ordem_compra.botao_pesquisar_ordem(class="btn btn-primary mt-3") }}
-
-  </div>
-</div>
-
+  <form action="" method="POST"> {{ form_entrada_ordem_compra.csrf_token }}
   <pre>
-  data
+    << NF TESTE: 2112, STATUS OK ( IGUAL PEDIDO DE COMPRA )>>
 
-  pesquisar ordem de compra
-
-  visualizar itens da ordem de compra apos confirmar pesquisa.
-
-  realizar a conferencia cega do pedido
-
-  critica se os itens recebidos estão de acordo com o pedido, quantidade e preço
-
-  em caso de recebimento parcial, o saldo deverá constar em aberto no sistema
-
-  após a finalização da internalização do pedido, um log deverá ser gerado, informando data, hora e login de quem recebeu
-
-  os itens recebidos devem constar no estoque.
-
+         PENDENCIAS                                            |  ONDE
+    --------------------------------------------------------------
+    1 - VALIDAR SE A NF ESTÁ NO SERVIDOR OK                    |
+    2 - VALIDAR SE FORNECEDOR ESTÁ CADASTRADO OK               |
+    3 - VALIDAR STATUS OC (ABERTA, LIQUIDADA, CANCELADA) OK    |
+    4 - VALIDAR SE OS PREÇOS ESTÃO DENTRO DA POLITICA OK       |
+    5 - DESAB O BTN REALIZAR CONFERENCIA OK                    |
   </pre>
+  <div class="mb-3 float-child-tela-pesquisa">
+
+    <div class="col form-label btn btn-light">
+      {{ form_entrada_ordem_compra.data.label }}
+      {{ form_entrada_ordem_compra.data(class="form-control tam_campo_data", value=data) }}
+    </div>
+
+    <div class="col form-label btn btn-light">
+      {{ form_entrada_ordem_compra.nf.label }}
+      {{ form_entrada_ordem_compra.nf(class="form-control tam_campo_data", value=ordem_compra) }}
+    </div>
+
+    <div class="col form-label btn btn-light">
+      {{ form_entrada_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-4") }}
+    </div>
+  </div>
+  <div class=" mb-4 float-child-resultado-busca-pedidos"> <!-- resultado da busca -->
+    <table class="table table-hover table-striped mt-4" style="position:sticky" cellpadding="2" cellspacing="2">
+      <thead>
+          <tr class="cab_tabela">
+            <th>CNPJ</th>
+            <th>RAZAO SOCIAL REMETENTE</th>
+            <th>NF</th>
+            <th>ORDEM</th>
+            <th>STATUS</th>
+          </tr>
+      </thead>
+      <tbody>
+
+      <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed">
+        <td>{{ lst_nf[0] }}</td>
+        <td>{{ lst_nf[1] }}</td>
+        <td>{{ lst_nf[2] }}</td>
+        <td>{{ lst_nf[3] }}</td>
+        <td>{{ lst_nf[4] }}</td>
+      </tr>
+
+      </tbody>
+    </table>
+    <button name="ordem_para_analise" type="submit" class="btn btn-success"
+        style="--bs-btn-padding-y: .02rem; --bs-btn-padding-x: 1.0rem; --bs-btn-font-size: 1.1rem;"
+        value="" {% if lst_nf[4] != 'LIBERADO' %} disabled {% endif %}>Realizar Conferência</button>
+      </div>
+ </form>
 
 </div>
-
 {% endblock %}

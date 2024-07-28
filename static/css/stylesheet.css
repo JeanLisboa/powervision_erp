@@ -52,9 +52,12 @@ body {
 }
 
 .tam_campo_data {
-    width: 130px;
+    width: 110px;
 }
 
+.tam_campo_cnpj {
+    width: 180px;
+}
 
 .tam_campo_descricao {
     width: 300px;

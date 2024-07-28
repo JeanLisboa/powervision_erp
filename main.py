@@ -1,18 +1,15 @@
 # outras bibliotecas
-from datetime import date
 import mysql.connector
 
 # flask
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template
 from flask_wtf.csrf import CSRFProtect
-from forms import ModCompras, Mod_Comercial, Mod_Pricing, Mod_Logistica
+from forms import Mod_Comercial, Mod_Pricing, Mod_Logistica, ModAdmin, ModCompras
 
 # geral
-from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores, AlertaMsg
-from geral import buscar_cnpj
-import geral
-
+from geral import Formatadores
 # modulos
+import modulos.admin
 import modulos.comercial
 import modulos.compras
 import modulos.estoque
@@ -20,6 +17,8 @@ import modulos.financeiro
 import modulos.fiscal
 import modulos.logistica
 import modulos.pricing
+import modulos.sobre
+
 
 global alert
 usuario = 'ADMIN'
@@ -37,22 +36,33 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 
-
-
-total_cadastro_produto = 0
-contador_item_cadastro_produto = 0
-lista_contador_cadastro_produto = []
-lista_cadastro_produto = []
-
-
 @app.route('/')
 def main():
     return render_template('homepage.html')
 
 
-@app.route('/admin', methods=['POST', 'GET'])
-def admin():
-    return render_template('admin.html')
+class Admin:
+    @staticmethod
+    @app.route('/regra_negocio', methods=['POST', 'GET'])
+    def regra_negocio():
+        return modulos.admin.regra_negocio()
+
+
+class Sobre:
+    @staticmethod
+    @app.route('/ajuda', methods=['POST', 'GET'])
+    def ajuda():
+        return modulos.sobre.ajuda()
+
+    @staticmethod
+    @app.route('/contato', methods=['POST', 'GET'])
+    def contato():
+        return modulos.sobre.contato()
+
+    @staticmethod
+    @app.route('/sobre', methods=['POST', 'GET'])
+    def sobre():
+        return modulos.sobre.sobre()
 
 
 class Compras:
@@ -86,14 +96,18 @@ class Compras:
 
 class Logistica:
     @staticmethod
+    @app.route('/realizar_conferencia', methods=['POST', 'GET'])
+    def realizar_conferencia():
+        return modulos.logistica.realizar_conferencia()
+
+
+    @staticmethod
     @app.route('/entrada_ordem_compra', methods=['POST', 'GET'])
     def entrada_ordem_compra():
         return modulos.logistica.entrada_ordem_compra()
 
-    @staticmethod
-    @app.route('/pedidos_pendentes', methods=['POST', 'GET'])
-    def pedidos_pendentes():
-        return modulos.logistica.pedidos_pendentes()
+
+
 
 class Comercial:
     @staticmethod
@@ -130,21 +144,6 @@ def financeiro():
 @app.route('/fiscal', methods=['POST', 'GET'])
 def fiscal():
     return render_template('fiscal.html')
-
-
-@app.route('/ajuda', methods=['POST', 'GET'])
-def ajuda():
-    return render_template('ajuda.html')
-
-
-@app.route('/sobre', methods=['POST', 'GET'])
-def sobre():
-    return render_template('sobre.html')
-
-
-@app.route('/contato', methods=['POST', 'GET'])
-def contato():
-    return render_template('contato.html')
 
 
 @app.route('/login', methods=['POST', 'GET'])

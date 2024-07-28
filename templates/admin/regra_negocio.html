@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+TELA ADMIN
+
+<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
+    <pre>
+    0 - NO PRIMEIRO USO, PREFERÊNCIAS DEVEM ESTAR EM BRANCO
+    1 - RECEBER AS NOVAS CONFIGURAÇÕES
+    2 - SALVAR NO BANCO DE DADOS
+    3 - LOGISTICA - RECEBER ORDEM DE COMPRA: MOSTRA QUANTIDADES, OU CONFERENCIA CEGA ?
+    4 - CRIAR TELA COM INFORMAÇÕES DA EMPRESA - CNPJ, RAZAO SOCIAL, ENDERECO, NOME FANTASIA
+    </pre>
+    <form action="" method="POST">
+        {{ form_regra_negocio.csrf_token }}
+    </form>
+    <div class="float-child0"> <!-- tela de pesquisa -->
+        <div class="mb-3 float-child-tela-pesquisa">
+            <div class="div_principal">
+                {{ form_regra_negocio.recebe_parcial_item.label }}
+                {{ form_regra_negocio.recebe_parcial_item (class="form-control tam_campo_data") }}
+                {{ form_regra_negocio.recebe_parcial_pedido.label }}
+                {{ form_regra_negocio.recebe_parcial_pedido (class="form-control tam_campo_data")  }}
+                {{ form_regra_negocio.recebe_parcial_item.label }}
+                {{ form_regra_negocio.recebe_parcial_item (class="form-control tam_campo_data")  }}
+                {{ form_regra_negocio.maior_dif_permitida.label }}
+                {{ form_regra_negocio.maior_dif_permitida (class="form-control tam_campo_data")  }}
+                {{ form_regra_negocio.menor_dif_permitida.label }}
+                {{ form_regra_negocio.menor_dif_permitida (class="form-control tam_campo_data")  }}
+                {{ form_regra_negocio.min_prazo_pag.label }}
+                {{ form_regra_negocio.min_prazo_pag (class="form-control tam_campo_data")  }}
+                {{ form_regra_negocio.botao_salvar (class="btn btn-primary") }}
+                {{ form_regra_negocio.botao_editar (class="btn btn-secondary") }}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

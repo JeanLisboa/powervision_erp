@@ -4,7 +4,11 @@
 
 TELA ANALISAR ORDEM DE COMPRA
 <div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
-
+    <pre>
+        1 -ALTERAR CAMPO ORDEM PARA COMBOBOX E VISUALIZAR APENAS ORDENS EM ABERTO
+        2 - CRIAR OPÇÃO DE ELIMINAR SALDO DE PEDIDOS EM ABERTO
+        3 - ALTERAR VISUALIZAÇÃO PARA SALDO DO PEDIDO, AO INVES DAS QTDES ORIGINAIS
+    </pre>
     <form action="" method="POST">
         {{ form_analisar_ordem_de_compra.csrf_token }}
         <div class="float-child0"> <!-- tela de pesquisa -->
@@ -63,7 +67,7 @@ TELA ANALISAR ORDEM DE COMPRA
             </div>
         </div>
         <br>
-        <div class="mb-3 float-child-analise-ordem-1"> <!-- pedido -->
+        <div class="mb-3 float-child-analise-ordem-1 container_com_barra_rolagem"> <!-- pedido -->
             ORDEM DE COMPRA
             <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
                 <thead>
@@ -89,7 +93,7 @@ TELA ANALISAR ORDEM DE COMPRA
             </table>
         </div>
 
-        <div class="mb-3 float-child-analise-ordem-2"> <!-- nota fiscal -->
+        <div class="mb-3 float-child-analise-ordem-2 container_com_barra_rolagem"> <!-- nota fiscal -->
             NOTA FISCAL
             <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" >
                 <thead>

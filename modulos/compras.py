@@ -12,7 +12,6 @@ from forms import ModCompras, Mod_Comercial, Mod_Pricing, Mod_Logistica
 
 # geral
 from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores, AlertaMsg
-from geral import buscar_cnpj
 import geral
 mydb = mysql.connector.connect(
     host="localhost",
@@ -27,12 +26,17 @@ total_ordem_compra = 0
 contador_item = 0
 lista_contador_item_compra = []
 lista_ordem_compra = []  # UTILIZADO EM compras/gerar_ordem_compra
+total_cadastro_produto = 0
+contador_item_cadastro_produto = 0
+lista_contador_cadastro_produto = []
+lista_cadastro_produto = []
+
 
 def cadastrar_fornecedores():
     cod_fornecedor = geral.AtualizaCodigo.cod_fornecedor()
     form_fornecedores = ModCompras.CadFornecedores()
     razao_social = form_fornecedores.razao_social.data
-    nome_fantasia = form_fornecedores.nome_fantasia.data
+
     cnpj = form_fornecedores.cnpj.data
     inscricaoestadual = form_fornecedores.insc_estadual.data
     email = form_fornecedores.email.data
@@ -41,17 +45,18 @@ def cadastrar_fornecedores():
     endereco = form_fornecedores.endereco.data
     municipio = form_fornecedores.municipio.data
     uf = form_fornecedores.uf.data
+
     data = Formatadores.os_data()
 
     if 'botao_submit_cad_fornecedor' in request.form:
         if geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is False:
             alert = geral.AlertaMsg.cnpj_invalido()
 
-        if geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is True and buscar_cnpj(
+        if geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is True and Buscadores.buscar_cnpj(
                 form_fornecedores.cnpj.data) is True:
             alert = geral.AlertaMsg.cnpj_ja_existente()
 
-        if geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is True and buscar_cnpj(
+        if geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is True and Buscadores.buscar_cnpj(
                 form_fornecedores.cnpj.data) is False:
             print('informações validadas - cadastrar no banco de dados')
             values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
@@ -116,8 +121,8 @@ def cadastrar_produtos():
         if 'botao_incluir_item' in request.form:  # inclui o item na tabela
             print('botao_incluir_item pressionado')
             fornecedor = request.form.get('fornecedor')  # retorna o fornecedor selecionado e instacia na variável
-            try:
 
+            try:
                 print(lista_cadastro_produto)
 
                 def valida_ean_na_lista():
@@ -330,12 +335,6 @@ def analisar_ordem_de_compra():
                     lista_cadastro_produto.append(i)
                     print(i[7])
                 print(lista_teste)
-                # print(detalhamento_ordem)
-                # criar uma lista temporária e um loop para iterar sobre cada ean... insere o primeiro ean,
-                # se o segundo for menor, inserir na posicao 0, e assim sucessivamente
-
-                # print(f'ordem para analise >>> {ordem_para_analise}')
-
                 xml = Formatadores.formatar_xml('25240643587344000909550040000022211120412670-nfe')  # retorna o xml
                 # print(ordem_para_analise)
         except Exception as e:
@@ -593,11 +592,13 @@ def gerar_ordem_compra():
                                   f"'{i[7]}',"
                                   f"'{i[8]}',"
                                   f"'{i[9]}',"
+                                  f"'{i[8]}',"
+                                  f"'{i[9]}',"
                                   f"'{modulos.admin.usuario}'")
 
                         query = (f'INSERT INTO ORDEM_COMPRA'
                                  f'(DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, '
-                                 f'CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, USUARIO)'
+                                 f'CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, USUARIO)'
                                  f' VALUES ({values});')
                         print(f'Query {cont_temp} >>>> {query}')
                         mydb.connect()
