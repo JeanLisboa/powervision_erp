@@ -41,6 +41,11 @@ body {
     background-color: rgb(255, 242, 201);
 }
 
+.background-color-input {
+    background-color: rgb(245, 202, 115);
+}
+
+
 
 /* CONFIGURAÇÕES DE CAMPOS */
 .tam_campo_codigo {
@@ -55,6 +60,10 @@ body {
     width: 110px;
 }
 
+.tam_coluna_quantidade {
+    width: 130px;
+}
+
 .tam_campo_cnpj {
     width: 180px;
 }
@@ -62,8 +71,15 @@ body {
 .tam_campo_descricao {
     width: 300px;
 }
+.tam_campo_descricao_tabela {
+    width: 1000px;
+}
 
 
+
+.fundo_campo {
+color: red;
+}
 
 .borda {
 position: absolute;
@@ -73,8 +89,15 @@ position: absolute;
     bottom: 50px;
     border: 2px solid rgb(253, 203, 110);
     background-color: (1,1,1);
-    box-sizing: border-box;
+
 }
+/*
+box-sizing:
+inherit
+content-box
+border-box
+padding-box
+*/
 
 
 
@@ -171,7 +194,7 @@ position: absolute;
 /* CONFIGURAÇÕES DE TABELA*/
 
 .cab_tabela {
-    font-size:15px;
+    font-size:25px;
     background-color:#e9ecef;
 }
 
@@ -225,7 +248,7 @@ td{
 
 .div_principal {
     max-width: 1600px;
-    border-width: 100px;
+    border-width: 100%;
     background-color: rgb(255, 242, 201);
     border: 3px solid rgb(223, 230, 233);
     padding: 50px;
@@ -241,23 +264,47 @@ td{
         ;
 }
 
+.float-tela-conferencia-esquerda {
+    float: left;
+    width: 50%;
+    padding: 10px;
+    margin:10px;
+        ;
+}
+
+
+.float-tela-conferencia-direita {
+    float: right;
+    width: 40%;
+    padding: 10px;
+    margin:10px;
+        ;
+}
+
 
 .float-child-tela-pesquisa {
-    width: 40%;
+    width: 45%;
     float: left;
-    padding: 5px;
+    padding: 10px;
     margin-top:13px;
 }
 
 .float-child-resultado-busca-pedidos {
-    width: 59%;
+    width: 45%;
+    float: right;
+    padding: 5px;
+    margin-top:13px;
+}
+
+.float-child-resultado-dif-conferencia {
+    width: 30%;
     float: right;
     padding: 5px;
     margin-top:13px;
 }
 
 .float-child1 {
-    width: 70%;
+    width: 40%;
     float: left;
     padding: 5px;
     margin-top:13px;

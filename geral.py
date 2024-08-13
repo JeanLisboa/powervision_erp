@@ -104,29 +104,21 @@ class Formatadores:
 
     @staticmethod
     def formatar_xml(nf):
+        print('Método formatar_xml')
         # Definir namespace
         lista_itens_nf_nova = ''
         namespace = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-
-        # Definir o caminho da pasta onde o arquivo XML está localizado
-
-        xml_filename = f'{nf}.xml'
+        xml_filename = f'{nf}.xml' # Definir o caminho da pasta onde o arquivo XML está localizado
         xml_path = os.path.join(pasta_xml, xml_filename)
-        # Verificar se o arquivo existe
-        if not os.path.isfile(xml_path):
+        if not os.path.isfile(xml_path): # Verificar se o arquivo existe
             print(f"Arquivo {xml_path} não encontrado.")
         else:
             try:
-                # Carregar e analisar o arquivo XML
-                tree = ET.parse(xml_path)
+                tree = ET.parse(xml_path) # Carregar e analisar o arquivo XML
                 root = tree.getroot()
-
-                # Acessar informações gerais da nota fiscal
-                ide = root.find('.//nfe:ide', namespace)
+                ide = root.find('.//nfe:ide', namespace) # Acessar informações gerais da nota fiscal
                 emit = root.find('.//nfe:emit', namespace)
                 dest = root.find('.//nfe:dest', namespace)
-
-                #  nf_info = {uf, nf ,dta emissao, emitente{cnpj, nome}, destinatario {cnpj, nome}, produtos[] }
                 nf_info = {
                     'UF': ide.find('nfe:cUF', namespace).text,
                     'Número NF': ide.find('nfe:nNF', namespace).text,
@@ -143,8 +135,7 @@ class Formatadores:
                 }
 
                 produto_info = []
-                # Extrair todos os produtos
-                for det in root.findall('.//nfe:det', namespace):
+                for det in root.findall('.//nfe:det', namespace):  # Extrair todos os produtos
                     prod = det.find('nfe:prod', namespace)
                     produto_info = {
                         'Ean': prod.find('nfe:cEAN', namespace).text,
@@ -161,8 +152,7 @@ class Formatadores:
                 lista_itens_nf_nova = []
                 lista_itens_nf_temp_nova = []
 
-                # Imprimir as informações extraídas
-                for key, value in nf_info.items():
+                for key, value in nf_info.items():  # Imprimir as informações extraídas
                     if isinstance(value, list):
                         for item in value:  # cada 'item' é uma linha contendo todos os campos de 'produto_info'
                             item = dict(item)
@@ -206,63 +196,42 @@ class Validadores:
     def valida_pedido_recebido(pedido):
         lista_itens = []
         # 1 faz a query no banco de dados e retorna uma lista com os itens do pedido
-        print('def valida_nf_recebida')
-        print("query = SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA  = '{pedido}'")
+        print('class Validadores | método valida_nf_recebida')
         query = f"SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA  = '{pedido}'"
         mydb.connect()
         mycursor.execute(query)
         itens_ordem_de_compra = mycursor.fetchall()
         mydb.commit()
         valida_itens = ''
-        import modulos.logistica
+
         try:
             if itens_ordem_de_compra:
                 print('chama função lista_itens_de_compra...'
                       'esta função serve para criar uma lista '
                       'e comparar com as linhas do xml, afim '
                       'de validar os itens de acordo com a política')
-                print('------------retorno da função -----------')
-                print('Validadores.lista_itens_ordem_de_compra(itens_ordem_de_compra)')
-                # Validadores.lista_itens_ordem_de_compra(itens_ordem_de_compra)
-                print('-----------------------------------------')
 
                 for i in itens_ordem_de_compra:
                     item_zip = (i[7], i[9])
                     lista_itens.append(item_zip)
-
-                   # print(f'{i[7]} - {i[9]}')
 
             return lista_itens
         except Exception as e:
             print(f'Erro: {e}')
             return False
 
-    # @staticmethod
-    # def lista_itens_ordem_de_compra(itens_ordem_de_compra):
-    #     print('função_lista_itens_ordem_de_compra')
-    #     lst_itens_ordem_de_compra = []
-    #     try:
-    #         if itens_ordem_de_compra:
-    #             for i in itens_ordem_de_compra:
-    #                 item = i[7], i[8], i[9]
-    #                 lst_itens_ordem_de_compra.append(item)
-    #             # print(lst_itens_ordem_de_compra)
-    #         return lst_itens_ordem_de_compra
-    #     except Exception as e:
-    #         print(e)
 
     ordem_compra = ''
     @staticmethod
     def lista_itens_nf(nf):
-        print('função_lista_itens_nf')
+        print('class Validadores | método_lista_itens_nf')
         print('BUSCAR FUNÇÃO DA TELA ANALISAR ORDEM DE COMPRA')
-
         return
 
 
     @staticmethod
     def valida_item_a_cadastrar(ean):
-        print(f'função_item_a_cadastrar >>> {ean}')
+        print(f'class Validadores | método_item_a_cadastrar >>> {ean}')
 
         return False
         pass
@@ -272,6 +241,7 @@ class Validadores:
 
     @staticmethod
     def valida_cnpj(cnpj):
+        print('class Validadores | método valida_cnpj')
         print(f'cnpj original {cnpj}')
         cnpj = (str(cnpj))
         print(f'cnpj convertido {cnpj}')
@@ -279,6 +249,7 @@ class Validadores:
 
     @staticmethod
     def valida_inscricao_estadual(insc_estadual):
+        print('class Validadores | método valida_inscricao_estadual')
         insc_estadual = (str(insc_estadual))
         if len(insc_estadual) != 9:
             return False
@@ -289,6 +260,7 @@ class Validadores:
 class AtualizaCodigo:
     @staticmethod
     def cod_produto():
+        print('class AtualizaCodigo | metodo cod_produto')
         try:
             query = "SELECT MAX(CODIGO) FROM PRODUTOS"
             mydb.connect()
@@ -318,6 +290,7 @@ class AtualizaCodigo:
 
     @staticmethod
     def cod_fornecedor():
+        print('class AtualizaCodigo | metodo cod_fornecedor')
         try:
             query = "SELECT MAX(CODIGO) FROM fornecedores"
             mydb.connect()
@@ -347,6 +320,7 @@ class AtualizaCodigo:
 
     @staticmethod
     def ordem_compra():
+        print('class AtualizaCodigo | metodo ordem_compra')
         try:
             query = "SELECT MAX(ORDEM_COMPRA) FROM ordem_compra"
             mydb.connect()
@@ -381,6 +355,7 @@ class Buscadores:
         pass
 
     def buscar_cnpj(cnpj):
+        print('class Buscadores | metodo buscar_cnpj')
         mydb.connect()
         query = f"SELECT * FROM fornecedores WHERE CNPJ = '{cnpj}'"
         mycursor.execute(query)
@@ -393,24 +368,23 @@ class Buscadores:
     class Xml:
         chave_nf = ''
         nome_arquivo =''
-
         pasta_xml = r'C:\relato\xml'
 
         @staticmethod
         def buscar_linhas_nf(nf):
-            print('Método buscar_linhas_nf')
+            print('class Buscadores.Xml | metodo buscar_linhas_nf')
             pasta_xml = r'C:\relato\xml'
             namespaces = {'ns1': 'http://www.portalfiscal.inf.br/nfe'}
             arquivo_encontrado = None
             lst_zipada = []
-            # Procura pelo arquivo na pasta especificada
-            for arquivo in os.listdir(pasta_xml):
+
+            for arquivo in os.listdir(pasta_xml): # Procura pelo arquivo na pasta especificada
                 if nf in arquivo[26:34] and arquivo.endswith('-nfe.xml'):
                     arquivo_encontrado = os.path.join(pasta_xml, arquivo)
                     print(f'arquivo encontrado >> {arquivo_encontrado}')
                     break
-            # Verifica se o arquivo foi encontrado
-            if arquivo_encontrado:
+
+            if arquivo_encontrado:  # Verifica se o arquivo foi encontrado
                 xNome4 = ''
                 lst_produto = []
                 lst_ean = []
@@ -428,7 +402,6 @@ class Buscadores:
                     vUnCom.text = vUnCom.text.replace(',', '.')
                     vUnCom.text = vUnCom.text.replace(' ', '')
                     vUnCom.text = vUnCom.text.rstrip('0')
-
                     item_zip = (cEAN.text, float(vUnCom.text))
                     lst_zipada.append(item_zip)
 
@@ -439,7 +412,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_arquivo(nf):
-            print('Método buscar_xml', end=' - ')
+            print('class Buscadores.Xml | metodo buscar_arquivo')
             nf = str(nf)
             for nome_arquivo in os.listdir(pasta_xml):
                 i = nome_arquivo
@@ -451,7 +424,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_colunas_xml(nome_arquivo):
-            print('Método buscar colunas')
+            print('class Buscadores.Xml | metodo buscar_colunas_xml')
             nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
 
             def extrair_tags(element, prefix=''):
@@ -463,34 +436,26 @@ class Buscadores:
                     tags.update(extrair_tags(child, tag_name))
                 return tags
 
-            # /NFe/infNFe/dest/CNPJ
-
             try:
-                # Parse do XML
-                tree = ET.parse(nome_arquivo)
+                tree = ET.parse(nome_arquivo) # Parse do XML
                 root_element = tree.getroot()
-
-                # Extrair todas as tags
-                colunas = extrair_tags(root_element)
-
+                colunas = extrair_tags(root_element) # Extrair todas as tags
                 print(f'Colunas encontradas: {colunas}')
                 return colunas
 
             except ET.ParseError:
                 print(f"Erro ao analisar o arquivo: {nome_arquivo}")
                 return None
+
         @staticmethod
         def buscar_cnpj(nome_arquivo):
-            print('Método buscar_cnpj', end=' - ')
+            print('class Buscadores.Xml | metodo buscar_cnpj')
             nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
             try:
-                # Parse do XML
-                tree = ET.parse(nome_arquivo)
+                tree = ET.parse(nome_arquivo) # Parse do XML
                 root_element = tree.getroot()
-
                 # Obter namespace
                 namespaces = {node[0]: node[1] for _, node in ET.iterparse(nome_arquivo, events=['start-ns'])}
-
                 # Buscar o elemento CNPJ específico
                 cnpj_element = root_element.find(
                     './/{http://www.portalfiscal.inf.br/nfe}CNPJ',namespaces)
@@ -517,32 +482,22 @@ class Buscadores:
 
         @staticmethod
         def buscar_pedido(nome_arquivo):
-            print('Método buscar_ordem_compra', end=' - ')
+            print('class Buscadores.Xml | metodo buscar_pedido')
             nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
             try:
-                # Parse do XML
-                tree = ET.parse(nome_arquivo)
+                tree = ET.parse(nome_arquivo) # Parse do XML
                 root_element = tree.getroot()
-
-                # Obter namespace
                 namespaces = {node[0]: node[1] for _, node in ET.iterparse(nome_arquivo, events=['start-ns'])}
-                # print(f'Namespaces: {namespaces}')
-
-                # # Imprimir a estrutura do XML
-                # for elem in root_element.iter():
-                #     print(f'{elem.tag} - {elem.attrib} - {elem.text}')
-
                 # Buscar o elemento xPed específico
                 xped_element = root_element.find('.//{http://www.portalfiscal.inf.br/nfe}xPed', namespaces)
                 if xped_element is not None:
                     pedido = xped_element.text
-                    # print(f'Ordem de Compra com namespace: {pedido}')
                     return pedido
                 else:
                     print('Ordem de Compra não encontrada com namespace')
 
-                    # Buscar o elemento xPed específico sem considerar namespace
-                xped_element_no_ns = root_element.find('.//xPed')
+                xped_element_no_ns = root_element.find('.//xPed') # Buscar o elemento xPed específico sem considerar namespace
+
                 if xped_element_no_ns is not None:
                     print(f'xPed encontrado sem namespace: {xped_element_no_ns.text}')
                     return xped_element_no_ns.text
@@ -557,13 +512,11 @@ class Buscadores:
 
         @staticmethod
         def buscar_razao_social(nome_arquivo):
-            print('Método buscar_razao_social', end=' - ')
+            print('class Buscadores.Xml | metodo buscar_razao_social')
             nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
             try:
-                # Parse do XML
-                tree = ET.parse(nome_arquivo)
+                tree = ET.parse(nome_arquivo)  # Parse do XML
                 root_element = tree.getroot()
-                # Obter namespace
                 namespaces = {node[0]: node[1] for _, node in ET.iterparse(nome_arquivo, events=['start-ns'])}
                 # Buscar o elemento CNPJ específico
                 razao_social = root_element.find('.//{http://www.portalfiscal.inf.br/nfe}xNome', namespaces)
@@ -586,9 +539,9 @@ class Buscadores:
     class OrdemCompra:
         @staticmethod
         def verifica_status_ordem(ordem_compra):
+            print('class Buscadores.OrdemCompra | metodo verifica_status_ordem')
             print(f'Verifica status_ordem_compra: {ordem_compra}')
             query = (f'SELECT SUM(SALDO_QTD) FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = "{ordem_compra}";')
-            # print(query)
             mydb.connect()
             mycursor.execute(query)
             resultado = mycursor.fetchall()
@@ -605,6 +558,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_nf2(nf):
+            print('class Buscadores.OrdemCompra | metodo buscar_nf2')
             nf = str(nf)
             cnpj_encontrado = []
 
@@ -687,6 +641,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_ordem_compra2(ordem_compra, razaosocial):
+            print('class Buscadores.OrdemCompra | metodo buscar_ordem_compra2')
             query = ''
             try:
                 if ordem_compra == '':
@@ -739,6 +694,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_ordem_compra(ordem_compra):
+            print('Buscadores.OrdemCompra.buscar_ordem_compra()')
             try:
                 query = f'select * from ordem_compra where ordem_compra = {ordem_compra}'
                 mydb.connect()
@@ -750,6 +706,7 @@ class Buscadores:
             except Exception as e:
                 print(e)
                 pass
+
 
         @staticmethod
         def buscar_ordem_compra_pela_razaosocial(razaosocial):
@@ -769,6 +726,7 @@ class Buscadores:
 
         @staticmethod
         def preco_medio(codigo):
+            print('Buscadores.OrdemCompra.preco_medio()')
             try:
                 query = f'select avg(preco) from ordem_compra where codigo = {codigo}'
                 mydb.connect()
@@ -986,3 +944,10 @@ class BancoDeDados:  # queries
         # mycursor.execute(query)
         pass
 
+class Estoque:
+
+
+    @staticmethod
+    def EntradaEstoque():
+        print('class Estoque | metodo EntradaEstoque')
+        pass

@@ -157,8 +157,11 @@ class Mod_Logistica:
         nf = IntegerField("NF", validators=[NumberRange(min=1)])
         razao_social = StringField("Nome Fantasia")
         ordem_compra = IntegerField("Ordem de Compra", validators=[NumberRange(min=1)])
+        quantidade = IntegerField("Quantidade", validators=[NumberRange(min=0), DataRequired()])
         cnpj = IntegerField("CNPJ", validators=[Length(14, 14)])
         botao_pesquisar_ordem_compra = SubmitField('Pesquisar Ordem')
+        botao_realizar_conferencia = SubmitField('Realizar Conferência')
+        botao_analisar_conferencia = SubmitField('Analisar Conferência')
         botao_limpar_pesquisa = SubmitField('Limpar')
 
     class Realizar_conferencia(FlaskForm):
