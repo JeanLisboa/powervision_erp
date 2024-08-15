@@ -13,8 +13,10 @@ def entrada_ordem_compra():
     validacao_3 = ""
     validacao_4 = ""
     lst_nf = []
+    lst_qtde_pedido = []
     lst_itens_recebidos = []
-    quantidade = 0
+    qtde_pedido = 0
+    diferenca = 0
     result_conferencia = []
     form_entrada_ordem_compra = Mod_Logistica.EntradaOrdemCompra()
     razao_social = form_entrada_ordem_compra.razao_social.data
@@ -39,9 +41,7 @@ def entrada_ordem_compra():
                 nome_arquivo = Buscadores.Xml.buscar_arquivo(nf)
                 cnpj = Buscadores.Xml.buscar_cnpj(nome_arquivo)
                 razao_social = Buscadores.Xml.buscar_razao_social(nome_arquivo)
-                print('------------------------------------------------------------')
-                print('------VALIDAÇÃO 1: VERIFICAR SE O XML ESTÁ NO SERVIDOR------')
-                print('------------------------------------------------------------')
+                print('\n------VALIDAÇÃO 1: VERIFICAR SE O XML ESTÁ NO SERVIDOR------')
                 pedido = Buscadores.Xml.buscar_pedido(nome_arquivo)  # busca o pedido no xml
                 print(f'pedido identificado no xml: {pedido}')
                 lst_nf = [cnpj, razao_social, nf, pedido]
@@ -55,32 +55,27 @@ def entrada_ordem_compra():
                 else:
                     print('xml não encontrado')
 
-                print('------------------------------------------------------------')
-                print('---VALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO---')
-                print('------------------------------------------------------------')
+
+                print('\n---VALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO---')
+
                 if Buscadores.buscar_cnpj(cnpj) is True:
                     print(f'cnpj encontrado: {cnpj}')
                     validacao_2 = True
                 else:
                     print('cnpj não encontrado')
                     lst_nf = ['Fornecedor não encontrado']
-                print('------------------------------------------------------------')
-                print('------VALIDAÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO-----')
-                print('------------------------------------------------------------')
+                print('\n------VALIDAÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO-----')
                 if Buscadores.OrdemCompra.verifica_status_ordem(lst_nf[3]) is True:
                     print('Pedido aberto')
                     validacao_3 = True
                 else:
                     print('Pedido encerrado ou cancelado')
-                print('--------------------------------------------------------------')
-                print('--------------VALIDAÇÃO 4: VALIDAR PEDIDO X NF----------------')
-                print('--------------------------------------------------------------')
-                print('---VALIDAÇÃO 4: (1) RECEBER NF, CRIAR LISTA DE EAN E PRECO----')
+                print('\n--------------VALIDAÇÃO 4: VALIDAR PEDIDO X NF----------------')
+                print('\n---VALIDAÇÃO 4: (1) RECEBER NF, CRIAR LISTA DE EAN E PRECO----')
                 itens_nf = Buscadores.Xml.buscar_linhas_nf(str(nf))
-                print('---VALIDAÇÃO 4: (2) RECEBER OC, CRIAR LISTA DE EAN E PRECO----')
+                print('\n---VALIDAÇÃO 4: (2) RECEBER OC, CRIAR LISTA DE EAN E PRECO----')
                 itens_oc = Validadores.valida_pedido_recebido(pedido)
-                print('--------------------------------------------------------------')
-                print('---VALIDAÇÃO 4: (3) COMPARAR AS DUAS LISTAS-------------------')
+                print('\n---VALIDAÇÃO 4: (3) COMPARAR AS DUAS LISTAS-------------------')
                 maior_dif_permitida = modulos.admin.maior_dif_permitida
                 cont_fora = 0
 
@@ -93,7 +88,6 @@ def entrada_ordem_compra():
                             else:
                                 pass
 
-                print('---------------------------------------------------------------')
                 if cont_fora == 0:
                     validacao_4 = True
                 else:
@@ -120,8 +114,8 @@ def entrada_ordem_compra():
             if 'botao_realizar_conferencia' in request.form:
                 lst_nf = session.get('resultado_validacao') # recupera as informações da tabela de pesquisa
                 nf = lst_nf[2]
-                print('botao_realizar_conferencia ACIONADO')
-                print(f' lst_nf >> {lst_nf}')
+                print('\nbotao_realizar_conferencia ACIONADO')
+                print(f'\n lst_nf >> {lst_nf}')
                 itens_conferencia = Buscadores.OrdemCompra.buscar_ordem_compra(lst_nf[3])
                 session['itens_conferencia'] = itens_conferencia
                 print(f'itens conferencia >>> {itens_conferencia}')
@@ -130,21 +124,23 @@ def entrada_ordem_compra():
 
         try:
             if 'botao_limpar_pesquisa' in request.form:
-                print('botao_limpar_pesquisa ACIONADO')
+                print('\nbotao_limpar_pesquisa ACIONADO')
         except Exception as e:
             print(e)
 
         try:
             if 'botao_analisar_conferencia' in request.form:
-                itens_conferencia = session.get('itens_conferencia', []) # Recupera as informações da ordem de compra
+                lst_nf = session.get('resultado_validacao')  # recupera as informações da tabela de pesquisa
+                itens_conferencia = session.get('itens_conferencia', [])  # Recupera as informações da ordem de compra
                 print(itens_conferencia)
                 print('botao_analisar_conferencia ACIONADO')
-                result_conferencia = request.form.getlist('quantidade') # lista a quantidade dos itens conferidos
+                result_conferencia = request.form.getlist('quantidade')  # lista a quantidade dos itens conferidos
                 print('--------------------------------------------')
 
                 lst_pedido_p_conferencia = []
                 lst_itens_recebidos = []
                 lst_diferenca = []
+                lst_qtde_pedido = [0]
 
                 # o bloco abaixo cria uma lista de tuplas (ean, quantidade) para fazer a comparação NF X RECEBIDO
                 pos = 0
@@ -156,15 +152,37 @@ def entrada_ordem_compra():
                     lst_pedido_p_conferencia.append(zipped)
                     zipped_2 = (ean_pedido, result_conferencia[pos])  # (ean, quantidade recebida)
                     lst_itens_recebidos.append(zipped_2)
-                    zipped_3 = (int(result_conferencia[pos]) - int(qtde_pedido))
+                    diferenca = (int(result_conferencia[pos]) - int(qtde_pedido))
+
+                    def analisa_diferenca(diferenca):
+                        if diferenca > 0:
+                            status = 'SOBRA'
+                        elif diferenca < 0:
+                            status = 'FALTA'
+                        else:
+                            status = 'OK'
+                        return status
+                    zipped_3 = (diferenca, analisa_diferenca(diferenca))
                     lst_diferenca.append(zipped_3)
                     pos += 1
 
-                print(f'lst_pedido_p_conferencia : {lst_pedido_p_conferencia}')
-                print(f'lst_itens_recebidos : {lst_itens_recebidos}')
-                print(f'lista_diferenca : {lst_diferenca}')
-                for a, b in zip(lst_itens_recebidos, lst_pedido_p_conferencia):
-                    print(f'{b[0]} | {a[1]}, {b[1]} | dif= { int(a[1]) - int(b[1])}')
+                def analisa_criterios_recebimento(lst_pedido_p_conferencia, lst_itens_recebidos, lst_diferenca):
+                    print('\nFunção analisa_criterios_recebimento\n')
+                    print(f'lst_pedido_p_conferencia : {lst_pedido_p_conferencia}')
+                    print(f'lst_itens_recebidos : {lst_itens_recebidos}')
+                    print(f'lista_diferenca : {lst_diferenca}')
+                    print('\nFim da função analisa_criterios_recebimento\n')
+
+                    # recebe uma lista com os criterios para recebimento
+                    # retorna a informação se recebe ou recusa a mercadoria
+                    # caso precise ser recebido, solicitar liberação de compras
+                    # neste caso, o pedido precisará ser liberado pelo comprador
+                    # se o pedido não for recebido completo, deverá ser finalizado ou gerar saldo
+
+                analisa_criterios_recebimento(lst_pedido_p_conferencia, lst_itens_recebidos, lst_diferenca)
+
+                # for a, b in zip(lst_itens_recebidos, lst_pedido_p_conferencia):
+                #     print(f'{b[0]} | {a[1]}, {b[1]} | dif= { int(a[1]) - int(b[1])}')
 
         except Exception as e:
             print(e)

@@ -274,8 +274,8 @@ td{
 
 
 .float-tela-conferencia-direita {
-    float: right;
-    width: 40%;
+    float: left ;
+    width: 20%;
     padding: 10px;
     margin:10px;
         ;

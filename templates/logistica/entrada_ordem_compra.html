@@ -12,12 +12,10 @@ TELA ENTRADA ORDEM DE COMPRA
         1.2 - ATUALIZAR ORDEM DE COMPRA
       2 - CORRIGIR TELA PARA NAO LIMPAR OS CAMPOS APÓS CLICAR EM ANALISAR CONFERENCIA
       3 - O BOTAO ANALISAR CONFERENCIA SÓ DEVE APARECER APÓS CLICAR EM REALIZAR CONFERENCIA
-      4 - VERIFICAR SE JÁ FOI CRIADA A TABELA DE ESTOQUE, CASO NAO, CRIAR
       *** - O PROCESSO DE ENTRADA DE ORDEM COMPRA DEVE SER FINALIZADO COM A ATUALIZAÇÃO DO ESTOQUE E DO STATUS DA ORDEM DE COMPRA
       *** - DEVEM SER RESPEITADOS OS CRITÉRIOS PARA RECEBIMENTO.
         - SE ACEITA PARCIAL
         - SE GERA SALDO DE PEDIDO.
-
    </pre>
 
   <div class="mb-3 float-child-tela-pesquisa"> <!-- DIV 1 SUPERIOR (ESQUERDA) -->
@@ -73,7 +71,8 @@ TELA ENTRADA ORDEM DE COMPRA
                 <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                   <td>{{ i[7] }}</td>
                   <td>{{ i[3] }}</td>
-                  <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input",  value=0 )  }}</td>
+                  <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input")  }}</td>
+
                 </tr>
                 {% endfor %}
               </tbody>
@@ -84,25 +83,46 @@ TELA ENTRADA ORDEM DE COMPRA
             <table class="table table-hover table-striped float-tela-conferencia-direita" style="position:sticky" cellpadding="2" cellspacing="2" >
               <thead>
                 <tr class="cab_tabela">
-                  <th class="tam_campo_codigo">DIFERENÇA</th>
+                   <th class="tam_campo_codigo">DIFERENÇA</th>
                   <th class="tam_campo_descricao_tabela">STATUS</th>
                 </tr>
               </thead>
               <tbody>
                 {% for i in lst_diferenca %}
                 <tr>
-                  <td>{{ i }}</td>
-                  <td></td>
+                  <td style="height: 48px;">{{ i[0] }}</td>
+                  <td style="height: 48px;">{{ i[1] }}</td>
+
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div> <!-- div 3 -->
-          <br>
-          <br>
-    {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0") }}
-
-
+          <div>
+            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0") }}
+          </div>
   </form>
 </div>
 {% endblock %}
+
+<script>
+    // Armazena os valores antes do envio do formulário
+    document.getElementById('botao_analisar_conferencia').addEventListener('click', function() {
+        {% for i in itens_conferencia %}
+        let quantidade{{ loop.index0 }} = document.getElementById('quantidade_{{ loop.index0 }}').value;
+        localStorage.setItem('quantidade_{{ loop.index0 }}', quantidade{{ loop.index0 }});
+        {% endfor %}
+    });
+
+    window.onload = function() {
+    {% for i in itens_conferencia %}
+        {% for a in lst_qtde_pedido %}
+            let quantidadeId = 'quantidade_{{ forloop.parentloop.index0 }}_{{ forloop.index0 }}';
+            let quantidadeValue = localStorage.getItem(quantidadeId);
+            if (quantidadeValue !== null) {
+                document.getElementById(quantidadeId).value = quantidadeValue;
+            }
+        {% endfor %}
+    {% endfor %}
+};
+</script>
