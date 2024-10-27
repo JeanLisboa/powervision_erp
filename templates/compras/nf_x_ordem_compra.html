@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block content %}
+TELA ENTRADA ORDEM DE COMPRA
+
+<div class="container p-3 mb-3 border border-1 border-primary  div_principal">
+
+  <form action="" method="POST"> {{ form_entrada_ordem_compra.csrf_token }}
+    <pre>
+      - NF TESTE: 2112 E 2299
+      1 -  APOS A CONFIRM DA ENTRADA DOS PEDIDOS:
+        1.1 - ATUALIZAR ESTOQUE
+        1.2 - ATUALIZAR ORDEM DE COMPRA
+      2 - CORRIGIR TELA PARA NAO LIMPAR OS CAMPOS APÓS CLICAR EM ANALISAR CONFERENCIA
+      3 - O BOTAO ANALISAR CONFERENCIA SÓ DEVE APARECER APÓS CLICAR EM REALIZAR CONFERENCIA
+      *** - O PROCESSO DE ENTRADA DE ORDEM COMPRA DEVE SER FINALIZADO COM A ATUALIZAÇÃO DO ESTOQUE E DO STATUS DA ORDEM DE COMPRA
+      *** - DEVEM SER RESPEITADOS OS CRITÉRIOS PARA RECEBIMENTO.
+        - SE ACEITA PARCIAL
+        - SE GERA SALDO DE PEDIDO.
+   </pre>
+
+  <div class="mb-3 float-child-tela-pesquisa"> <!-- DIV 1 SUPERIOR (ESQUERDA) -->
+    <div class="col form-label btn btn-light">
+      {{ form_entrada_ordem_compra.data.label }}
+      {{ form_entrada_ordem_compra.data(class="form-control tam_campo_data", value=data) }}
+    </div>
+    <div class="col form-label btn btn-light">
+      {{ form_entrada_ordem_compra.nf.label }}
+      {{ form_entrada_ordem_compra.nf(class="form-control tam_campo_data", value=ordem_compra) }}
+    </div>
+    <div class="col form-label btn btn-light">
+      {{ form_entrada_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-4") }}
+    </div>
+  </div> <!--  FIM DA DIV 1 SUPERIOR -->
+  <div class=" mb-3 float-child-tela-pesquisa"> <!-- DIV 2 SUPERIOR (DIREITA) -->
+    <table class="table table-striped mt-0" style="position:sticky" cellpadding="2" cellspacing="2">
+      <thead>
+        <tr class="cab_tabela">
+          <th>CNPJ</th>
+          <th>RAZAO SOCIAL REMETENTE</th>
+          <th>NF</th>
+          <th>ORDEM</th>
+          <th>STATUS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed">
+          <td>{{ lst_nf[0] }}</td>
+          <td>{{ lst_nf[1] }}</td>
+          <td>{{ lst_nf[2] }}</td>
+          <td>{{ lst_nf[3] }}</td>
+          <td>{{ lst_nf[4] }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+      {% if validacao_final == False %}
+        {{ form_entrada_ordem_compra.botao_realizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+      {% else %}
+        {{ form_entrada_ordem_compra.botao_realizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+      {% endif %}
+
+       {% if validacao_final == False %}
+        {{ form_entrada_ordem_compra.botao_limpar_pesquisa (class="btn btn-primary mt-0", disabled="disabled") }}
+      {% else %}
+        {{ form_entrada_ordem_compra.botao_limpar_pesquisa (class="btn btn-primary mt-0", enabled="enabled") }}
+      {% endif %}
+
+  </div> <!-- FIM DA DIV 2 SUPERIOR -->
+
+
+          <div> <!-- DIV 1 INFERIOR (TABELA DA ESQUERDA) -->
+            <table class="table table-hover table-striped float-tela-conferencia-esquerda" style="position:sticky" cellpadding="2" cellspacing="2" >
+              <thead>
+                <tr class="cab_tabela">
+                  <th class="tam_campo_codigo">EAN</th>
+                  <th class="tam_campo_descricao_tabela">DESCRICAO</th>
+                  <th class="tam_coluna_quantidade">QUANTIDADE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for i in itens_conferencia %}
+                <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                  <td>{{ i[7] }}</td>
+                  <td>{{ i[3] }}</td>
+                  {% if form_entrada_ordem_compra.botao_analisar_conferencia in request.form %}
+                    <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input", value=99  )  }}</td>
+                  {% else %}
+                    <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input") }}</td>
+
+                  {% endif %}
+
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- FIM DO DIV 1 INFERIOR -->
+
+          <div> <!-- DIV 2  INFERIOR (TABELA DA DIREITA)-->
+            <table class="table table-hover table-striped float-tela-conferencia-direita" style="position:sticky" cellpadding="2" cellspacing="2" >
+              <thead>
+                <tr class="cab_tabela">
+                   <th class="tam_campo_codigo">ENTRADA</th> <!-- col1 -->
+                   <th class="tam_campo_codigo">DIFERENÇA</th> <!-- col2 -->
+                  <th class="tam_campo_descricao_tabela">STATUS</th> <!-- col3 -->
+                </tr>
+              </thead>
+
+              <tbody>
+
+                {% for i in lst_diferenca %}
+                <tr>
+
+                  <td style="height: 48px;">{{ i[0][1] }}</td>
+                  <td style="height: 48px;">{{ i[1] }}</td>
+                  <td style="height: 48px;">{{ i[2] }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- div 3 -->
+          <div class="col form-label btn btn-light">
+           {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
+
+            <br>
+          {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
+
+            <br>
+          {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
+
+          </div>
+
+  </form>
+
+<!--  <script>-->
+<!--  document.addEventListener("DOMContentLoaded", function () {-->
+<!--    function desabilitarCampos() {-->
+<!--      let inputs = document.querySelectorAll('input.form-control');-->
+<!--      inputs.forEach(function(input) {-->
+<!--        input.disabled = false;-->
+<!--      });-->
+<!--    }-->
+
+<!--    document.getElementById('botao_analisar_conferencia').addEventListener('click', function(event) {-->
+<!--      desabilitarCampos();-->
+<!--    });-->
+<!--  });-->
+<!--</script>-->
+</div>
+
+{% endblock %}
