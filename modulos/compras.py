@@ -32,11 +32,11 @@ lista_contador_cadastro_produto = []
 lista_cadastro_produto = []
 
 
+
 def cadastrar_fornecedores():
     cod_fornecedor = geral.AtualizaCodigo.cod_fornecedor()
     form_fornecedores = ModCompras.CadFornecedores()
     razao_social = form_fornecedores.razao_social.data
-
     cnpj = form_fornecedores.cnpj.data
     inscricaoestadual = form_fornecedores.insc_estadual.data
     email = form_fornecedores.email.data
@@ -61,7 +61,7 @@ def cadastrar_fornecedores():
             print('informações validadas - cadastrar no banco de dados')
             values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
                       f"'{cod_fornecedor}',"
-                      f"'{nome_fantasia}',"
+                      # f"'{nome_fantasia}',"
                       f"'{razao_social}',"
                       f"'{cnpj}',"
                       f"'{inscricaoestadual}',"
@@ -97,10 +97,12 @@ def cadastrar_fornecedores():
 
 def cadastrar_produtos():
     alert = None
+    fornecedor = ''
     # global contador_item_cadastro
     global lista_cadastro_produto
     global total_cadastro_produto
     global lista_contador_cadastro_produto
+
     contador_item_cadastro_produto = 0
     item_cadastro_produto = []
     form_cad_produtos = ModCompras.CadProduto()
@@ -116,11 +118,22 @@ def cadastrar_produtos():
     data = Formatadores.os_data()
     fornecedor = form_cad_produtos.fornecedor.data
     usuario = "ADMIN"
+    # session['fornecedor'] = fornecedor
     if request.method == 'POST':
-        fornecedor = ''
+        if 'botao_baixar_planilha' in request.form:
+            print('botao_baixar_planilha pressionado')
+            geral.download_planilha()
+
+
+        # fornecedor = ''
         if 'botao_incluir_item' in request.form:  # inclui o item na tabela
             print('botao_incluir_item pressionado')
-            fornecedor = request.form.get('fornecedor')  # retorna o fornecedor selecionado e instacia na variável
+            # print(f' session["fornecedor_selecionado"] {session["fornecedor_selecionado"]}')
+            # print(f'fornecedor {fornecedor}')
+
+            # redirect(url_for('cadastrar_produtos', fornecedor=fornecedor))
+            # fornecedor = request.form.get('fornecedor')  # retorna o fornecedor selecionado e instacia na variável
+            # fornecedor = request.form.getlist('fornecedor')  # retorna o fornecedor selecionado e instacia na variável
 
             try:
                 print(lista_cadastro_produto)
@@ -186,13 +199,18 @@ def cadastrar_produtos():
                     # A LINHA ABAIXO SERVE PARA SALVAR O FORNECEDOR NA SESSÃO E,
                     # MANTÊ-LO NA TELA AO INCLUIR O ITEM NA TABELA
                     #   (obs.: DEVE SER PASSADO NO RENDER TEMPLATE)
-                    session['fornecedor'] = fornecedor
+
                     alert = geral.AlertaMsg.produto_incluido_na_tabela(ean, descricao)
-                    return redirect(url_for('cadastrar_produtos', session=session))
+                    return redirect(url_for('cadastrar_produtos'))
             #
             except Exception as e:
                 print('erro no botão incluir item')
                 print(e)
+
+            fornecedor = session.get("fornecedor")
+            print(f'sessio.ger{session.get(fornecedor)}')
+
+            return redirect(url_for('cadastrar_produtos', alert=alert, fornecedor=session.get('fornecedor')))
 
         # inclui as linhas da tabela no banco de dados
         if 'botao_submit_cad_prod' in request.form:
@@ -258,12 +276,19 @@ def cadastrar_produtos():
                                            alert=alert,
                                            form_cad_produtos=form_cad_produtos,
                                            cod_produto=AtualizaCodigo.cod_produto(),
-                                           data=Formatadores.formatar_data(Formatadores.os_data()))
+                                           data=Formatadores.formatar_data(Formatadores.os_data()
+                                                                           ))
 
         if 'botao_cancelar_cad_prod' in request.form:  # limpa os campos do formulário
             print('botao_cancelar_cad_prod pressionado')
             cod_produto = ean = descricao = unidade = categoria = valor = fornecedor = ''
             lista_cadastro_produto.clear()
+
+        if 'botao_baixar_planilha' in request.form:
+            print('botao_baixar_planilha pressionado')
+            print('Criar planilha com pandas')
+
+
 
         if 'botao_excluir_cad_prod' in request.form:
             valor_produto = request.form.getlist('valor_produto')
@@ -297,13 +322,54 @@ def cadastrar_produtos():
                            data=Formatadores.formatar_data(Formatadores.os_data()))
 
 
+def editar_ordem_compra():
+    form_editar_ordem_compra = ModCompras.EditarOrdemCompra()
+    data = Formatadores.os_data()
+    ordem_compra = request.form.get('pesquisar_ordem_compra')
+    ordem_pesquisada = ()  # Valor padrão para evitar o erro no primeiro acesso
+
+    if request.method == 'POST':
+        if 'botao_pesquisar_ordem_compra' in request.form:
+            print('botao_pesquisar_ordem_compra acionado')
+
+            if ordem_compra:  # Verifica se o campo 'ordem_compra' está preenchido
+                try:
+                    ordem_pesquisada = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
+                    session['result_ordem_pesquisada'] = ordem_pesquisada
+                except Exception as e:
+                    print(f"Erro ao buscar ordem de compra: {e}")
+            else:
+                print("Nenhuma ordem de compra informada para a pesquisa.")
+
+        if 'botao_editar_item' in request.form:
+            print('botao_editar_item_acionado')
+            ordem_pesquisada = session.get('result_ordem_pesquisada')
+            item_selecionado = request.form.getlist('editar__item')
+            print(item_selecionado)
+
+        if 'botao_excluir_item' in request.form:
+            print('botao_excluir_item_acionado')
+            ordem_pesquisada = session.get('result_ordem_pesquisada')
+            item_selecionado = request.form.getlist('excluir__item')
+            # criar linha para excluir o item conforme item_selecionado
+            print(item_selecionado)
+
+    return render_template('compras/editar_ordem_compra.html',
+                           ordem_compra=ordem_compra,
+                           ordem_pesquisada=ordem_pesquisada,
+                           form_editar_ordem_compra=form_editar_ordem_compra,
+                           data=data)
+
+
 def analisar_ordem_de_compra():
     resultado = ''
     ordem_compra = ''
     razao_social = ''
     xml = ''
+    itens_xml = ''
     detalhamento_ordem = ''
     form_analisar_ordem_de_compra = ModCompras.AnalisarOrdemCompra()
+    nf = form_analisar_ordem_de_compra.nf.data
     ordem_compra = form_analisar_ordem_de_compra.ordem_compra.data
     razao_social = form_analisar_ordem_de_compra.razao_social.data
     pesquisar_nf = form_analisar_ordem_de_compra.pesquisar_nf.data
@@ -315,8 +381,6 @@ def analisar_ordem_de_compra():
         try:
             if 'botao_pesquisar_notafiscal' in request.form:
                 print('botao_pesquisar_notafiscal ACIONADO')
-                # xml = Formatadores.formatar_xml('25240543587344000909550040000020461934533155-nfe')
-                # executar função xml
         except Exception as e:
             print('erro ao pesquisar nf')
             print(e)
@@ -324,19 +388,47 @@ def analisar_ordem_de_compra():
             lista_teste = []
             if 'botao_pesquisar_ordem_de_compra' in request.form:
                 print('botao_pesquisar_ordem_de_compra ACIONADO')
-                print(f'Ordem a pesquisar >>> {ordem_compra, razao_social}')
+                print(f'Ordem a pesquisar >>> {ordem_compra, razao_social, nf}')
+
                 # faz a busca na base de dados pela ordem de compra, ou pela razao social,  ou por ambos
                 resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra, razao_social)
-
+            status_ordem = Buscadores.OrdemCompra.verifica_status_ordem(ordem_compra)
             if 'ordem_para_analise' in request.form:  # retorna a opção selecionada na tela
+                print('Ordem_para_analise ACIONADO')
+
                 ordem_para_analise = request.form.get('ordem_para_analise')
                 detalhamento_ordem = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_para_analise)
-                for i in detalhamento_ordem:
+                print(f'detalhamento_ordem >>> {detalhamento_ordem}')
+
+                print('------------Teste funçoes validadoras----------')
+                print(geral.ValidaStatusPedido.validacao_1(status_ordem))
+
+                nome_arquivo = Buscadores.Xml.buscar_arquivo(nf)
+                print(f'nome_arquivo = {nome_arquivo}')
+                cnpj = Buscadores.Xml.buscar_cnpj(nome_arquivo)
+
+                print(geral.ValidaStatusPedido.validacao_2(cnpj))
+                print(f'cnpj = {cnpj}')
+                print(geral.ValidaStatusPedido.validacao_3(status_ordem, ordem_compra))
+                print(geral.ValidaStatusPedido.validacao_4(nf,ordem_compra))
+                print('---------fim do teste funçoes validadoras------\n')
+
+                print('---------teste valida status pedido------\n')
+                geral.Validadores.valida_status_pedido(ordem_compra)
+
+                print('---------fim do teste valida status pedido------\n')
+
+
+
+                for i in detalhamento_ordem:  # itens da ordem de compra
                     lista_cadastro_produto.append(i)
-                    print(i[7])
+                    # print(i[7])
                 print(lista_teste)
-                xml = Formatadores.formatar_xml('25240643587344000909550040000022211120412670-nfe')  # retorna o xml
-                # print(ordem_para_analise)
+                itens__nf = geral.Buscadores.Xml.retorna_xml(str(nf))
+                xml = Formatadores.formatar_xml(itens__nf)  # retorna o xml
+                print(ordem_para_analise)
+
+
         except Exception as e:
             print('erro ao pesquisar nf')
             print(e)
@@ -358,6 +450,8 @@ def analisar_ordem_de_compra():
 
     return render_template('compras/analisar_ordem_de_compra.html',
                            xml=xml,
+                           itens_xml=itens_xml,
+                           itens_oc=0,
                            retorno_ordem_compra=resultado,
                            detalhamento_ordem=detalhamento_ordem,
                            data=Formatadores.formatar_data(Formatadores.os_data()),

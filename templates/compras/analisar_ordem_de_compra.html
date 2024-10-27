@@ -1,4 +1,4 @@
-    {% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block content %}
 
@@ -22,6 +22,12 @@ TELA ANALISAR ORDEM DE COMPRA
                     {{ form_analisar_ordem_de_compra.ordem_compra.label(class="form-label") }}
                     {{ form_analisar_ordem_de_compra.ordem_compra(class="form-control tam_campo_codigo") }}
                 </div>
+
+                <div  class="col form-label  btn btn-light">
+                    {{ form_analisar_ordem_de_compra.nf.label(class="form-label") }}
+                    {{ form_analisar_ordem_de_compra.nf(class="form-control tam_campo_codigo") }}
+                </div>
+
                 <div  class="col form-label  btn btn-light">
                     {{ form_analisar_ordem_de_compra.razao_social.label(class="form-label") }}
                     {{ form_analisar_ordem_de_compra.razao_social(class="form-control tam_campo_descricao") }}
@@ -30,9 +36,9 @@ TELA ANALISAR ORDEM DE COMPRA
                     {{ form_analisar_ordem_de_compra.botao_pesquisar_ordem_de_compra(class="btn btn-primary mt-3")  }}
                 </div>
             </div>
-            <div class="mb-3 float-child-resultado-busca-pedidos"> <!-- resultado da busca -->
-                TELA RESULTADO
 
+            <div class="mb-3 float-child-resultado-busca-pedidos container_com_barra_rolagem"> <!-- resultado da busca -->
+                <p>TELA RESULTADO</p>
                 <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2">
                     <thead>
                         <tr class="cab_tabela">
@@ -44,7 +50,7 @@ TELA ANALISAR ORDEM DE COMPRA
                             <th>STATUS</th>
                         </tr>
                     </thead>
-                    <tbody>
+                        <tbody>
                         {% for i in retorno_ordem_compra %}
                         <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed">
                             <td>{{ i[0] }}</td>

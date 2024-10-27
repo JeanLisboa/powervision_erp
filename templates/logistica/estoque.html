@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+TELA ESTOQUE
+
+<div class="container"
+     xmlns="http://www.w3.org/1999/html">
+  <form action="" method="POST">
+    {{ form_estoque.csrf_token }}
+    {{ form_estoque.botao_pesquisar(class="btn btn-primary") }}
+  </form>
+
+    <div> <!-- DIV 1 INFERIOR (TABELA DA ESQUERDA) -->
+      <table class="table table-hover table-striped float-tela-conferencia-esquerda" style="position:sticky" cellpadding="2" cellspacing="2" >
+        <thead>
+          <tr class="cab_tabela">
+            <th class="tam_campo_codigo">CATEGORIA</th>
+            <th class="tam_campo_codigo">EAN</th>
+            <th class="tam_campo_codigo">CODIGO</th>
+            <th class="tam_campo_descricao_tabela">DESCRICAO</th>
+            <th class="tam_coluna_quantidade">QUANTIDADE</th>
+            <th class="tam_coluna_quantidade">CUSTO MEDIO</th>
+            <th class="tam_coluna_quantidade">CUSTO TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+            <td></td>
+
+
+          </tr>
+        </tbody>
+    </table>
+    </div>
+
+</div>
+{% endblock %}

@@ -52,8 +52,19 @@ TELA ENTRADA ORDEM DE COMPRA
         </tr>
       </tbody>
     </table>
-      {{ form_entrada_ordem_compra.botao_realizar_conferencia (class="btn btn-primary mt-0") }}
-      {{ form_entrada_ordem_compra.botao_limpar_pesquisa (class="btn btn-secondary mt-0") }}
+
+      {% if validacao_final == False %}
+        {{ form_entrada_ordem_compra.botao_realizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+      {% else %}
+        {{ form_entrada_ordem_compra.botao_realizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+      {% endif %}
+
+       {% if validacao_final == False %}
+        {{ form_entrada_ordem_compra.botao_limpar_pesquisa (class="btn btn-primary mt-0", disabled="disabled") }}
+      {% else %}
+        {{ form_entrada_ordem_compra.botao_limpar_pesquisa (class="btn btn-primary mt-0", enabled="enabled") }}
+      {% endif %}
+
   </div> <!-- FIM DA DIV 2 SUPERIOR -->
 
 
@@ -71,7 +82,12 @@ TELA ENTRADA ORDEM DE COMPRA
                 <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                   <td>{{ i[7] }}</td>
                   <td>{{ i[3] }}</td>
-                  <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input")  }}</td>
+                  {% if form_entrada_ordem_compra.botao_analisar_conferencia in request.form %}
+                    <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input", value=99  )  }}</td>
+                  {% else %}
+                    <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input") }}</td>
+
+                  {% endif %}
 
                 </tr>
                 {% endfor %}
@@ -83,46 +99,64 @@ TELA ENTRADA ORDEM DE COMPRA
             <table class="table table-hover table-striped float-tela-conferencia-direita" style="position:sticky" cellpadding="2" cellspacing="2" >
               <thead>
                 <tr class="cab_tabela">
-                   <th class="tam_campo_codigo">DIFERENÇA</th>
-                  <th class="tam_campo_descricao_tabela">STATUS</th>
+                   <th class="tam_campo_codigo">ENTRADA</th> <!-- col1 -->
+                   <th class="tam_campo_codigo">DIFERENÇA</th> <!-- col2 -->
+                  <th class="tam_campo_descricao_tabela">STATUS</th> <!-- col3 -->
                 </tr>
               </thead>
+
               <tbody>
+
                 {% for i in lst_diferenca %}
                 <tr>
-                  <td style="height: 48px;">{{ i[0] }}</td>
-                  <td style="height: 48px;">{{ i[1] }}</td>
 
+                  <td style="height: 48px;">{{ i[0][1] }}</td>
+                  <td style="height: 48px;">{{ i[1] }}</td>
+                  <td style="height: 48px;">{{ i[2] }}</td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div> <!-- div 3 -->
-          <div>
-            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0") }}
+          <div class="col form-label btn btn-light">
+           {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
+
+            <br>
+          {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
+
+            <br>
+          {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
+
           </div>
+
   </form>
+
+<!--  <script>-->
+<!--  document.addEventListener("DOMContentLoaded", function () {-->
+<!--    function desabilitarCampos() {-->
+<!--      let inputs = document.querySelectorAll('input.form-control');-->
+<!--      inputs.forEach(function(input) {-->
+<!--        input.disabled = false;-->
+<!--      });-->
+<!--    }-->
+
+<!--    document.getElementById('botao_analisar_conferencia').addEventListener('click', function(event) {-->
+<!--      desabilitarCampos();-->
+<!--    });-->
+<!--  });-->
+<!--</script>-->
 </div>
+
 {% endblock %}
-
-<script>
-    // Armazena os valores antes do envio do formulário
-    document.getElementById('botao_analisar_conferencia').addEventListener('click', function() {
-        {% for i in itens_conferencia %}
-        let quantidade{{ loop.index0 }} = document.getElementById('quantidade_{{ loop.index0 }}').value;
-        localStorage.setItem('quantidade_{{ loop.index0 }}', quantidade{{ loop.index0 }});
-        {% endfor %}
-    });
-
-    window.onload = function() {
-    {% for i in itens_conferencia %}
-        {% for a in lst_qtde_pedido %}
-            let quantidadeId = 'quantidade_{{ forloop.parentloop.index0 }}_{{ forloop.index0 }}';
-            let quantidadeValue = localStorage.getItem(quantidadeId);
-            if (quantidadeValue !== null) {
-                document.getElementById(quantidadeId).value = quantidadeValue;
-            }
-        {% endfor %}
-    {% endfor %}
-};
-</script>

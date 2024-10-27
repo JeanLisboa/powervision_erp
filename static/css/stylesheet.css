@@ -372,6 +372,11 @@ td{
             overflow-y: auto; /* Adiciona rolagem vertical */
         }
 
+.container_com_barra_100% {
+
+            overflow-y: auto; /* Adiciona rolagem vertical */
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;

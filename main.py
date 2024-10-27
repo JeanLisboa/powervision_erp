@@ -65,12 +65,29 @@ class Sobre:
         return modulos.sobre.sobre()
 
 
+
+    @staticmethod
+    @app.route('/estrutura', methods=['POST', 'GET'])
+    def estrutura():
+        return modulos.sobre.estrutura()
+
+
+    @staticmethod
+    @app.route('/backlog', methods=['POST', 'GET'])
+    def backlog():
+        return modulos.sobre.backlog()
+
 class Compras:
 
     @staticmethod
     @app.route('/cadastrar_fornecedores', methods=['POST', 'GET'])
     def cadastrar_fornecedores():
         return modulos.compras.cadastrar_fornecedores()
+
+    @staticmethod
+    @app.route('/editar_ordem_compra', methods=['POST', 'GET'])
+    def editar_ordem_compra():
+        return modulos.compras.editar_ordem_compra()
 
     @staticmethod
     @app.route('/cadastrar_produtos', methods=['POST', 'GET'])
@@ -100,13 +117,16 @@ class Logistica:
     def realizar_conferencia():
         return modulos.logistica.realizar_conferencia()
 
+    @staticmethod
+    @app.route('/estoque', methods=['POST', 'GET'])
+    def estoque():
+        return modulos.logistica.estoque()
+
 
     @staticmethod
     @app.route('/entrada_ordem_compra', methods=['POST', 'GET'])
     def entrada_ordem_compra():
         return modulos.logistica.entrada_ordem_compra()
-
-
 
 
 class Comercial:
@@ -157,4 +177,4 @@ def teste():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8000)

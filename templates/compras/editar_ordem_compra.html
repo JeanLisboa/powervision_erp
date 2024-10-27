@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+TELA EDITAR ORDEM DE COMPRA
+<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
+
+    <form action="" method="POST">
+        {{ form_editar_ordem_compra.csrf_token }}
+        <div class="float-child0"> <!-- tela de pesquisa -->
+            <div class="mb-3 float-child-tela-pesquisa">
+                PESQUISA<BR>
+                <div class="mb-3 float-child-tela-pesquisa border border-2 border-primary">
+                    <div  class="col form-label  btn btn-light">
+                        {{ form_editar_ordem_compra.data.label }}
+                        {{ form_editar_ordem_compra.data(class="form-control", value=data) }}
+                    </div>
+                    <div  class="col form-label  btn btn-light">
+                        {{ form_editar_ordem_compra.pesquisar_ordem_compra.label }}
+                        {{ form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control") }}
+                    </div>
+                {{ form_editar_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-5") }}
+                {{ form_editar_ordem_compra.botao_excluir_ordem_compra(class="btn btn-secondary mt-5") }}
+                </div>
+                <div class="container_com_barra_rolagem_100%"> <!-- resultado da busca -->
+                    <p>TELA RESULTADO</p>
+                    <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2">
+                    <thead>
+                        <tr class="cab_tabela">
+                            <th>DATA</th>
+                            <th>ORDEM</th>
+                            <th>DESCRIÇÃO</th>
+                            <th>QUANTIDADE</th>
+                            <th>VALOR UNITÁRIO</th>
+                            <th>VALOR TOTAL</th>
+                            <th>STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in ordem_pesquisada %}
+                        <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed">
+                            <td>{{ i[0] }}</td>
+                            <td>{{ i[1] }}</td>
+                            <td>{{ i[3] }}</td>
+                            <td>{{ i[8] }}</td>
+                            <td>{{ i[9] }}</td>
+                            <td>{{ i[10] }}</td>
+                            <td></td>
+                            <td>
+                                <form method="POST">
+                                    {{ form_editar_ordem_compra.hidden_tag() }}
+                                    <input type="hidden" name="editar__item" value="{{ i[3] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
+                            {{ form_editar_ordem_compra.botao_editar_item(class='btn btn-primary') }}
+                                </form>
+                            </td>
+                            <td>
+                                <form method="POST">
+                                    {{ form_editar_ordem_compra.hidden_tag() }}
+                                    <input type="hidden" name="excluir__item" value="{{ i[3] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
+                            {{ form_editar_ordem_compra.botao_excluir_item(class='btn btn-primary') }}
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+
+                    {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5") }}
+                    {{ form_editar_ordem_compra.botao_salvar_alteracoes(class="btn btn-primary mt-5") }}
+                    {{ form_editar_ordem_compra.botao_descartar_alteracoes(class="btn btn-primary mt-5") }}
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -3,10 +3,13 @@ import mysql.connector
 from pycpfcnpj import cpfcnpj as validador_cnpj
 from flask import session, redirect, url_for, request
 import xml.etree.ElementTree as ET
+import openpyxl
 import os
-import forms
 
-pasta_xml = r'C:\relato\xml'
+import forms
+# import modulos.admin
+
+pasta_xml = r'C:\relato\XML\ANTIGOS'
 
 
 def acesso_db():
@@ -20,6 +23,33 @@ def acesso_db():
     mycursor = mydb.cursor()
     return mydb, mycursor, connect
 mydb, mycursor, connect = acesso_db()
+
+
+class CorFonte:
+
+    @staticmethod
+    def fonte_vermelha():
+        return '\033[31m'
+
+    @staticmethod
+    def fonte_verde():
+        return '\033[92m'
+
+    @staticmethod
+    def fonte_amarela():
+        return '\033[93m'
+
+    @staticmethod
+    def fonte_azul():
+        return '\033[34m'
+
+    @staticmethod
+    def fonte_azul_claro():
+        return '\033[36m'
+
+    @staticmethod
+    def reset_cor():
+        return '\033[0m'
 
 
 class AlertaMsg:
@@ -103,12 +133,15 @@ class AlertaMsg:
 class Formatadores:
 
     @staticmethod
-    def formatar_xml(nf):
-        print('Método formatar_xml')
+    def formatar_xml(nome_arquivo):
+        print('Método formatar_xml\n'
+              'Recebe a chave da nf e \n'
+              'retorna ean, quantidade, preco unitário e total do item')
+
         # Definir namespace
         lista_itens_nf_nova = ''
         namespace = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-        xml_filename = f'{nf}.xml' # Definir o caminho da pasta onde o arquivo XML está localizado
+        xml_filename = f'{nome_arquivo}.xml' # Definir o caminho da pasta onde o arquivo XML está localizado
         xml_path = os.path.join(pasta_xml, xml_filename)
         if not os.path.isfile(xml_path): # Verificar se o arquivo existe
             print(f"Arquivo {xml_path} não encontrado.")
@@ -138,7 +171,7 @@ class Formatadores:
                 for det in root.findall('.//nfe:det', namespace):  # Extrair todos os produtos
                     prod = det.find('nfe:prod', namespace)
                     produto_info = {
-                        'Ean': prod.find('nfe:cEAN', namespace).text,
+                        'Ean': prod.find('nfe:cEANTrib', namespace).text,
                         # 'Código': prod.find('nfe:cProd', namespace).text,
                         # 'Descrição': prod.find('nfe:xProd', namespace).text,
                         'Quantidade': int(float(prod.find('nfe:qCom', namespace).text)),
@@ -176,7 +209,6 @@ class Formatadores:
 
         return lista_itens_nf_nova
 
-
     @staticmethod
     def formatar_data(data):
         return data.strftime('%d/%m/%Y')
@@ -191,7 +223,83 @@ class Formatadores:
         return agora
 
 
+class ValidaStatusPedido:
+    @staticmethod
+    def validacao_1(status_ordem):
+        print('class ValidaStatusPedido | metodo validacao_1\n'
+              'Objetivo: Verificar se o xml está no servidor')
+
+        if status_ordem is True:
+            return True
+        else:  # xml nao localizado
+            return False
+
+    @staticmethod
+    def validacao_2(cnpj):
+        print('class ValidaStatusPedido | metodo validacao_2\n'
+              'Objetivo: Verificar se o fornecedor está cadastrado')
+        # print(fonte_amarela + '\nVALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO' + reset_cor)
+        if Buscadores.buscar_cnpj(cnpj) is True:
+            print(CorFonte.fonte_azul() + f'cnpj encontrado: {cnpj}' + CorFonte.reset_cor())
+            # print(fonte_verde + 'VALIDAÇÃO 2 concluída' + reset_cor)
+            return True
+        else:
+            print('cnpj não encontrado')
+            # lst_nf = ['Fornecedor não encontrado']
+            return False
+
+    @staticmethod
+    def validacao_3(status_ordem, ordem):
+        print('class ValidaStatusPedido | metodo validacao_3\n'
+              'Objetivo: Verificar se o pedido está aberto')
+        # print(fonte_amarela + '\nVALIDÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO' + reset_cor)
+        if status_ordem is True:
+            # print(CorFonte.fonte_azul() + f'Pedido {ordem} aberto' + CorFonte.fonte_azul())
+            # print(fonte_verde + 'VALIDAÇÃO 3 concluída' + reset_cor)
+            return True
+        else:
+            print(CorFonte.fonte_vermelha() + 'Pedido encerrado ou cancelado' + CorFonte.reset_cor())
+            return False
+
+    @staticmethod
+    def validacao_4(nf,ordem):
+        print('class ValidaStatusPedido | metodo validacao_4\n'
+              'Objetivo: Verificar ordem x nf')
+        # print(fonte_amarela + '\nVALIDAÇÃO 4: VALIDAR PEDIDO X NF' + reset_cor)
+        itens_nf = Buscadores.Xml.buscar_linhas_nf(str(nf))
+        # print(f'itens_nf = {itens_nf}\n')
+        # print(fonte_amarela + '\nVALIDAÇÃO 4: (2) RECEBER OC, CRIAR LISTA DE EAN E PRECO' + reset_cor)
+        itens_oc = Validadores.valida_pedido_recebido(ordem)
+        # print(f'itens_oc = {itens_oc}\n')
+        # print(fonte_amarela + '\nVALIDAÇÃO 4: (3) COMPARAR AS DUAS LISTAS' + reset_cor)
+        # maior_dif_permitida = modulos.admin.maior_dif_permitida
+        maior_dif_permitida = 0.2
+        # print(f'maior_dif_permitida = {maior_dif_permitida}\n')
+        cont_preco_fora_politica = 0
+
+        # print('for ean_oc in itens_oc:')
+        for ean_oc in itens_oc:  # 'oc' = 'ordem de compra'
+            # print(f'\nean pesquisado: {ean_oc[0]}')
+
+            for ean_nf in itens_nf:
+                # print(f'ean_nf = {ean_nf[0]}')
+                if ean_oc[0] == ean_nf[0]:
+                    # print(CorFonte.fonte_azul() + f'ean_oc[0] = {ean_oc[0]} || ean_oc[1] = {ean_oc[1]}\n'
+                    #                    f'ean_nf[0] = {ean_nf[0]} || ean_nf[1] = {ean_nf[1]}' + CorFonte.reset_cor())
+                    if (ean_oc[1] - ean_nf[1]) <= maior_dif_permitida:
+                        print(CorFonte.fonte_verde() + f'preco dentro da politica' + CorFonte.reset_cor())
+                    else:
+                        print(CorFonte.fonte_vermelha() + f'preco fora da politica' + CorFonte.reset_cor())
+                        cont_preco_fora_politica += 1
+
+        if cont_preco_fora_politica == 0:
+            return True
+        else:
+            return False
+
 class Validadores:
+
+
     @staticmethod
     def valida_pedido_recebido(pedido):
         lista_itens = []
@@ -206,10 +314,10 @@ class Validadores:
 
         try:
             if itens_ordem_de_compra:
-                print('chama função lista_itens_de_compra...'
-                      'esta função serve para criar uma lista '
-                      'e comparar com as linhas do xml, afim '
-                      'de validar os itens de acordo com a política')
+                # print('chama função lista_itens_de_compra...'
+                #       'esta função serve para criar uma lista '
+                #       'e comparar com as linhas do xml, afim '
+                #       'de validar os itens de acordo com a política')
 
                 for i in itens_ordem_de_compra:
                     item_zip = (i[7], i[9])
@@ -220,24 +328,28 @@ class Validadores:
             print(f'Erro: {e}')
             return False
 
+    @staticmethod
+    def valida_status_pedido(pedido):
+        lista_itens = []
+        # 1 faz a query no banco de dados e retorna uma lista com os itens do pedido
+        print('class Validadores | método valida_status_pedido')
+        query = f"SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA  = '{pedido}'"
+        mydb.connect()
+        mycursor.execute(query)
+        itens_ordem_de_compra = mycursor.fetchall()
+        mydb.commit()
+        valida_itens = ''
+        for i in itens_ordem_de_compra:
+            print(i)
+        print('-------------------------------')
+        try:
+            return itens_ordem_de_compra
+        except Exception as e:
+            print(f'Erro: {e}')
+            return False
 
     ordem_compra = ''
-    @staticmethod
-    def lista_itens_nf(nf):
-        print('class Validadores | método_lista_itens_nf')
-        print('BUSCAR FUNÇÃO DA TELA ANALISAR ORDEM DE COMPRA')
-        return
 
-
-    @staticmethod
-    def valida_item_a_cadastrar(ean):
-        print(f'class Validadores | método_item_a_cadastrar >>> {ean}')
-
-        return False
-        pass
-    @staticmethod
-    def analisar_nf_pedido():
-        pass
 
     @staticmethod
     def valida_cnpj(cnpj):
@@ -368,12 +480,31 @@ class Buscadores:
     class Xml:
         chave_nf = ''
         nome_arquivo =''
-        pasta_xml = r'C:\relato\xml'
+        pasta_xml = r'C:\relato\XML\ANTIGOS'
+
+
+        @staticmethod
+        def retorna_xml(nf):
+            print('----------------------------------------------')
+            print('class Buscadores.Xml | metodo retorna_xml')
+            print('Recebe a NF e retorna o caminho do XML')
+            pasta_xml = r'C:\relato\XML\ANTIGOS'
+            namespaces = {'ns1': 'http://www.portalfiscal.inf.br/nfe'}
+            arquivo_encontrado = None
+            lst_zipada = []
+
+            for arquivo in os.listdir(pasta_xml):  # Procura pelo arquivo na pasta especificada
+                if nf in arquivo[26:34] and arquivo.endswith('-nfe.xml'):
+                    arquivo_encontrado = os.path.join(pasta_xml, arquivo)
+                    print(f'arquivo encontrado >> {arquivo_encontrado}')
+                    # print('----------------------------------------------')
+            return arquivo_encontrado[22:-4]
 
         @staticmethod
         def buscar_linhas_nf(nf):
+            print('----------------------------------------------')
             print('class Buscadores.Xml | metodo buscar_linhas_nf')
-            pasta_xml = r'C:\relato\xml'
+            pasta_xml = r'C:\relato\XML\ANTIGOS'
             namespaces = {'ns1': 'http://www.portalfiscal.inf.br/nfe'}
             arquivo_encontrado = None
             lst_zipada = []
@@ -404,14 +535,15 @@ class Buscadores:
                     vUnCom.text = vUnCom.text.rstrip('0')
                     item_zip = (cEAN.text, float(vUnCom.text))
                     lst_zipada.append(item_zip)
-
             else:
                 print('Arquivo não encontrado')
                 return None
+            print('----------------------------------------------')
             return lst_zipada
 
         @staticmethod
         def buscar_arquivo(nf):
+            print('----------------------------------------------')
             print('class Buscadores.Xml | metodo buscar_arquivo')
             nf = str(nf)
             for nome_arquivo in os.listdir(pasta_xml):
@@ -420,6 +552,7 @@ class Buscadores:
                 i = i.lstrip('0')# tirar zeros a esquerda
                 if i == nf:
                     print(f'NFO {i}/{nf} localizada na pasta')
+                    print('----------------------------------------------')
                     return nome_arquivo
 
         @staticmethod
@@ -538,6 +671,18 @@ class Buscadores:
 
     class OrdemCompra:
         @staticmethod
+        def atualizar_saldo_ordem_compra(ordem_compra):
+            print(f'class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra | {ordem_compra}')
+
+        @staticmethod
+        def atualizar_status_ordem_compra(ordem_compra):
+            print(f'class Buscadores.OrdemCompra | metodo atualizar_status_ordem_compra | {ordem_compra}')
+
+            # recebe a conferencia da ordem de compra
+            # se todos os itens ok: status = pedido liquidado
+            # caso contrário: status = recebido parcialmente
+
+        @staticmethod
         def verifica_status_ordem(ordem_compra):
             print('class Buscadores.OrdemCompra | metodo verifica_status_ordem')
             print(f'Verifica status_ordem_compra: {ordem_compra}')
@@ -554,7 +699,6 @@ class Buscadores:
                     return True
                 else:
                     return False
-
 
         @staticmethod
         def buscar_nf2(nf):
@@ -588,6 +732,7 @@ class Buscadores:
 
                     return cnpj_encontrado
         chave_nf = ''
+
         def buscar_nf(pasta_xml, chave_nf, nf):
             cnpjs_encontrados = []
             nf = str(nf)
@@ -697,6 +842,7 @@ class Buscadores:
             print('Buscadores.OrdemCompra.buscar_ordem_compra()')
             try:
                 query = f'select * from ordem_compra where ordem_compra = {ordem_compra}'
+                print(query)
                 mydb.connect()
                 mycursor.execute(query)
                 myresult = mycursor.fetchall()
@@ -706,7 +852,6 @@ class Buscadores:
             except Exception as e:
                 print(e)
                 pass
-
 
         @staticmethod
         def buscar_ordem_compra_pela_razaosocial(razaosocial):
@@ -747,6 +892,7 @@ class Buscadores:
         @staticmethod
         def visualizar_nf(nf):
             pass
+
         @staticmethod
         def ordem_compra_em_aberto(codigo):
             quantidade = 0
@@ -783,6 +929,7 @@ class Buscadores:
                 print(e)
 
             pass
+
         @staticmethod
         def ultimo_preco(codigo):
             try:
@@ -927,7 +1074,6 @@ class Buscadores:
 
 
 class BancoDeDados:  # queries
-    pass
 
     @staticmethod
     def listar_produtos():
@@ -944,10 +1090,41 @@ class BancoDeDados:  # queries
         # mycursor.execute(query)
         pass
 
-class Estoque:
-
-
     @staticmethod
-    def EntradaEstoque():
+    def atualizar_ordem_compra():
+        print('class BancoDeDados | metodo atualizar_ordem_compra')
+        pass
+
+
+class Estoque:
+    @staticmethod
+    def entrada_estoque():
         print('class Estoque | metodo EntradaEstoque')
         pass
+
+
+
+
+def download_planilha():
+    pasta = r'C:\Users\jean.lino\Downloads'  # Substitua pelo caminho da sua pasta
+    file_name = 'planilha.xlsx'
+    file_path = os.path.join(pasta, file_name)
+
+    # Crie a pasta se ela não existir
+    os.makedirs(pasta, exist_ok=True)
+
+    # Crie uma nova planilha
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+
+    # Adicione as colunas à planilha
+    columns = ['Fornecedor', 'EAN', 'Valor','Unidade', 'Quantidade']  # Substitua pelos nomes das suas colunas
+    sheet.append(columns)
+
+    # Salve a planilha na pasta específica
+    workbook.save(file_path)
+
+    print(f'Planilha salva em: {file_path}')
+
+    pass
+

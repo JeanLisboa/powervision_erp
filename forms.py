@@ -1,4 +1,4 @@
-from wtforms import StringField, SubmitField, SelectField, IntegerField, FloatField, HiddenField
+from wtforms import StringField, SubmitField, SelectField, IntegerField, FloatField, HiddenField, DateField
 from wtforms.validators import DataRequired, Email, Disabled, Length, ReadOnly, NumberRange
 from flask_wtf import FlaskForm
 from datetime import date
@@ -15,7 +15,6 @@ class ModAdmin:
         min_prazo_pag = IntegerField("Prazo Minimo de Pagamento (Em Dias)", validators=[DataRequired(), NumberRange(min=0)])
         maior_dif_permitida = FloatField("Maior diferença permitida", validators=[DataRequired(), NumberRange(min=0.01)])
         menor_dif_permitida = FloatField("Menor diferença permitida", validators=[DataRequired(), NumberRange(min=0.01)])
-
         botao_salvar = SubmitField('Salvar Alterações')
         botao_editar = SubmitField('Editar')
 
@@ -23,6 +22,7 @@ class ModAdmin:
 class ModCompras:
     class AnalisarOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        nf = IntegerField("NF", validators=[NumberRange(min=1)])
         pesquisar_nf = StringField("Nota Fiscal")
         razao_social = StringField("Fornecedor")
         ordem_compra = StringField("Ordem")
@@ -30,6 +30,19 @@ class ModCompras:
         botao_pesquisar_ordem_de_compra = SubmitField('Pesquisar')
         botao_liberar_recebimento = SubmitField('Liberar Para Recebimento')
         botao_recusar_recebimento = SubmitField('Recusar')
+
+    class EditarOrdemCompra(FlaskForm):
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        ordem_compra = StringField("Ordem")
+        pesquisar_nf = StringField("Nota Fiscal")
+        pesquisar_ordem_compra = StringField("Ordem")
+        botao_excluir_ordem_compra = SubmitField("Excluir Ordem")
+        botao_pesquisar_ordem_compra = SubmitField('Pesquisar')
+        botao_excluir_item = SubmitField('Excluir Item')
+        botao_adicionar_item = SubmitField('Adicionar Item')
+        botao_editar_item = SubmitField('Editar Item')
+        botao_salvar_alteracoes = SubmitField('Salvar Alteracoes')
+        botao_descartar_alteracoes = SubmitField('Descartar Alteracoes')
 
     class CadFornecedores(FlaskForm):
         cod_fornecedor = StringField("Código", validators=[ReadOnly()])
@@ -52,6 +65,7 @@ class ModCompras:
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ean = StringField("EAN", validators=[Length(13)])
         descricao = StringField("Descrição")
+
         fornecedor = SelectField("Fornecedor", choices=['Selecionar um fornecedor'] + [f[0] for f in buscar_fornecedor], validators=[DataRequired()])
         unidade = SelectField(coerce=str, choices=['', 'KG', 'G', 'CX', 'UN', 'L', 'M', 'CM'],
                               validators=[ReadOnly()])
@@ -59,6 +73,7 @@ class ModCompras:
         valor = FloatField("Valor", validators=[NumberRange(min=0.01)])
         categoria = SelectField(coerce=str, choices=['','VESTUARIO', 'BEBIDAS', 'ALIMENTOS', 'HIGIENE', 'OUTROS'])
         botao_incluir_item = SubmitField('Incluir Item')
+        botao_baixar_planilha = SubmitField('Baixar Arquivo Excel')
         botao_submit_cad_prod = SubmitField('Cadastrar')
         botao_cancelar_cad_prod = SubmitField('cancelar')
         botao_excluir_cad_prod = SubmitField('excluir')
@@ -113,7 +128,7 @@ class Mod_Comercial:
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cod_cliente = StringField("Código", validators=[Disabled()])
         razao_social = StringField("Razão Social", validators=[DataRequired()])
-        razao_social = StringField("Nome Fantasia", validators=[DataRequired()])
+        # razao_social = StringField("Nome Fantasia", validators=[DataRequired()])
         cnpj = IntegerField("CNPJ", validators=[DataRequired(), Length(11, 14)], render_kw={'placeholder': '__.___.___/____-__'})
         insc_estadual = IntegerField("Insc. Estadual", validators=[DataRequired(), Length(14)])
         email = StringField("Email", validators=[DataRequired(), Email()])
@@ -161,8 +176,17 @@ class Mod_Logistica:
         cnpj = IntegerField("CNPJ", validators=[Length(14, 14)])
         botao_pesquisar_ordem_compra = SubmitField('Pesquisar Ordem')
         botao_realizar_conferencia = SubmitField('Realizar Conferência')
+        botao_finalizar_conferencia = SubmitField('Finalizar Conferência')
         botao_analisar_conferencia = SubmitField('Analisar Conferência')
+        botao_alterar = SubmitField('Alterar')
         botao_limpar_pesquisa = SubmitField('Limpar')
+
+    class Estoque(FlaskForm):
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        data_ini = DateField("Data Inicial", validators=[DataRequired()])
+        data_final = DateField("Data Final", validators=[DataRequired()])
+        botao_pesquisar = SubmitField('Pesquisar')
+
 
     class Realizar_conferencia(FlaskForm):
         ordem_compra = StringField("Ordem de Compra")

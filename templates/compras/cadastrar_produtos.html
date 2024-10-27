@@ -9,9 +9,8 @@ TELA CADASTRAR PRODUTOS
         <pre>
                 1 - AJUSTAR CODIGO PARA NÃO PRECISAR INSERIR FORNECEDOR A CADA LINHA DE PRODUTO CADASTRADA.
                 2 - MANTER SESSÃO COM INFORMAÇÃO DO FORNECEDOR, ATÉ QUE SE CLIQUE EM CADASTRAR
-                3 - LIMPAR A TELA AO CLICAR EM CADASTRAR
-                4 - AO ENTRAR NA TELA NÃO DEVE APARECER NENHUM ALERT
-                5 - INSERIR OPÇÃO PARA SUBIR AJUSTE DE PREÇO DIRETO NA TELA, OU BAIXAR PLANILHA
+                3 - INSERIR OPÇÃO PARA SUBIR AJUSTE DE PREÇO DIRETO NA TELA, OU BAIXAR PLANILHA
+            3335558884439
             </pre>
             {% if alert %}
                         {{ alert | safe }}
@@ -40,7 +39,7 @@ TELA CADASTRAR PRODUTOS
                 <div class="col form-label mt-4 btn btn-light">
                     {{ form_cad_produtos.descricao.label }}
                     {{ form_cad_produtos.descricao(class="form-control") }}
-                </div>
+                    </div>
                 <br>
                 <div class="col form-label mt-4 btn btn-light">
                     {{ form_cad_produtos.unidade.label }}
@@ -78,7 +77,7 @@ TELA CADASTRAR PRODUTOS
                     <tbody>
 
                         {% for index, i in dicionario_cad_produtos %}
-                            <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                           <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                                 <td> {{ index }}</td>
                                 <td>{{ i[0] }}</td>
                                 <td>{{ i[1] }}</td>
@@ -102,8 +101,8 @@ TELA CADASTRAR PRODUTOS
                 </table>
                 <div class="mb-3">
                     {{ form_cad_produtos.botao_submit_cad_prod(class="btn btn-primary") }}
-
                     {{ form_cad_produtos.botao_cancelar_cad_prod(class="btn btn-secondary") }}
+                    {{ form_cad_produtos.botao_baixar_planilha(class="btn btn-secondary") }}
 
                 </div>
             </div>
