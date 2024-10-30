@@ -19,8 +19,9 @@ TELA EDITAR ORDEM DE COMPRA
                         {{ form_editar_ordem_compra.pesquisar_ordem_compra.label }}
                         {{ form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control") }}
                     </div>
-                {{ form_editar_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-5") }}
-                {{ form_editar_ordem_compra.botao_excluir_ordem_compra(class="btn btn-secondary mt-5") }}
+                    {{ form_editar_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-5") }}
+                    {{ form_editar_ordem_compra.botao_excluir_ordem_compra(class="btn btn-secondary mt-5", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
+
                 </div>
                 <div class="container_com_barra_rolagem_100%"> <!-- resultado da busca -->
                     <p>TELA RESULTADO</p>
@@ -49,15 +50,16 @@ TELA EDITAR ORDEM DE COMPRA
                             <td>
                                 <form method="POST">
                                     {{ form_editar_ordem_compra.hidden_tag() }}
-                                    <input type="hidden" name="editar__item" value="{{ i[3] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
-                            {{ form_editar_ordem_compra.botao_editar_item(class='btn btn-primary') }}
+                                    <input type="hidden" name="editar__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
+                                     <button type="button" class="btn btn-primary" onclick="abrirModalEditar('{{ i[7] }}', '{{ i[3] }}', '{{ i[8] }}', '{{ i[9] }}')">Editar Item</button>
+
                                 </form>
                             </td>
                             <td>
                                 <form method="POST">
                                     {{ form_editar_ordem_compra.hidden_tag() }}
-                                    <input type="hidden" name="excluir__item" value="{{ i[3] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
-                            {{ form_editar_ordem_compra.botao_excluir_item(class='btn btn-primary') }}
+                                    <input type="hidden" name="excluir__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
+                            {{ form_editar_ordem_compra.botao_excluir_item(class='btn btn-primary' , onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
                                 </form>
                             </td>
                         </tr>
@@ -65,6 +67,24 @@ TELA EDITAR ORDEM DE COMPRA
 
                     </tbody>
                 </table>
+                    <div id="modalEditarItem" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <span class="close" onclick="fecharModalEditar()">&times;</span>
+                            <h2>Editar Item</h2>
+                            <form id="formEditarItem" method="POST" action="/editar_item">
+                                {{ form_editar_ordem_compra.hidden_tag() }}
+                                <label for="descricao">Descrição</label>
+                                <input type="text" id="descricao" name="descricao" class="form-control" value="{{ descricao }}">
+                                <label for="quantidade">Quantidade</label>
+                                <input type="number" id="quantidade" name="quantidade" class="form-control" value="{{ quantidade }}">
+                                <label for="valor_unitario">Valor Unitário</label>
+                                <input type="number" id="valor_unitario" name="valor_unitario" step="0.01" class="form-control" value="{{ valor_unitario }}">
+                                <input type="hidden" name="item_id" id="item_id" value="">
+                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                            </form>
+                        </div>
+                    </div>
+
 
                     {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5") }}
                     {{ form_editar_ordem_compra.botao_salvar_alteracoes(class="btn btn-primary mt-5") }}
@@ -75,3 +95,15 @@ TELA EDITAR ORDEM DE COMPRA
     </form>
 </div>
 {% endblock %}
+
+function abrirModalEditar(itemId, descricao, quantidade, valorUnitario) {
+    document.getElementById("item_id").value = itemId;
+    document.getElementById("descricao").value = descricao;
+    document.getElementById("quantidade").value = quantidade;
+    document.getElementById("valor_unitario").value = valorUnitario;
+    document.getElementById("modalEditarItem").style.display = "block";
+}
+
+function fecharModalEditar() {
+    document.getElementById("modalEditarItem").style.display = "none";
+}

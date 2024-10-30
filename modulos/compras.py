@@ -326,6 +326,8 @@ def editar_ordem_compra():
     form_editar_ordem_compra = ModCompras.EditarOrdemCompra()
     data = Formatadores.os_data()
     ordem_compra = request.form.get('pesquisar_ordem_compra')
+
+    session['ordem_compra'] = ordem_compra
     ordem_pesquisada = ()  # Valor padrão para evitar o erro no primeiro acesso
 
     if request.method == 'POST':
@@ -333,8 +335,10 @@ def editar_ordem_compra():
             print('botao_pesquisar_ordem_compra acionado')
 
             if ordem_compra:  # Verifica se o campo 'ordem_compra' está preenchido
+                session['ordem_compra'] = ordem_compra
                 try:
                     ordem_pesquisada = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
+                    print(f'ordem_pesquisada: {ordem_pesquisada}')
                     session['result_ordem_pesquisada'] = ordem_pesquisada
                 except Exception as e:
                     print(f"Erro ao buscar ordem de compra: {e}")
@@ -343,16 +347,49 @@ def editar_ordem_compra():
 
         if 'botao_editar_item' in request.form:
             print('botao_editar_item_acionado')
+            ordem_compra = session.get('ordem_compra')
+            print(f'ordem_compra recuperado no session {ordem_compra}')
             ordem_pesquisada = session.get('result_ordem_pesquisada')
+            print(f'ordem_pesquisada: {ordem_pesquisada}')
             item_selecionado = request.form.getlist('editar__item')
-            print(item_selecionado)
-
+            item_selecionado = item_selecionado[0]
+            print(f'item_selecionado: {item_selecionado}')
+            return render_template('compras/editar_ordem_compra.html',
+                                   ordem_compra=ordem_compra,
+                                   ordem_pesquisada=ordem_pesquisada,
+                                   form_editar_ordem_compra=form_editar_ordem_compra,
+                                   data=data)
         if 'botao_excluir_item' in request.form:
             print('botao_excluir_item_acionado')
+            print(f'ordem_compra recuperado no session {ordem_compra}')
             ordem_pesquisada = session.get('result_ordem_pesquisada')
+            ordem_compra = ordem_pesquisada[0][1]
+            print(f'ordem_pesquisada: {ordem_pesquisada}')
             item_selecionado = request.form.getlist('excluir__item')
-            # criar linha para excluir o item conforme item_selecionado
-            print(item_selecionado)
+            item_selecionado = item_selecionado[0]
+            print(f'item_selecionado{item_selecionado}')
+            query = F'DELETE FROM ORDEM_COMPRA WHERE ORDEM_COMPRA={ordem_pesquisada[0][1]} and EAN = {item_selecionado};'
+            mydb.connect()
+            mycursor.execute(query)
+            mycursor.fetchall()
+            fechadb = 'SET SQL_SAFE_UPDATES = 1'
+            mycursor.execute(fechadb)
+            mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+            print(f'ordem_compra = {ordem_compra}')
+            ordem_pesquisada = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
+            # return redirect(url_for('editar_ordem_compra'))
+
+
+            #
+            # return render_template('compras/editar_ordem_compra.html',
+            #                        ordem_compra=ordem_compra,
+            #                        ordem_pesquisada=ordem_pesquisada,
+            #                        form_editar_ordem_compra=form_editar_ordem_compra,
+            #                        data=data)
+
+
 
     return render_template('compras/editar_ordem_compra.html',
                            ordem_compra=ordem_compra,
