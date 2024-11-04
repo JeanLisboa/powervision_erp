@@ -1,102 +1,39 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+
 {% extends "base.html" %}
 {% block content %}
 
+<!DOCTYPE html>
+<html>
+<title>W3.CSS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<body>
 
+<div class="w3-container">
+  <h2>W3.CSS Modal</h2>
+  <p>Use w3-container classes to create different sections in the modal (e.g. header & footer).</p>
+  <button onclick="document.getElementById('id01').style.display='block'" class="w3-button w3-black">Open Modal</button>
 
-<p>Área para criação de telas</p>
-<div>
-    Sites para estudo:
-    html:
-    <a href="">https://www.w3schools.com/</a><br>
-
-    css:
- <a href="">https://getbootstrap.com/</a><br>
- <a href="">https://tailwindcss.com/</a>
-
-<pre>
--Plano sugerido HOSTINGER VPS: KVM 1 oferece recursos suficientes para um setup normal.
--Plano de assinatura: R$ 26,99/Mês (1 ano) valor total: R$ 323,88/ano
--Como subir o projeto para a hostinger ?
--Para subir  projeto Python para o VPS da Hostinger, precisará realizar a migração manualmente. Passos básicos:
-
-1 - Configurar o VPS: Acesse seu VPS e configure o ambiente necessário (por exemplo, instale Python, configure o servidor web, etc.).
-2 - Transferir Arquivos: Use ferramentas como SCP, SFTP ou rsync para transferir seus arquivos do projeto para o VPS.
-3 - Configurar o Projeto: Configure seu projeto no VPS, incluindo a instalação de dependências e a configuração do servidor web.
-4 - Iniciar o Projeto: Execute seu projeto e verifique se está funcionando corretamente.
-
-Alterando o projeto localmente:
-É possível fazer alterações localmente no seu projeto e depois subir essas alterações para o servidor utilizando o Git.
-Fluxo básico:
-
-1 - Desenvolvimento Local: Faça as alterações no seu projeto localmente.
-2 - Commit e Push: Use Git para fazer commit das suas alterações e push para um repositório remoto (como GitHub ou GitLab).
-3 - Pull no VPS: No seu VPS, faça um pull do repositório remoto para atualizar o projeto com as últimas alterações.
-</pre>
+  <div id="id01" class="w3-modal">
+    <div class="w3-modal-content">
+      <header class="w3-container w3-teal">
+        <span onclick="document.getElementById('id01').style.display='none'"
+        class="w3-button w3-display-topright">&times;</span>
+        <h2>Modal Header</h2>
+      </header>
+      <div class="w3-container">
+        <p>Some text..</p>
+        <p>Some text..</p>
+      </div>
+      <footer class="w3-container w3-teal">
+        <p>Modal Footer</p>
+      </footer>
+    </div>
+  </div>
 </div>
 
-
-<canvas id="animationCanvas" width="800" height="600"></canvas>
-    <script src="animation.js"></script>
-
-
-<script>
-    const canvas = document.getElementById('animationCanvas');
-const ctx = canvas.getContext('2d');
-
-let x = canvas.width / 4;
-let y = canvas.height / 4
-let dx = 2;
-let dy = 2;
-const ballRadius = 10;
-
-function drawBall() {
-    ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "#0195DD";
-    ctx.fill();
-    ctx.closePath();
-}
-
-function update() {
-    ctx.clearRect(0, 101, canvas.width, canvas.height);
-    drawBall();
-
-    // Verificar colisão com as bordas e inverter a direção se necessário
-    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-        dx = -dx;
-    }
-    if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-        dy = -dy;
-    }
-
-    x += dx;
-    y += dy;
-
-    requestAnimationFrame(update);
-}
-
-function update() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBall();
-
-    // Verificar colisão com as bordas e inverter a direção se necessário
-    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-        dx = -dx;
-    }
-    if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-        dy = -dy;
-    }
-
-    x += dx;
-    y += dy;
-
-    requestAnimationFrame(update);
-}
-
-update();
-update();
-update();
-
-</script>
+</body>
+</html>
 
 {% endblock %}

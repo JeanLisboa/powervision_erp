@@ -36,6 +36,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 
+
 @app.route('/')
 def main():
     return render_template('homepage.html')
@@ -78,6 +79,7 @@ class Sobre:
         return modulos.sobre.backlog()
 
 class Compras:
+
 
     @staticmethod
     @app.route('/cadastrar_fornecedores', methods=['POST', 'GET'])

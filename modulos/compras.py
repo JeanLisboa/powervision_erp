@@ -346,16 +346,54 @@ def editar_ordem_compra():
                 print("Nenhuma ordem de compra informada para a pesquisa.")
 
         if 'botao_editar_item' in request.form:
-            print('botao_editar_item_acionado')
+            print('botao_editar_item acionado')
             ordem_compra = session.get('ordem_compra')
             print(f'ordem_compra recuperado no session {ordem_compra}')
             ordem_pesquisada = session.get('result_ordem_pesquisada')
             print(f'ordem_pesquisada: {ordem_pesquisada}')
             item_selecionado = request.form.getlist('editar__item')
             item_selecionado = item_selecionado[0]
+            linha_para_editar = []
+
+            for i in ordem_pesquisada:
+                if i[7] == item_selecionado:
+                    linha_para_editar.append(i)
+                    print(i)
+                    session['linha_para_editar'] = linha_para_editar
+
+            if linha_para_editar:
+                ean = linha_para_editar[0][7]  #
+                form_editar_ordem_compra.ean.data = ean  # Define o valor no campo 'ean' do formulário
+                session['ean'] = ean
+
+                quantidade = linha_para_editar[0][8]
+                form_editar_ordem_compra.quantidade.data = quantidade
+                session['quantidade'] = quantidade
+
+                valor_unitario = linha_para_editar[0][9]
+                form_editar_ordem_compra.val_unitario.data = valor_unitario
+                session['valor_unitario'] = valor_unitario
+
+                form_editar_ordem_compra.descricao.data = linha_para_editar[0][3]
+
             print(f'item_selecionado: {item_selecionado}')
+
+        if 'botao_salvar_alteracoes' in request.form:
+            linha_para_editar = session.get('linha_para_editar')
+            print('botao_salvar_alteracoes acionado')
+            print('executar query')
+            ordem_compra = session.get('ordem_compra')
+            print(f'ordem_compra recuperado no session {ordem_compra}')
+            ordem_pesquisada = session.get('result_ordem_pesquisada')
+            print(f'ordem_pesquisada: {ordem_pesquisada}')
+            item_selecionado = request.form.getlist('editar__item')
+
+
+
             return render_template('compras/editar_ordem_compra.html',
                                    ordem_compra=ordem_compra,
+                                   linha_para_editar=linha_para_editar,
+
                                    ordem_pesquisada=ordem_pesquisada,
                                    form_editar_ordem_compra=form_editar_ordem_compra,
                                    data=data)

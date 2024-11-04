@@ -41,8 +41,12 @@ class ModCompras:
         botao_excluir_item = SubmitField('Excluir Item')
         botao_adicionar_item = SubmitField('Adicionar Item')
         botao_editar_item = SubmitField('Editar Item')
-        botao_salvar_alteracoes = SubmitField('Salvar Alteracoes')
-        botao_descartar_alteracoes = SubmitField('Descartar Alteracoes')
+        botao_salvar_alteracoes = SubmitField('Salvar')
+        botao_descartar_alteracoes = SubmitField('Descartar ')
+        ean = StringField('Ean')
+        quantidade = IntegerField('Quant')
+        val_unitario = FloatField('V.Unit')
+        descricao = StringField('Descricao', validators=[ReadOnly()])
 
     class CadFornecedores(FlaskForm):
         cod_fornecedor = StringField("Código", validators=[ReadOnly()])
