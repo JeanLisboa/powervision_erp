@@ -328,9 +328,23 @@ def editar_ordem_compra():
     ordem_compra = request.form.get('pesquisar_ordem_compra')
 
     session['ordem_compra'] = ordem_compra
+
     ordem_pesquisada = ()  # Valor padrão para evitar o erro no primeiro acesso
 
     if request.method == 'POST':
+        if 'botao_descartar_alteracoes' in request.form:
+            print('botao_descartar_alteracoes acionado')
+            ordem_compra = ''
+            ordem_pesquisada = ''
+            linha_para_editar = []
+            return render_template('compras/editar_ordem_compra.html',
+                                   ordem_compra=ordem_compra,
+                                   linha_para_editar=linha_para_editar,
+                                   ordem_pesquisada=ordem_pesquisada,
+                                   form_editar_ordem_compra=form_editar_ordem_compra,
+                                   data=data)
+
+
         if 'botao_pesquisar_ordem_compra' in request.form:
             print('botao_pesquisar_ordem_compra acionado')
 
@@ -347,7 +361,8 @@ def editar_ordem_compra():
 
         if 'botao_editar_item' in request.form:
             print('botao_editar_item acionado')
-            ordem_compra = session.get('ordem_compra')
+
+            session['ordem_compra'] = ordem_compra
             print(f'ordem_compra recuperado no session {ordem_compra}')
             ordem_pesquisada = session.get('result_ordem_pesquisada')
             print(f'ordem_pesquisada: {ordem_pesquisada}')
@@ -375,28 +390,22 @@ def editar_ordem_compra():
                 session['valor_unitario'] = valor_unitario
 
                 form_editar_ordem_compra.descricao.data = linha_para_editar[0][3]
-
+                session['linha_para_editar'] = linha_para_editar
             print(f'item_selecionado: {item_selecionado}')
 
         if 'botao_salvar_alteracoes' in request.form:
             linha_para_editar = session.get('linha_para_editar')
             print('botao_salvar_alteracoes acionado')
             print('executar query')
-            ordem_compra = session.get('ordem_compra')
+
+            # ordem_compra = session.get('ordem_compra')
             print(f'ordem_compra recuperado no session {ordem_compra}')
-            ordem_pesquisada = session.get('result_ordem_pesquisada')
+
+            # ordem_pesquisada = session.get('result_ordem_pesquisada')
             print(f'ordem_pesquisada: {ordem_pesquisada}')
+            print(f'linha_para_editar: {linha_para_editar}')
             item_selecionado = request.form.getlist('editar__item')
 
-
-
-            return render_template('compras/editar_ordem_compra.html',
-                                   ordem_compra=ordem_compra,
-                                   linha_para_editar=linha_para_editar,
-
-                                   ordem_pesquisada=ordem_pesquisada,
-                                   form_editar_ordem_compra=form_editar_ordem_compra,
-                                   data=data)
         if 'botao_excluir_item' in request.form:
             print('botao_excluir_item_acionado')
             print(f'ordem_compra recuperado no session {ordem_compra}')
@@ -427,9 +436,11 @@ def editar_ordem_compra():
             #                        form_editar_ordem_compra=form_editar_ordem_compra,
             #                        data=data)
 
-
+    ordem_pesquisada = session.get('result_ordem_pesquisada')
+    linha_para_editar = session.get('linha_para_editar')
 
     return render_template('compras/editar_ordem_compra.html',
+                           linha_para_editar=linha_para_editar,
                            ordem_compra=ordem_compra,
                            ordem_pesquisada=ordem_pesquisada,
                            form_editar_ordem_compra=form_editar_ordem_compra,
@@ -628,7 +639,6 @@ def gerar_ordem_compra():
                 result_pesq_forn = session.get('result_pesq_forn', [])  # Recupera da sessão
                 print('botao_selecionar_item ACIONADO')
                 print()
-
 
             def busca_ean_selecionado():
                 print('BUSCA EAN SELECIONADO')
