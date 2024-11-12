@@ -325,7 +325,6 @@ def cadastrar_produtos():
 def editar_ordem_compra():
     form_editar_ordem_compra = ModCompras.EditarOrdemCompra()
     data = Formatadores.os_data()
-
     ordem_compra = request.form.get('pesquisar_ordem_compra')
     session['ordem_compra'] = ordem_compra
 
@@ -384,58 +383,78 @@ def editar_ordem_compra():
             # print(f'item_selecionado: {item_selecionado}')
 
         if 'botao_salvar_alteracoes' in request.form:
-            linha_para_editar = session.get('linha_para_editar')
-            valor_unitario = session.get('valor_unitario')
-            print(f'linha_para_editar {linha_para_editar}')
+            try:
+                linha_para_editar = session.get('linha_para_editar')
+                valor_unitario = session.get('valor_unitario')
+                print(f'linha_para_editar {linha_para_editar}')
 
-            nova_qtde = form_editar_ordem_compra.quantidade.data
-            preco_novo = form_editar_ordem_compra.val_unitario.data
-            ean_novo = form_editar_ordem_compra.ean.data
-            print('botao_salvar_alteracoes acionado')
-            print('executar query')
-            print(f'Preço antigo: {linha_para_editar[0][9]}')
-            print(f'Preço novo: {preco_novo}')
-            print(f'Total Item antigo: {linha_para_editar[0][10]}')
-            print(f'Total item novo: {nova_qtde * preco_novo}')
-            print(f'Quantidade Antiga: {linha_para_editar[0][8]}')
-            print(f'Nova quantidade: {nova_qtde}')
-            total_item_novo = nova_qtde * preco_novo
-            saldo_total_item_novo = nova_qtde * preco_novo
-            query = (f"UPDATE ORDEM_COMPRA\n"
-                     f"SET\n "
-                     f"QUANTIDADE = '{nova_qtde}',\n"
-                     f"PRECO = '{preco_novo}',\n"
-                     f"TOTAL_ITEM = '{total_item_novo}',\n"
-                     f"SALDO_TOTAL_ITEM = '{saldo_total_item_novo}',\n"
-                     f"EAN = {ean_novo},\n"
-                     f"SALDO_QTD = '{nova_qtde}'\n"
-                     f"WHERE EAN = '{linha_para_editar[0][7]}'\n "
-                     f"and ORDEM_COMPRA = '{linha_para_editar[0][1]}';")
-            print(f'query {query}')
+                nova_qtde = form_editar_ordem_compra.quantidade.data
+                preco_novo = form_editar_ordem_compra.val_unitario.data
+                ean_novo = form_editar_ordem_compra.ean.data
+                print('botao_salvar_alteracoes acionado')
+                print('executar query')
+                print(f'Preço antigo: {linha_para_editar[0][9]}')
+                print(f'Preço novo: {preco_novo}')
+                print(f'Total Item antigo: {linha_para_editar[0][10]}')
+                print(f'Total item novo: {nova_qtde * preco_novo}')
+                print(f'Quantidade Antiga: {linha_para_editar[0][8]}')
+                print(f'Nova quantidade: {nova_qtde}')
+                total_item_novo = nova_qtde * preco_novo
+                saldo_total_item_novo = nova_qtde * preco_novo
+                query = (f"UPDATE ORDEM_COMPRA\n"
+                         f"SET\n "
+                         f"QUANTIDADE = '{nova_qtde}',\n"
+                         f"PRECO = '{preco_novo}',\n"
+                         f"TOTAL_ITEM = '{total_item_novo}',\n"
+                         f"SALDO_TOTAL_ITEM = '{saldo_total_item_novo}',\n"
+                         f"EAN = {ean_novo},\n"
+                         f"SALDO_QTD = '{nova_qtde}'\n"
+                         f"WHERE EAN = '{linha_para_editar[0][7]}'\n "
+                         f"and ORDEM_COMPRA = '{linha_para_editar[0][1]}';")
+                print(f'query {query}')
 
-            mydb.connect()
-            mycursor.execute(query)
-            mycursor.fetchall()
-            fechadb = 'SET SQL_SAFE_UPDATES = 1'
-            mycursor.execute(fechadb)
-            mycursor.fetchall()
-            mydb.commit()
-            mydb.close()
+                mydb.connect()
+                mycursor.execute(query)
+                mycursor.fetchall()
+                fechadb = 'SET SQL_SAFE_UPDATES = 1'
+                mycursor.execute(fechadb)
+                mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
 
-            ordem_compra = session.get('ordem_compra')
-            print(f'ordem_compra recuperado no session {ordem_compra}')
+                ordem_compra = session.get('ordem_compra')
+                print(f'ordem_compra recuperado no session {ordem_compra}')
+                ordem_pesquisada = session.get('result_ordem_pesquisada')
+                # linha_para_editar = list(linha_para_editar)
+                linha_para_editar = linha_para_editar.clear()
+                print(f'linha_para_editar antes do redirect {linha_para_editar}')
+                return redirect(url_for('editar_ordem_compra'))
 
-            ordem_pesquisada = session.get('result_ordem_pesquisada')
-            linha_para_editar = list(linha_para_editar)
-            linha_para_editar = linha_para_editar.clear()
+            except:
+                pass
 
-            return render_template('compras/editar_ordem_compra.html',
-                                   ordem_compra=ordem_compra,
-                                   linha_para_editar=linha_para_editar,
+            finally:
+                # atualiza os campos da linha que está sendo editada
+                ## passar esta instrução para o script js no html
+                form_editar_ordem_compra.ean.data = ''
+                form_editar_ordem_compra.descricao.data = ''
 
-                                   ordem_pesquisada=ordem_pesquisada,
-                                   form_editar_ordem_compra=form_editar_ordem_compra,
-                                   data=data)
+                # retornar a lista ordem pesquisada com os valores já editados.
+
+
+                # print(f'linha_para_editar: {linha_para_editar}')
+                return render_template('compras/editar_ordem_compra.html',
+
+
+                                       # ordem_compra=ordem_compra,
+                                       # linha_para_editar='',
+                                       #
+                                       ordem_pesquisada=ordem_pesquisada,
+                                       form_editar_ordem_compra=form_editar_ordem_compra,
+
+
+                                       data=data)
+
         if 'botao_excluir_item' in request.form:
             print('botao_excluir_item_acionado')
             print(f'ordem_compra recuperado no session {ordem_compra}')
@@ -456,16 +475,9 @@ def editar_ordem_compra():
             mydb.close()
             print(f'ordem_compra = {ordem_compra}')
             ordem_pesquisada = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
-            # return redirect(url_for('editar_ordem_compra'))
 
-
-            #
-            # return render_template('compras/editar_ordem_compra.html',
-            #                        ordem_compra=ordem_compra,
-            #                        ordem_pesquisada=ordem_pesquisada,
-            #                        form_editar_ordem_compra=form_editar_ordem_compra,
-            #                        data=data)
-
+        if 'botao_adicionar_item' in request.form:
+            print('Botao_adicionar_item acionado')
 
 
     return render_template('compras/editar_ordem_compra.html',
@@ -746,6 +758,7 @@ def gerar_ordem_compra():
 
 
                 def atualizar_lista_ordem_compra():
+                    total_ordem_compra = 0
                     lista_contador_item_compra.append(contador_item)
                     item_ordem_compra.append(Formatadores.data_formato_db(data))
                     item_ordem_compra.append(ordem_compra)
@@ -765,7 +778,6 @@ def gerar_ordem_compra():
                     item_ordem_compra.clear()
                     total_ordem_compra += lista_ordem_compra[-1][9]
                     return total_ordem_compra
-
 
                 total_ordem_compra = atualizar_lista_ordem_compra()
         except Exception as e:
@@ -817,7 +829,7 @@ def gerar_ordem_compra():
                         mydb.commit()
                         mydb.close()
                         cont_temp += 1
-                lista_ordem_compra.clear()  # limpa a lista para a proxima ordem de compra
+                # lista_ordem_compra.clear()  # limpa a lista para a proxima ordem de compra
                 return redirect(url_for('gerar_ordem_compra'))
 
         except Exception as e:

@@ -1,4 +1,8 @@
+.fonte_pequena{
+ font.size: 15px;
 
+
+ }
 *{font-family: arial;
     font.size:12;
     font.color: rgb(45, 52, 54);
@@ -56,8 +60,18 @@ body {
     width: 60px;
 }
 
+
+.tam_campo_quantidade_grande {
+    width: 100px;
+}
+
 .tam_campo_val_unit {
     width: 70px;
+}
+
+
+.tam_campo_val_unit_grande {
+    width: 100px;
 }
 
 
@@ -74,8 +88,9 @@ body {
 }
 
 .tam_coluna_quantidade {
-    width: 130px;
+    width: 150px;
 }
+
 
 .tam_campo_cnpj {
     width: 180px;
@@ -84,6 +99,12 @@ body {
 .tam_campo_descricao {
     width: 300px;
 }
+
+.tam_campo_descricao_grande {
+    width: 400px;
+}
+
+
 .tam_campo_descricao_tabela {
     width: 1000px;
 }

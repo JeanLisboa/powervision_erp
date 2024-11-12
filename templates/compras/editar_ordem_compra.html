@@ -34,49 +34,59 @@ TELA EDITAR ORDEM DE COMPRA
         </div>
             <!-- div2 -->
 
-        <div class="float-direita-40%">
-            <div  class="col form-label btn btn-light">
-                {{ form_editar_ordem_compra.ean.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.ean(class="form-control tam_campo_ean") }}
-            </div>
+<!--        <div class="float-direita-40%">-->
+<!--            <div  class="col form-label btn btn-light">-->
+<!--                {{ form_editar_ordem_compra.ean.label(class="form-label" )  }}-->
+<!--                {{ form_editar_ordem_compra.ean(class="form-control tam_campo_ean") }}-->
+<!--            </div>-->
 
             <div  class="col form-label btn btn-light">
                 {{ form_editar_ordem_compra.descricao.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.descricao(class="form-control tam_campo_descricao") }}
+                {{ form_editar_ordem_compra.descricao(class="form-control tam_campo_descricao_grande") }}
             </div>
 
 
             <div  class="form-label btn btn-light">
                 {{ form_editar_ordem_compra.quantidade.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.quantidade(class="form-control tam_campo_quantidade") }}
+                {{ form_editar_ordem_compra.quantidade(class="form-control tam_campo_quantidade_grande", id="quantidade" ) }}
             </div>
 
             <div  class="col form-label btn btn-light">
                 {{ form_editar_ordem_compra.val_unitario.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.val_unitario(class="form-control tam_campo_val_unit") }}
+                {{ form_editar_ordem_compra.val_unitario(class="form-control tam_campo_val_unit_grande", id="val_unitario") }}
             </div>
 
             <div class="col form-label btn btn-light">
-                {{ form_editar_ordem_compra.botao_salvar_alteracoes(class="btn btn-primary mt-3") }}
-                {{ form_editar_ordem_compra.botao_descartar_alteracoes(class="btn btn-primary mt-3") }}
+                {{ form_editar_ordem_compra.botao_salvar_alteracoes(class="btn btn-primary mt-3", onclick="limparCampos()") }}
+                {{ form_editar_ordem_compra.botao_descartar_alteracoes(class="btn btn-secondary mt-3", onclick="limparCampos()") }}
             </div>
                 <br>
         </div>
 
     </form>
+    <script>
+    function limparCampos()
+        {
+        // limpa os campos especificados ao clicar no botao salvar
+        document.getElementById("quantidade").value = '';
+        document.getElementById("val_unitario").value = '';
+        document.getElementById("descricao").value = '';
+        }
+    </script>
 
+    {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5") }}
     <div class="mt-5 float-child-ordem-compra">
         <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
 
             <thead>
                 <tr class="cab_tabela">
                     <th>DATA</th>
-                        <th>ORDEM</th>
-                        <th>DESCRIÇÃO</th>
-                        <th>QUANTIDADE</th>
-                        <th>VALOR UNITÁRIO</th>
-                        <th>VALOR TOTAL</th>
-                        <th>STATUS</th>
+                    <th>ORDEM</th>
+                    <th>DESCRIÇÃO</th>
+                    <th>QUANTIDADE</th>
+                    <th>VALOR UNITÁRIO</th>
+                    <th>VALOR TOTAL</th>
+                    <th>STATUS</th>
                 </tr>
             </thead>
             <tbody>
@@ -107,14 +117,14 @@ TELA EDITAR ORDEM DE COMPRA
                         </tr>
                         {% endfor %}
             </tbody>
-        </table><div class="float-tela-conferencia-direita">
+        </table>
+        <div class="float-tela-conferencia-direita">
 
-                    </div>
+            </div>
 
-                    {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5") }}
+
 
                 </div>
             </div>
-        </div>
-</form>
+
 {% endblock %}
