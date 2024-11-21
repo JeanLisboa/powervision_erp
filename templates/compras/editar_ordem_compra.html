@@ -1,130 +1,114 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 
 TELA EDITAR ORDEM DE COMPRA
+<pre>
+
+    3 - incluir funcionalidade para adicionar item à ordem ordem
+
+</pre>
 <div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
-
     <form action="" method="POST">
         {{ form_editar_ordem_compra.csrf_token }}
 
-<div class="container p-3 mb-3 border border-primary div_principal"
-     xmlns="http://www.w3.org/1999/html">
-    <form action="" method="POST">
-        {{ form_editar_ordem_compra.csrf_token }}
-
-        <div class="mb-1 float-esquerda-40pp">
-            <div class="col form-label btn btn-light">
-               {{ form_editar_ordem_compra.data.label }}
-               {{ form_editar_ordem_compra.data(class="form-control tam_campo_data", value=data  ) }}
-            </div>
-
-            <div class="col form-label btn btn-light">
-               {{ form_editar_ordem_compra.pesquisar_ordem_compra.label }}
-               {{ form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data") }}
-            </div>
-
-            <div class="col form-label btn btn-light">
-               {{ form_editar_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-3") }}
-               {{ form_editar_ordem_compra.botao_excluir_ordem_compra(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
-            </div>
-
-            <script src="static/js/pesquisa_produto.js" defer></script>
-        </div>
-            <!-- div2 -->
-
-<!--        <div class="float-direita-40%">-->
-<!--            <div  class="col form-label btn btn-light">-->
-<!--                {{ form_editar_ordem_compra.ean.label(class="form-label" )  }}-->
-<!--                {{ form_editar_ordem_compra.ean(class="form-control tam_campo_ean") }}-->
-<!--            </div>-->
-
-            <div  class="col form-label btn btn-light">
-                {{ form_editar_ordem_compra.descricao.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.descricao(class="form-control tam_campo_descricao_grande") }}
-            </div>
-
-
-            <div  class="form-label btn btn-light">
-                {{ form_editar_ordem_compra.quantidade.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.quantidade(class="form-control tam_campo_quantidade_grande", id="quantidade" ) }}
-            </div>
-
-            <div  class="col form-label btn btn-light">
-                {{ form_editar_ordem_compra.val_unitario.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.val_unitario(class="form-control tam_campo_val_unit_grande", id="val_unitario") }}
-            </div>
-
-            <div class="col form-label btn btn-light">
-                {{ form_editar_ordem_compra.botao_salvar_alteracoes(class="btn btn-primary mt-3", onclick="limparCampos()") }}
-                {{ form_editar_ordem_compra.botao_descartar_alteracoes(class="btn btn-secondary mt-3", onclick="limparCampos()") }}
-            </div>
+        <div class="container p-3 mb-3 border border-primary div_principal"
+             xmlns="http://www.w3.org/1999/html">
+            <form action="" method="POST">
+                {{ form_editar_ordem_compra.csrf_token }}
+                <div class="mb-1 float-esquerda-40pp">
+                    <div class="col form-label btn btn-light">
+                       {{ form_editar_ordem_compra.data.label }}
+                       {{ form_editar_ordem_compra.data(class="form-control tam_campo_data", value=data  ) }}
+                    </div>
+                    <div class="col form-label btn btn-light">
+                       {{ form_editar_ordem_compra.pesquisar_ordem_compra.label }}
+                       {% if ordem_compra is not none %}
+                            {{ form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", value=ordem_compra) }}
+                       {% else %}
+                           {{ form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data") }}
+                       {% endif %}
+                    </div>
+                    <div class="col form-label btn btn-light">
+                       {{ form_editar_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-3") }}
+                       {{ form_editar_ordem_compra.botao_excluir_ordem_compra(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
+                    </div>
+                    <script src="static/js/pesquisa_produto.js" defer></script>
+                </div>
+                <div  class="col form-label btn btn-light">
+                    {{ form_editar_ordem_compra.descricao.label(class="form-label" )  }}
+                    {{ form_editar_ordem_compra.descricao(class="form-control tam_campo_descricao_grande") }}
+                </div>
+                <div  class="form-label btn btn-light">
+                    {{ form_editar_ordem_compra.quantidade.label(class="form-label" )  }}
+                    {{ form_editar_ordem_compra.quantidade(class="form-control tam_campo_quantidade_grande", value=quantidade, id="quantidade") }}
+                </div>
+                <div  class="col form-label btn btn-light">
+                    {{ form_editar_ordem_compra.val_unitario.label(class="form-label" )  }}
+                    {{ form_editar_ordem_compra.val_unitario(class="form-control tam_campo_val_unit_grande", value=val_unitario, id="val_unitario") }}
+                </div>
+                <div class="col form-label btn btn-light">
+                    {{ form_editar_ordem_compra.botao_salvar_alteracoes(class="btn btn-primary mt-3", onclick="limparCampos()") }}
+                    {{ form_editar_ordem_compra.botao_descartar_alteracoes(class="btn btn-secondary mt-3", onclick="limparCampos()") }}
+                </div>
                 <br>
-        </div>
 
-    </form>
-    <script>
-    function limparCampos()
-        {
-        // limpa os campos especificados ao clicar no botao salvar
-        document.getElementById("quantidade").value = '';
-        document.getElementById("val_unitario").value = '';
-        document.getElementById("descricao").value = '';
-        }
-    </script>
+                <script>
+                    function limparCampos() {
+                    setTimeout(() => {
+                        document.getElementById("quantidade").value = '';
+                        document.getElementById("val_unitario").value = '';
+                        document.getElementById("descricao").value = '';
+                    }); // Delay para permitir que o formulário seja enviado primeiro
+                    }
+                </script>
+                {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5") }}
+                <div class="mt-5 float-child-ordem-compra">
+                    <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+                        <thead>
+                            <tr class="cab_tabela">
+                                <th>DATA</th>
+                                <th>ORDEM</th>
+                                <th>DESCRIÇÃO</th>
+                                <th>QUANTIDADE</th>
+                                <th>VALOR UNITÁRIO</th>
+                                <th>VALOR TOTAL</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in ordem_pesquisada %}
+                            <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                                <td>{{ i[0] }}</td>
+                                <td>{{ i[1] }}</td>
+                                <td>{{ i[3] }}</td>
+                                <td>{{ i[8] }}</td>
+                                <td>{{ i[9] }}</td>
+                                <td>{{ i[10] }}</td>
+                                <td></td>
+                                <td>
+                                    <form method="POST">
+                                        {{ form_editar_ordem_compra.hidden_tag() }}
+                                            <input type="hidden" id='myBtn' name="editar__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
+                                        {{ form_editar_ordem_compra.botao_editar_item(class='btn btn-primary') }}
 
-    {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5") }}
-    <div class="mt-5 float-child-ordem-compra">
-        <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
-
-            <thead>
-                <tr class="cab_tabela">
-                    <th>DATA</th>
-                    <th>ORDEM</th>
-                    <th>DESCRIÇÃO</th>
-                    <th>QUANTIDADE</th>
-                    <th>VALOR UNITÁRIO</th>
-                    <th>VALOR TOTAL</th>
-                    <th>STATUS</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for i in ordem_pesquisada %}
-                <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                    <td>{{ i[0] }}</td>
-                            <td>{{ i[1] }}</td>
-                            <td>{{ i[3] }}</td>
-                            <td>{{ i[8] }}</td>
-                            <td>{{ i[9] }}</td>
-                            <td>{{ i[10] }}</td>
-                            <td></td>
-                            <td>
-                                <form method="POST">
-                                    {{ form_editar_ordem_compra.hidden_tag() }}
-                                        <input type="hidden" id='myBtn' name="editar__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
-                                    {{ form_editar_ordem_compra.botao_editar_item(class='btn btn-primary', onclick="abrirModalEditar()") }}
-
-                                </form>
-                            </td>
-                            <td>
-                                <form method="POST">
-                                    {{ form_editar_ordem_compra.hidden_tag() }}
-                                    <input type="hidden" name="excluir__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
-                            {{ form_editar_ordem_compra.botao_excluir_item(class='btn btn-primary' , onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-            </tbody>
-        </table>
-        <div class="float-tela-conferencia-direita">
-
-            </div>
-
-
+                                    </form>
+                                </td>
+                                <td>
+                                        <form method="POST">
+                                            {{ form_editar_ordem_compra.hidden_tag() }}
+                                            <input type="hidden" name="excluir__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
+                                            {{ form_editar_ordem_compra.botao_excluir_item(class='btn btn-primary' , onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
+                                        </form>
+                                        </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
                 </div>
-            </div>
-
+            </form>
+        </div>
+    </form>
+</div>
 {% endblock %}

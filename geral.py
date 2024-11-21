@@ -29,14 +29,18 @@ class CorFonte:
 
     @staticmethod
     def fonte_vermelha():
-        return '\033[31m'
+
+        # 38;2 especifica que o rgb será aplicado à cor da fonte e ';2' especifica que será aplicado a cor pelo rgb
+        # 48;2 especifica que o rgb será aplicado à cor ao background e ';2' especifica que será aplicado a cor pelo rgb
+
+        return '\033[38;2;255;0;0;48;2;0;0;0m'  # erro
 
     @staticmethod
-    def fonte_verde():
+    def fonte_verde(): #
         return '\033[92m'
 
     @staticmethod
-    def fonte_amarela():
+    def fonte_amarela(): # interação do usuário
         return '\033[93m'
 
     @staticmethod
@@ -44,7 +48,7 @@ class CorFonte:
         return '\033[34m'
 
     @staticmethod
-    def fonte_azul_claro():
+    def fonte_azul_claro(): # acionamento de função
         return '\033[36m'
 
     @staticmethod
@@ -60,35 +64,41 @@ class AlertaMsg:
 
     @staticmethod
     def produto_ja_cadastrado(ean):
+        print('class AlertaMsg: produto_ja_cadastrado()')
         session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
-                            f'role="alert">PRODUTO JÁ CADASTRADO EAN {ean}</div>')
+                            f'role="alert">PRODUTO JÁ CADASTRADO: EAN {ean}</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def produto_incluido_na_tabela(ean, descricao):
+        print('class AlertaMsg: produto_incluido_na_tabela()')
         session['alert'] = (f'<div id = "alert" class="alert alert-success", '
                             f'role="alert">PRODUTO INCLUIDO NA TABELA: EAN {ean} | {descricao}</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def produto_ja_digitado():
+        print('class AlertaMsg: produto_ja_digitado()')
         session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">PRODUTO JÁ DIGITADO</div>'
-        return redirect(url_for('cadastrar_produtos'))
+        # return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def campos_em_branco():
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: campos_em_branco()' + CorFonte.reset_cor(    ))
         session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
                             f'role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def ean_ja_digitado(ean):
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: ean_ja_digitado()' + CorFonte.reset_cor())
         session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
                             f'role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def produto_cadastrado_com_sucesso():
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: produto_cadastrado_com_sucesso()'+ CorFonte.reset_cor())
         session['alert'] = \
             ('<div id = "alert" class="alert alert-success", '
              'role="alert">PRODUTO CADASTRADO COM SUCESSO</div>')
@@ -96,35 +106,41 @@ class AlertaMsg:
 
     @staticmethod
     def fornecedor_invalido_cad_prod():
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: fornecedor_invalido_cad_prod()'+ CorFonte.reset_cor())
         session['alert'] = ('<div id="alert" class="alert alert-danger" '
                             'role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def cad_fornecedor_realizado():
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: cad_fornecedor_realizado()'+ CorFonte.reset_cor())
         session['alert'] \
             = '<div id="alert" class="alert alert-success", role="alert">CADASTRO REALIZADO!</div>'
         return redirect(url_for('cadastrar_fornecedores'))
     @staticmethod
     def fornecedor_invalido():
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: fornecedor_invalido()' + CorFonte.reset_cor())
         session['alert'] = '<div id="alert" class="alert alert-danger" role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>'
         return redirect(url_for('cadastrar_fornecedores'))
 
 
     @staticmethod
     def cnpj_invalido():
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: cnpj_invalido()'+ CorFonte.reset_cor())
         session['alert'] = \
             '<div id = "alert" class="alert alert-danger" role="alert">CNPJ INVALIDO!</div>'
         return redirect(url_for('cadastrar_fornecedores'))
 
     @staticmethod
     def cnpj_ja_existente():
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: cnpj_ja_existente()' + CorFonte.reset_cor())
         session['alert'] = \
             '<div id = "alert" class="alert alert-danger" role="alert">CNPJ JA EXISTENTE!</div>'
         return redirect(url_for('cadastrar_fornecedores'))
 
     @staticmethod
     def cadastro_inexistente():
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: cadastro_inexistente()' + CorFonte.reset_cor())
         session['alert'] = \
             '<div id = "alert" class="alert alert-danger" role="alert">CADASTRO INEXISTENTE</div>'
         return redirect(url_for('gerar_ordem_de_compra'))
@@ -998,7 +1014,7 @@ class Buscadores:
             mydb.close()
             # print(myresult)
             try:
-                print(len(myresult))
+                # print(len(myresult))
 
                 if len(myresult) > 0:
                     return False

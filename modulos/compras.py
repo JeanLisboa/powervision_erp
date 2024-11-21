@@ -97,7 +97,7 @@ def cadastrar_fornecedores():
 
 def cadastrar_produtos():
     alert = None
-    fornecedor = ''
+
     # global contador_item_cadastro
     global lista_cadastro_produto
     global total_cadastro_produto
@@ -117,74 +117,65 @@ def cadastrar_produtos():
     categoria = form_cad_produtos.categoria.data
     data = Formatadores.os_data()
     fornecedor = form_cad_produtos.fornecedor.data
+    session['fornecedor'] = fornecedor
     usuario = "ADMIN"
     # session['fornecedor'] = fornecedor
+
+    # funções validadoras do item digitado na ordem de compra
+    def valida_ean_na_lista():
+        print('função verifica_ean_na_lista')
+        if not lista_cadastro_produto:  # ou if lista_cadastro_produto == []
+            print('lista vazia')
+            return True
+        for i in lista_cadastro_produto:  # verifica se o item ja existe no pedido
+            print(f'informações para incluir na tabela\n {i}')
+            if i[1][1] == ean:
+                print('ean ja existente na lista de itens a cadastrar')
+                return False
+            else:
+                print('ean ainda nao digitado.')
+                return True
+
+    def valida_campos():
+        print('função valida_campos (verifica se todos os campos foram preenchidos)')
+        if (fornecedor == 'Selecionar um fornecedor'
+                or ean == '' or ean is None
+                or descricao == '' or descricao is None
+                or unidade == '' or unidade is None
+                or valor == '' or valor is None
+                or categoria == '' or categoria is None):
+            print('>>há um ou mais campos em branco ')
+            return False
+        else:
+            print('>>todos os campos preenchidos')
+            return True
+
+    def valida_ean_no_banco():
+        print('função valida_ean_no_banco')
+        # valida se o ean existe no banco de dados
+        if geral.Buscadores.buscar_produto_pelo_ean(ean) is False:
+            print('>>ean ja existente no banco de dados')
+            return False
+        else:
+            print('>>ean disponível para cadastro')
+            return True
+
     if request.method == 'POST':
         if 'botao_baixar_planilha' in request.form:
             print('botao_baixar_planilha pressionado')
             geral.download_planilha()
 
-
         # fornecedor = ''
         if 'botao_incluir_item' in request.form:  # inclui o item na tabela
-            print('botao_incluir_item pressionado')
-            # print(f' session["fornecedor_selecionado"] {session["fornecedor_selecionado"]}')
-            # print(f'fornecedor {fornecedor}')
 
-            # redirect(url_for('cadastrar_produtos', fornecedor=fornecedor))
-            # fornecedor = request.form.get('fornecedor')  # retorna o fornecedor selecionado e instacia na variável
-            # fornecedor = request.form.getlist('fornecedor')  # retorna o fornecedor selecionado e instacia na variável
+            print(geral.CorFonte.fonte_amarela() +'botao_incluir_item acionado' + geral.CorFonte.reset_cor())
+            valida_campos = valida_campos()
+            valida_ean_na_lista = valida_ean_na_lista()
+            valida_ean_no_banco = valida_ean_no_banco()
+            print(geral.CorFonte.fonte_amarela() + '1 - Verifica se os campos estão validados' + geral.CorFonte.reset_cor())
 
+            #  *função* que será executada caso todos os campos sejam validados
             try:
-                print(lista_cadastro_produto)
-
-                def valida_ean_na_lista():
-                    print('def verifica_ean_na_lista')
-                    if not lista_cadastro_produto:  # ou if lista_cadastro_produto == []
-                        print('lista vazia')
-                        return True
-                    for i in lista_cadastro_produto:  # verifica se o item ja existe no pedido
-                        print(f'for lista_cadastro_produto {i}')
-                        if i[1][1] == ean:
-                            print('ean ja existente na lista de itens a cadastrar')
-                            return False
-                        else:
-                            print('ean ainda nao digitado.')
-                            return True
-
-                def valida_campos():
-                    print('função valida_campos (verifica se todos os campos foram preenchidos)')
-                    if (fornecedor == 'Selecionar um fornecedor'
-                            or ean == '' or ean is None
-                            or descricao == '' or descricao is None
-                            or unidade == '' or unidade is None
-                            or valor == '' or valor is None
-                            or categoria == '' or categoria is None):
-
-                        alert = geral.AlertaMsg.campos_em_branco()
-                        print('>>há um ou mais campos em branco ')
-                        return False
-                    else:
-                        print('>>todos os campos preenchidos')
-                        return True
-
-                def valida_ean_no_banco():
-                    print('função valida_ean_no_banco')
-                    # valida se o ean existe no banco de dados
-                    if geral.Buscadores.buscar_produto_pelo_ean(ean) is False:
-                        alert = geral.AlertaMsg.produto_ja_cadastrado(ean)
-                        print('>>ean ja existente no banco de dados')
-                        return False
-                    else:
-                        print('>>ean disponível para cadastro')
-                        return True
-                print('----------------------')
-                valida_campos = valida_campos()
-                print('----------------------')
-                valida_ean_na_lista = valida_ean_na_lista()
-                print('----------------------')
-                valida_ean_no_banco = valida_ean_no_banco()
-
                 if valida_campos is True and valida_ean_na_lista is True and valida_ean_no_banco is True:
                     print('Todas as validações foram executadas corretamente')
                     contador_item_cadastro = len(lista_contador_cadastro_produto)
@@ -200,17 +191,50 @@ def cadastrar_produtos():
                     # MANTÊ-LO NA TELA AO INCLUIR O ITEM NA TABELA
                     #   (obs.: DEVE SER PASSADO NO RENDER TEMPLATE)
 
+                    fornecedor = session.get('fornecedor')
                     alert = geral.AlertaMsg.produto_incluido_na_tabela(ean, descricao)
-                    return redirect(url_for('cadastrar_produtos'))
-            #
+                    # return redirect(url_for('cadastrar_produtos') + f'?fornecedor={fornecedor}')
+                    print(f'fornecedor recuperado no botao incluir item {fornecedor}')
+                    return render_template('compras/cadastrar_produtos.html',
+                                           fornecedor=fornecedor,
+                                           form_cad_produtos=form_cad_produtos,
+                                           data=data,
+                                           alert=alert)
+
+                # caso alguma validação falhe
+
+                if valida_campos is False:
+                    print('Função valida_campos is False')
+                    alert = geral.AlertaMsg.campos_em_branco()
+                    return render_template('compras/cadastrar_produtos.html',
+                                           fornecedor=fornecedor,
+                                           form_cad_produtos=form_cad_produtos,
+                                           data=data,
+                                           alert=alert)
+
+                if valida_ean_no_banco is False:
+                    print('Função valida_ean_no_banco is False')
+                    alert = geral.AlertaMsg.produto_ja_cadastrado(ean)
+                    return render_template('compras/cadastrar_produtos.html',
+                                           fornecedor=fornecedor,
+                                           form_cad_produtos=form_cad_produtos,
+                                           data=data,
+                                           alert=alert)
+
+                if valida_ean_na_lista is False:
+                    print('Função valida_ean_na_lista is False')
+                    alert = geral.AlertaMsg.ean_ja_digitado(ean)
+                    return render_template('compras/cadastrar_produtos.html',
+                                           fornecedor=fornecedor,
+                                           form_cad_produtos=form_cad_produtos,
+                                           data=data,
+                                           alert=alert)
+
             except Exception as e:
-                print('erro no botão incluir item')
                 print(e)
 
-            fornecedor = session.get("fornecedor")
-            print(f'sessio.ger{session.get(fornecedor)}')
-
-            return redirect(url_for('cadastrar_produtos', alert=alert, fornecedor=session.get('fornecedor')))
+            finally:
+                return redirect(url_for('cadastrar_produtos'))
 
         # inclui as linhas da tabela no banco de dados
         if 'botao_submit_cad_prod' in request.form:
@@ -288,8 +312,6 @@ def cadastrar_produtos():
             print('botao_baixar_planilha pressionado')
             print('Criar planilha com pandas')
 
-
-
         if 'botao_excluir_cad_prod' in request.form:
             valor_produto = request.form.getlist('valor_produto')
             for i in valor_produto:
@@ -331,33 +353,42 @@ def editar_ordem_compra():
     ordem_pesquisada = ()  # Valor padrão para evitar o erro no primeiro acesso
 
     if request.method == 'POST':
+        ean = ''
+        quantidade = ''
+        val_unitario = ''
+
         if 'botao_pesquisar_ordem_compra' in request.form:
             print('botao_pesquisar_ordem_compra acionado')
-
             if ordem_compra:  # Verifica se o campo 'ordem_compra' está preenchido
-                session['ordem_compra'] = ordem_compra
+
                 try:
                     ordem_pesquisada = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
                     print(f'ordem_pesquisada: {ordem_pesquisada}')
                     session['result_ordem_pesquisada'] = ordem_pesquisada
+                    ordem_compra = ordem_pesquisada[0][1]
 
                 except Exception as e:
                     print(f"Erro ao buscar ordem de compra: {e}")
             else:
                 print("Nenhuma ordem de compra informada para a pesquisa.")
-                ordem_compra = []
+
+            return render_template('compras/editar_ordem_compra.html',
+                                   ordem_compra=ordem_compra,
+                                   ordem_pesquisada=ordem_pesquisada,
+                                   form_editar_ordem_compra=form_editar_ordem_compra,
+                                   linha_para_editar='',
+                                   data=data)
 
         if 'botao_editar_item' in request.form:
             print('botao_editar_item acionado')
-
-            ordem_compra = session.get('ordem_compra')
-            print(f'ordem_compra recuperado no session {ordem_compra}')
             ordem_pesquisada = session.get('result_ordem_pesquisada')
-            # print(f'ordem_pesquisada: {ordem_pesquisada}')
+            ordem_compra = ordem_pesquisada[0][1]
+
+            print(f'ordem_compra recuperado no session {ordem_compra}')
+            print(f'ordem_pesquisada: {ordem_pesquisada}')
             item_selecionado = request.form.getlist('editar__item')
             item_selecionado = item_selecionado[0]
             linha_para_editar = []
-
             for i in ordem_pesquisada:
                 if i[7] == item_selecionado:
                     linha_para_editar.append(i)
@@ -365,6 +396,7 @@ def editar_ordem_compra():
                     session['linha_para_editar'] = linha_para_editar
 
             if linha_para_editar:
+
                 ean = linha_para_editar[0][7]  #
                 form_editar_ordem_compra.ean.data = ean  # Define o valor no campo 'ean' do formulário
                 session['ean'] = ean
@@ -373,16 +405,31 @@ def editar_ordem_compra():
                 form_editar_ordem_compra.quantidade.data = quantidade
                 session['quantidade'] = quantidade
 
-                valor_unitario = linha_para_editar[0][9]
-                form_editar_ordem_compra.val_unitario.data = valor_unitario
-                session['valor_unitario'] = valor_unitario
+                val_unitario = linha_para_editar[0][9]
+                form_editar_ordem_compra.val_unitario.data = val_unitario
+                session['valor_unitario'] = val_unitario
 
                 form_editar_ordem_compra.descricao.data = linha_para_editar[0][3]
 
             print(f'linha_para_editar {linha_para_editar}')
             # print(f'item_selecionado: {item_selecionado}')
+            return render_template('compras/editar_ordem_compra.html',
+                                   ordem_compra=ordem_compra,
+                                   quantidade=quantidade,
+                                   val_unitario=val_unitario,
+                                   linha_para_editar=linha_para_editar,
+                                   ordem_pesquisada=ordem_pesquisada,
+                                   form_editar_ordem_compra=form_editar_ordem_compra,
+                                   data=data)
+
 
         if 'botao_salvar_alteracoes' in request.form:
+            nova_qtde = form_editar_ordem_compra.quantidade.data
+            print(f'nova_qtde = {nova_qtde}')
+            preco_novo = form_editar_ordem_compra.val_unitario.data
+            print(f'preco_novo= {preco_novo}')
+
+
             try:
                 linha_para_editar = session.get('linha_para_editar')
                 valor_unitario = session.get('valor_unitario')
@@ -390,13 +437,14 @@ def editar_ordem_compra():
 
                 nova_qtde = form_editar_ordem_compra.quantidade.data
                 preco_novo = form_editar_ordem_compra.val_unitario.data
-                ean_novo = form_editar_ordem_compra.ean.data
+
                 print('botao_salvar_alteracoes acionado')
                 print('executar query')
                 print(f'Preço antigo: {linha_para_editar[0][9]}')
                 print(f'Preço novo: {preco_novo}')
                 print(f'Total Item antigo: {linha_para_editar[0][10]}')
                 print(f'Total item novo: {nova_qtde * preco_novo}')
+                # input('input >>>>')
                 print(f'Quantidade Antiga: {linha_para_editar[0][8]}')
                 print(f'Nova quantidade: {nova_qtde}')
                 total_item_novo = nova_qtde * preco_novo
@@ -407,7 +455,7 @@ def editar_ordem_compra():
                          f"PRECO = '{preco_novo}',\n"
                          f"TOTAL_ITEM = '{total_item_novo}',\n"
                          f"SALDO_TOTAL_ITEM = '{saldo_total_item_novo}',\n"
-                         f"EAN = {ean_novo},\n"
+                        
                          f"SALDO_QTD = '{nova_qtde}'\n"
                          f"WHERE EAN = '{linha_para_editar[0][7]}'\n "
                          f"and ORDEM_COMPRA = '{linha_para_editar[0][1]}';")
@@ -428,6 +476,31 @@ def editar_ordem_compra():
                 # linha_para_editar = list(linha_para_editar)
                 linha_para_editar = linha_para_editar.clear()
                 print(f'linha_para_editar antes do redirect {linha_para_editar}')
+                form_editar_ordem_compra.ean.data = ''
+                form_editar_ordem_compra.descricao.data = ''
+                form_editar_ordem_compra.quantidade.data = ''
+                form_editar_ordem_compra.val_unitario.data = ''
+                def script():
+                    html = """
+                    <!DOCTYPE html>
+                        <html>
+                        <head><title>Executar JS</title></head>
+                        <body>
+                            <h1>Executando JavaScript do Backend</h1>
+                            <script>
+                                function limparCampos() {
+                                setTimeout(() => {
+                                    document.getElementById("quantidade").value = '';
+                                    document.getElementById("val_unitario").value = '';
+                                    document.getElementById("descricao").value = '';
+                                }, 5); // Delay para permitir que o formulário seja enviado primeiro
+                                }
+                                alert('Este script foi enviado pelo backend!');
+                            </script>
+                        </body>
+                        </html>
+                                """
+
                 return redirect(url_for('editar_ordem_compra'))
 
             except:
@@ -438,21 +511,19 @@ def editar_ordem_compra():
                 ## passar esta instrução para o script js no html
                 form_editar_ordem_compra.ean.data = ''
                 form_editar_ordem_compra.descricao.data = ''
+                form_editar_ordem_compra.quantidade.data = ''
+                form_editar_ordem_compra.val_unitario.data = ''
+
 
                 # retornar a lista ordem pesquisada com os valores já editados.
 
 
                 # print(f'linha_para_editar: {linha_para_editar}')
                 return render_template('compras/editar_ordem_compra.html',
-
-
-                                       # ordem_compra=ordem_compra,
-                                       # linha_para_editar='',
-                                       #
+                                        script=script(),
+                                       ordem_compra=ordem_compra,
                                        ordem_pesquisada=ordem_pesquisada,
                                        form_editar_ordem_compra=form_editar_ordem_compra,
-
-
                                        data=data)
 
         if 'botao_excluir_item' in request.form:
@@ -478,6 +549,7 @@ def editar_ordem_compra():
 
         if 'botao_adicionar_item' in request.form:
             print('Botao_adicionar_item acionado')
+
 
 
     return render_template('compras/editar_ordem_compra.html',
@@ -779,7 +851,10 @@ def gerar_ordem_compra():
                     total_ordem_compra += lista_ordem_compra[-1][9]
                     return total_ordem_compra
 
+                print(f'variável total_ordem_compra\n'
+                      f'chama função atualizar_lista_ordem_compra ')
                 total_ordem_compra = atualizar_lista_ordem_compra()
+
         except Exception as e:
             print('erro no botao_incluir_item')
             print(e)
