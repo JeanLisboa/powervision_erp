@@ -20,8 +20,8 @@ fonte_azul_claro = '\033[36m'
 reset_cor = '\033[0m'
 
 
-
 def entrada_ordem_compra():
+    print('Função entrada_ordem_compra')
     form_entrada_ordem_compra = Mod_Logistica.EntradaOrdemCompra()
     razao_social = form_entrada_ordem_compra.razao_social.data
     cnpj = form_entrada_ordem_compra.cnpj.data
@@ -48,7 +48,6 @@ def entrada_ordem_compra():
     if nf is None:
         nf = ''
 
-
     # processamento dos botões
     if request.method == 'POST':
         try:
@@ -64,14 +63,11 @@ def entrada_ordem_compra():
                 status_ordem = Buscadores.OrdemCompra.verifica_status_ordem(lst_nf[3])  # lst_nf[3] = pedido (ou ordem de compra)
                 Validadores.valida_pedido_recebido(pedido)  # busca o pedido no banco de dados
 
-
-
                 def validacao_1():
                     if status_ordem is True:  # VERIFICAR SE O XML ESTÁ NO SERVIDOR
                         return True
                     else:  # xml nao localizado
                         return False
-
 
                 def validacao_2():
                     # print(fonte_amarela + '\nVALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO' + reset_cor)
@@ -128,73 +124,77 @@ def entrada_ordem_compra():
                         return False
 
         except Exception as e:
+            print(f'Exception e: {e}')
             lst_nf = ['NOTA FISCAL NAO LOCALIZADA']
             validacao_final = False  # serve para configurar os botoes na renderização da tela
             # session['validacao_final'] = validacao_final
 
-        try:
+        def analisa_validacoes():
+            print(f'função entrada_ordem_compra | subfuncao analisa_validacoes')
+            try:
+                if validacao_1() is True and validacao_2() is True and validacao_3() is True and validacao_4() is True:
+                    validacao_final = True
+                    session['validacao_final'] = validacao_final
+                    print(fonte_amarela + '\n >VALIDAÇÃO 1: VERIFICAR SE O XML ESTÁ NO SERVIDOR\033[32m' + reset_cor)
+                    print(validacao_1)
+                    print(fonte_verde + '>VALIDAÇÃO 1 concluída' + reset_cor)
 
-            if validacao_1() is True and validacao_2() is True and validacao_3() is True and validacao_4() is True:
-                validacao_final = True
-                session['validacao_final'] = validacao_final
-                print(fonte_amarela + '\n >VALIDAÇÃO 1: VERIFICAR SE O XML ESTÁ NO SERVIDOR\033[32m' + reset_cor)
-                print(validacao_1)
-                print(fonte_verde + '>VALIDAÇÃO 1 concluída' + reset_cor)
+                    print(fonte_amarela + '\n>VALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO' + reset_cor)
+                    print(validacao_2)
+                    print(fonte_verde + '>VALIDAÇÃO 2 concluída' + reset_cor)
 
-                print(fonte_amarela + '\n>VALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO' + reset_cor)
-                print(validacao_2)
-                print(fonte_verde + '>VALIDAÇÃO 2 concluída' + reset_cor)
+                    print(fonte_amarela + '\n>VALIDAÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO' + reset_cor)
+                    print(validacao_3)
+                    print(fonte_verde + '>VALIDAÇÃO 3 concluída' + reset_cor)
 
-                print(fonte_amarela + '\n>VALIDAÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO' + reset_cor)
-                print(validacao_3)
-                print(fonte_verde + '>VALIDAÇÃO 3 concluída' + reset_cor)
+                    print(fonte_amarela + '\n>VALIDAÇÃO 4: VALIDAR PEDIDO X NF' + reset_cor)
+                    print(fonte_amarela + '\n>VALIDAÇÃO 4: (1) RECEBER NF, CRIAR LISTA DE EAN E PRECO' + reset_cor)
+                    print(fonte_amarela + '\n>VALIDAÇÃO 4: (2) RECEBER OC, CRIAR LISTA DE EAN E PRECO' + reset_cor)
+                    print(fonte_amarela + '\n>VALIDAÇÃO 4: (3) COMPARAR AS DUAS LISTAS' + reset_cor)
+                    print(validacao_4)
+                    print(fonte_verde + '\n>VALIDAÇÃO 4 concluída' + reset_cor)
+                    # print(fonte_verde + 'Pedido Validado' + reset_cor)
 
-                print(fonte_amarela + '\n>VALIDAÇÃO 4: VALIDAR PEDIDO X NF' + reset_cor)
-                print(fonte_amarela + '\n>VALIDAÇÃO 4: (1) RECEBER NF, CRIAR LISTA DE EAN E PRECO' + reset_cor)
-                print(fonte_amarela + '\n>VALIDAÇÃO 4: (2) RECEBER OC, CRIAR LISTA DE EAN E PRECO' + reset_cor)
-                print(fonte_amarela + '\n>VALIDAÇÃO 4: (3) COMPARAR AS DUAS LISTAS' + reset_cor)
-                print(validacao_4)
-                print(fonte_verde + '\n>VALIDAÇÃO 4 concluída' + reset_cor)
-                # print(fonte_verde + 'Pedido Validado' + reset_cor)
+                    lst_nf.append('LIBERADO')
+                    session['resultado_validacao'] = lst_nf
+                    session['validacao_final'] = validacao_final
+                    print(fonte_verde + f'lst_nf = {lst_nf}' + reset_cor)
 
-                lst_nf.append('LIBERADO')
-                session['resultado_validacao'] = lst_nf
-                session['validacao_final'] = validacao_final
-                print(fonte_verde + f'lst_nf = {lst_nf}' + reset_cor)
+                else:
+                    validacao_final = False
+                    session['validacao_final'] = validacao_final
 
-            else:
-                validacao_final = False
-                session['validacao_final'] = validacao_final
+                if validacao_1() is False:
+                    lst_nf.append('NOTA FISCAL NÃO ENCONTRADA')
+                    session['resultado_validacao'] = lst_nf
+                    session['validacao_final'] = validacao_final
 
-            if validacao_1() is False:
-                lst_nf.append('NOTA FISCAL NÃO ENCONTRADA')
-                session['resultado_validacao'] = lst_nf
-                session['validacao_final'] = validacao_final
+                if validacao_2() is False:
+                    lst_nf.append('FORNECEDOR NÃO CADASTRADO')
+                    session['resultado_validacao'] = lst_nf
+                    session['validacao_final'] = validacao_final
 
-            if validacao_2() is False:
-                lst_nf.append('FORNECEDOR NÃO CADASTRADO')
-                session['resultado_validacao'] = lst_nf
-                session['validacao_final'] = validacao_final
+                if validacao_3() is False:
+                    lst_nf.append('PEDIDO NÃO ABERTO')
+                    session['resultado_validacao'] = lst_nf
+                    session['validacao_final'] = validacao_final
 
-            if validacao_3() is False:
-                lst_nf.append('PEDIDO NÃO ABERTO')
-                session['resultado_validacao'] = lst_nf
-                session['validacao_final'] = validacao_final
+                if validacao_4() is False:
+                    lst_nf.append('PREÇO FORA DA POLÍTICA')
+                    session['resultado_validacao'] = lst_nf
+                    session['validacao_final'] = validacao_final
 
-            if validacao_4() is False:
-                lst_nf.append('PREÇO FORA DA POLÍTICA')
-                session['resultado_validacao'] = lst_nf
-                session['validacao_final'] = validacao_final
+            except Exception as e:
+                print(e)
+        analisa_validacoes()
 
-
-        except Exception as e:
-            print(e)
-
-        try:
-            if 'botao_limpar_pesquisa' in request.form:
-                print('\nbotao_limpar_pesquisa ACIONADO')
-        except Exception as e:
-            print(e)
+        def botao_limpar_pesquisa():
+            try:
+                if 'botao_limpar_pesquisa' in request.form:
+                    print('\nbotao_limpar_pesquisa ACIONADO')
+            except Exception as e:
+                print(e)
+        botao_limpar_pesquisa()
 
         try:
             if 'botao_realizar_conferencia' in request.form:
@@ -202,12 +202,8 @@ def entrada_ordem_compra():
                 lst_nf = session.get('resultado_validacao')  # recupera as informações da tabela de pesquisa
                 if lst_nf != ['NOTA FISCAL NÃO ENCONTRADA']:
                     print(f'\n lst_nf >> {lst_nf}')
-
                     itens_conferencia = Buscadores.OrdemCompra.buscar_ordem_compra(lst_nf[3])  # lista os itens da ordem de compra, localizado no html, à esquerda
-
                     session['itens_conferencia'] = itens_conferencia
-
-
 
         except Exception as e:
             print(e)
@@ -308,12 +304,8 @@ def entrada_ordem_compra():
                 print(f'lst_qtde_recebida_a >>> {lst_qtde_recebida_a}')
                 lst_an_ent_estoque.append(lst_qtde_pedido_a)
                 print(f'lst_qtde_pedido_a >>> {lst_qtde_pedido_a}')
-
                 print(f'lst_an_ent_estoque >>> {lst_an_ent_estoque}')
-
-
                 print('----FINALIZADO-----\n')
-
                 print('2 - MONTA LISTA DE ITENS QUE SERÃO INTERNALIZADOS\n')
                 for i in itens_conferencia:
                     lst_ent_estoque_temp.append(i[5])  # categoria
@@ -367,6 +359,19 @@ def entrada_ordem_compra():
 
                 print('6 - ATUALIZA SALDO ORDEM COMPRA')
                 print('Recebe o pedido e a lista dos itens recebidos')
+
+                print('gerar lista com os itens recebidos')
+                print()
+                linha_entrada_estoque = 0
+                for i in lst_ent_estoque_final:
+                    print(f'linha_entrada_estoque: {linha_entrada_estoque}')
+                    if type(lst_ent_estoque_final) is not list:
+                        print(f'{lst_ent_estoque_final}')
+                    else:
+                        pass
+                    linha_entrada_estoque += 1
+                # se quantidade recebida for maior do que o pedido, devolver a sobra
+                # post atualizacao saldo quantidade e saldo valor
                 geral.Buscadores.OrdemCompra.atualizar_saldo_ordem_compra(ordem_compra=lst_nf[3])
 
         except Exception as e:

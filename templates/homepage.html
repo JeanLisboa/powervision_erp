@@ -53,7 +53,7 @@ function draw() {
 
         // Desenha o ponto com cor variável
         fill(pontoCor);
-        ellipse(p.x, p.y, 5, 5);
+        ellipse(p.x, p.y, 9, 9);
 
         // Desenha linhas entre pontos próximos
         for (let j = i + 1; j < pontos.length; j++) {
@@ -79,8 +79,8 @@ function draw() {
     } else {
         // Desaceleração quando o mouse sai
         for (let p of pontos) {
-            p.vx *= 0.98;
-            p.vy *= 0.98;
+            p.vx *= 1.09;
+            p.vy *= 1.09;
         }
     }
 }

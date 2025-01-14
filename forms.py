@@ -39,7 +39,6 @@ class ModCompras:
         botao_excluir_ordem_compra = SubmitField("Excluir Ordem")
         botao_pesquisar_ordem_compra = SubmitField('Pesquisar')
         botao_excluir_item = SubmitField('Excluir Item')
-        botao_adicionar_item = SubmitField('Adicionar Item')
         botao_editar_item = SubmitField('Editar Item')
         botao_salvar_alteracoes = SubmitField('Salvar')
         botao_descartar_alteracoes = SubmitField('Descartar ')
@@ -47,6 +46,16 @@ class ModCompras:
         quantidade = IntegerField('Quant')
         val_unitario = FloatField('V.Unit')
         descricao = StringField('Descricao', validators=[ReadOnly()])
+
+        botao_adicionar_item = SubmitField('Adicionar Item')
+        botao_pesquisar_novo_item = SubmitField('Pesquisar')
+        botao_salvar_item_adicionado = SubmitField('Salvar')
+        botao_descartar_item_adicionado = SubmitField('Descartar')
+        pesquisar_ean = StringField("EAN")
+        pesquisar_descricao = StringField("Descrição")
+        adicionar_quantidade = IntegerField('Quantidade')
+        adicionar_preco_unitario = FloatField('Preço Unitário')
+
 
     class CadFornecedores(FlaskForm):
         cod_fornecedor = StringField("Código", validators=[ReadOnly()])
@@ -87,6 +96,31 @@ class ModCompras:
         valor_produto = HiddenField('Valor do Produto')
 
     class GerarOrdemCompra(FlaskForm):
+        buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
+        codigo = StringField("Código")
+        fornecedor = SelectField("Fornecedor", choices=['Selecionar um fornecedor'] + [f[0] for f in buscar_fornecedor],
+                                 validators=[DataRequired()])
+        # fornecedor = StringField("Fornecedor")
+        ean = StringField("EAN")
+        descricao = StringField("Descrição", validators=[ReadOnly()])
+        unidade = StringField("Un", validators=[ReadOnly()])
+        categoria = StringField("Categoria", validators=[ReadOnly()])
+        quantidade = IntegerField("Quantidade", validators=[DataRequired(), NumberRange(min=1)])
+        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00)])
+        preco_historico = FloatField("Preço Histórico", validators=[DataRequired(), ReadOnly()])
+        ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])
+        preco_medio = FloatField("Preço Médio", validators=[DataRequired(), ReadOnly()])
+        botao_consulta = SubmitField('Consulta')
+        botao_limpar_ordem = SubmitField('Limpar Ordem')
+        botao_pesquisar_item = SubmitField('Pesquisar Código')
+        botao_pesquisar_fornecedor = SubmitField('Pesquisar Fornecedor')
+        botao_incluir_item = SubmitField('Incluir Item')
+        botao_selecionar_item = SubmitField('Selecionar')
+        botao_submit_compra = SubmitField('Gerar Ordem de Compra')
+
+    class AdicionarItemOrdemCompra(FlaskForm):
         buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])

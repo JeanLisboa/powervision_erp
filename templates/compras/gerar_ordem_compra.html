@@ -10,7 +10,7 @@ TELA GERAR ORDEM DE COMPRA
 <div class="container p-3 mb-3 border border-primary div_principal"
      xmlns="http://www.w3.org/1999/html">
     <form action="" method="POST">
-        {{ form_gerar_ordem_compra.csrf_token }}
+        {{form_gerar_ordem_compra.csrf_token}}
         <!-- div1 -->
         <div class="mb-1 float-child-ordem-compra1">
             <pre>
@@ -19,64 +19,64 @@ TELA GERAR ORDEM DE COMPRA
                 4 - (F) INCLUIR BARRA DE ROLAGEM NA ORDEM DE COMPRA
             </pre>
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.data.label }}
-                {{ form_gerar_ordem_compra.data(class="form-control tam_campo_data",  value=data) }}
+                {{form_gerar_ordem_compra.data.label}}
+                {{form_gerar_ordem_compra.data(class="form-control tam_campo_data",  value=data)}}
             </div>
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.ordem_compra.label }}
-                {{ form_gerar_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra) }}
-            </div>
-
-            <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.codigo.label }}
-<!--                {{ form_gerar_ordem_compra.codigo(class="form-control", value=resultado_pesquisa[1]) }}-->
-                {{ form_gerar_ordem_compra.codigo(class="form-control tam_campo_codigo", value=linha_selecionada[1]) }}
+                {{form_gerar_ordem_compra.ordem_compra.label}}
+                {{form_gerar_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra)}}
             </div>
 
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.categoria.label }}
-                {{ form_gerar_ordem_compra.categoria(class="form-control tam_campo_codigo", value=linha_selecionada[6]) }}
+                {{form_gerar_ordem_compra.codigo.label}}
+<!--                {{form_gerar_ordem_compra.codigo(class="form-control", value=resultado_pesquisa[1])}}-->
+                {{form_gerar_ordem_compra.codigo(class="form-control tam_campo_codigo", value=linha_selecionada[1])}}
+            </div>
+
+            <div class="col form-label btn btn-light">
+                {{form_gerar_ordem_compra.categoria.label}}
+                {{form_gerar_ordem_compra.categoria(class="form-control tam_campo_codigo", value=linha_selecionada[6])}}
             </div>
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.unidade.label }}
-                {{ form_gerar_ordem_compra.unidade(class="form-control tam_campo_abrev", value=linha_selecionada[5]) }}
+                {{form_gerar_ordem_compra.unidade.label}}
+                {{form_gerar_ordem_compra.unidade(class="form-control tam_campo_abrev", value=linha_selecionada[5])}}
             </div>
             <br>
             <div class="col form-label btn btn-light"  >
-                {{ form_gerar_ordem_compra.fornecedor.label }}
-                {{ form_gerar_ordem_compra.fornecedor(class="form-control", value=linha_selecionada[2]) }}
+                {{form_gerar_ordem_compra.fornecedor.label}}
+                {{form_gerar_ordem_compra.fornecedor(class="form-control", value=linha_selecionada[2])}}
             </div>
-            {{ form_gerar_ordem_compra.botao_pesquisar_fornecedor(class="btn btn-primary mt-4") }}
+            {{form_gerar_ordem_compra.botao_pesquisar_fornecedor(class="btn btn-primary mt-4")}}
 
             <br>
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.ean.label }}
-                {{ form_gerar_ordem_compra.ean(class="form-control", value=linha_selecionada[3]) }}
+                {{form_gerar_ordem_compra.ean.label}}
+                {{form_gerar_ordem_compra.ean(class="form-control", value=linha_selecionada[3])}}
             </div>
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.descricao.label }}
-                {{ form_gerar_ordem_compra.descricao(class="form-control tam_campo_descricao", value=linha_selecionada[4]) }}
+                {{form_gerar_ordem_compra.descricao.label}}
+                {{form_gerar_ordem_compra.descricao(class="form-control tam_campo_descricao", value=linha_selecionada[4])}}
             </div>
             <br>
-<!--                {{ form_gerar_ordem_compra.botao_consulta(class="btn btn-primary mt-3")  }}-->
+<!--                {{form_gerar_ordem_compra.botao_consulta(class="btn btn-primary mt-3") }}-->
             <br>
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.quantidade.label }}
-               {{ form_gerar_ordem_compra.quantidade(class="form-control", value=1) }}
+                {{form_gerar_ordem_compra.quantidade.label}}
+               {{form_gerar_ordem_compra.quantidade(class="form-control", value=1)}}
             </div>
 
 
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_compra.preco_unitario.label }}
-                {{ form_gerar_ordem_compra.preco_unitario(class="form-control", value=linha_selecionada[7], id="preco_unitario") }}
+                {{form_gerar_ordem_compra.preco_unitario.label}}
+                {{form_gerar_ordem_compra.preco_unitario(class="form-control", value=linha_selecionada[7], id="preco_unitario")}}
             </div>
 
             <div class="btn">
-                {{ form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3") }}
+                {{form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3")}}
             </div>
             <div>
-                {{  form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3") }}
-                {{ form_gerar_ordem_compra.botao_limpar_ordem(class="btn btn-secondary mt-3") }}
+                {{ form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3")}}
+                {{form_gerar_ordem_compra.botao_limpar_ordem(class="btn btn-secondary mt-3")}}
             </div>
             <script src="static/js/pesquisa_produto.js" defer></script>
         </div>
@@ -103,15 +103,15 @@ TELA GERAR ORDEM DE COMPRA
                 <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                     <td>
                         <form method="POST">
-                                    {{ form_gerar_ordem_compra.hidden_tag() }}
-                                    <input type="hidden" name="incluir_item" value="{{ i[3] }}">
-                            {{ form_gerar_ordem_compra.botao_selecionar_item(class='btn btn-primary') }}
+                                    {{form_gerar_ordem_compra.hidden_tag()}}
+                                    <input type="hidden" name="incluir_item" value="{{i[3]}}">
+                            {{form_gerar_ordem_compra.botao_selecionar_item(class='btn btn-primary')}}
                         </form>
                     </td>
-                    <td>{{ i[4] }}</td>
-                    <td>{{ i[3] }}</td>
-                    <td>{{ i[5] }}</td>
-                    <td>{{ i[7] }}</td>
+                    <td>{{i[4]}}</td>
+                    <td>{{i[3]}}</td>
+                    <td>{{i[5]}}</td>
+                    <td>{{i[7]}}</td>
 
                 </tr>
                 {% endfor %}
@@ -125,10 +125,10 @@ TELA GERAR ORDEM DE COMPRA
 
 <!--                <div class="col form-label  btn btn-alt">-->
 
-<!--                    <button type="button" class="btn btn-success mt-3 btn-lg botao_borda_customizada"> ÚLTIMO PREÇO: R$ {{ ultimo_preco }}</button>-->
-<!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> PREÇO MEDIO: R$ {{ preco_medio }}</button>-->
-<!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> EM ABERTO: {{ ordens_em_aberto[0] }} R${{ ordens_em_aberto[1] }}</button>-->
-<!--                    <button type="button" class="btn btn-info mt-3 btn-lg botao_valor_total"> TOTAL DO PEDIDO: R$ {{ total_ordem_compra }}</button>-->
+<!--                    <button type="button" class="btn btn-success mt-3 btn-lg botao_borda_customizada"> ÚLTIMO PREÇO: R$ {{ultimo_preco}}</button>-->
+<!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> PREÇO MEDIO: R$ {{preco_medio}}</button>-->
+<!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> EM ABERTO: {{ordens_em_aberto[0]}} R${{ordens_em_aberto[1]}}</button>-->
+<!--                    <button type="button" class="btn btn-info mt-3 btn-lg botao_valor_total"> TOTAL DO PEDIDO: R$ {{total_ordem_compra}}</button>-->
 <!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE LIVRE:    </button>-->
 <!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE EMPENHADO: </button>-->
 
@@ -138,49 +138,51 @@ TELA GERAR ORDEM DE COMPRA
 
     </form>
 
-    <div class="mt-5 float-child-ordem-compra">
-        <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+    <div class="mt-5 float-child-ordem-compra container_com_barra_100%">
 
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Ordem de Compra</th>
-                    <th>Item</th>
-                    <th>Descrição</th>
-                    <th>Unidade</th>
-                    <th>Categoria</th>
-                    <th>Código</th>
-                    <th>EAN</th>
-                    <th>Quantidade</th>
-                    <th>Preço Unitário</th>
-                    <th>Total Item</th>
+            <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
 
-                </tr>
-            </thead>
-            <tbody>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Ordem de Compra</th>
+                        <th>Item</th>
+                        <th>Descrição</th>
+                        <th>Unidade</th>
+                        <th>Categoria</th>
+                        <th>Código</th>
+                        <th>EAN</th>
+                        <th>Quantidade</th>
+                        <th>Preço Unitário</th>
+                        <th>Total Item</th>
 
-                {% for i in dicionario_ordem_compra %}
-                    {% set contador_item = loop.index0 + 1 %}
-                    {% set total_item = i[7] * i[8] %}
+                    </tr>
+                </thead>
+                <tbody>
 
-                <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                    <td>{{ i[0] }}</td>
-                    <td>{{ ordem_compra }}</td>
-                    <td>{{ contador_item }}</td>
-                    <td>{{ i[2] }}</td>
-                    <td>{{ i[3] }}</td>
-                    <td>{{ i[4] }}</td>
-                    <td>{{ i[5] }}</td>
-                    <td>{{ i[6] }}</td>
-                    <td>{{ i[7] }}</td> <!--quantidade -->
+                    {% for i in dicionario_ordem_compra %}
+                        {% set contador_item = loop.index0 + 1 %}
+                        {% set total_item = i[7] * i[8] %}
 
-                    <td>{{ i[8] }}</td> <!--preco unitario -->
-                    <td>{{ total_item }}</td> <!--total item -->
+                    <tr class=" width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                        <td>{{i[0]}}</td>
+                        <td>{{ordem_compra}}</td>
+                        <td>{{contador_item}}</td>
+                        <td>{{i[2]}}</td>
+                        <td>{{i[3]}}</td>
+                        <td>{{i[4]}}</td>
+                        <td>{{i[5]}}</td>
+                        <td>{{i[6]}}</td>
+                        <td>{{i[7]}}</td> <!--quantidade -->
 
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        <td>{{i[8]}}</td> <!--preco unitario -->
+                        <td>{{total_item}}</td> <!--total item -->
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
     </div>
 {% endblock %}
 

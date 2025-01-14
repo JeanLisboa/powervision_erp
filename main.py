@@ -65,13 +65,15 @@ class Sobre:
     def sobre():
         return modulos.sobre.sobre()
 
-
-
     @staticmethod
     @app.route('/estrutura', methods=['POST', 'GET'])
     def estrutura():
         return modulos.sobre.estrutura()
 
+    @staticmethod
+    @app.route('/fluxograma', methods=['POST', 'GET'])
+    def fluxograma():
+        return modulos.sobre.fluxograma()
 
     @staticmethod
     @app.route('/backlog', methods=['POST', 'GET'])
@@ -85,6 +87,8 @@ class Compras:
     @app.route('/cadastrar_fornecedores', methods=['POST', 'GET'])
     def cadastrar_fornecedores():
         return modulos.compras.cadastrar_fornecedores()
+
+
 
     @staticmethod
     @app.route('/editar_ordem_compra', methods=['POST', 'GET'])
@@ -105,6 +109,11 @@ class Compras:
     @app.route('/gerar_ordem_compra', methods=['POST', 'GET'])
     def gerar_ordem_compra():
         return modulos.compras.gerar_ordem_compra()
+
+    @staticmethod
+    @app.route('/adicionar_item_ordem_compra', methods=['POST', 'GET'])
+    def adicionar_item_ordem_compra():
+        return modulos.compras.adicionar_item_ordem_compra()
 
     @staticmethod
     @app.route('/relatorios_compras', methods=['POST', 'GET'])
