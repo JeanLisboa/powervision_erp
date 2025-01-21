@@ -166,7 +166,6 @@ def cadastrar_produtos():
 
         # fornecedor = ''
         if 'botao_incluir_item' in request.form:  # inclui o item na tabela
-
             print(geral.CorFonte.fonte_amarela() +'botao_incluir_item acionado' + geral.CorFonte.reset_cor())
             valida_campos = valida_campos()
             valida_ean_na_lista = valida_ean_na_lista()
@@ -343,6 +342,398 @@ def cadastrar_produtos():
                            data=Formatadores.formatar_data(Formatadores.os_data()))
 
 
+def analisar_ordem_de_compra():
+    resultado = ''
+    ordem_compra = ''
+    razao_social = ''
+    xml = ''
+    itens_xml = ''
+    detalhamento_ordem = ''
+    form_analisar_ordem_de_compra = ModCompras.AnalisarOrdemCompra()
+    nf = form_analisar_ordem_de_compra.nf.data
+    ordem_compra = form_analisar_ordem_de_compra.ordem_compra.data
+    razao_social = form_analisar_ordem_de_compra.razao_social.data
+    pesquisar_nf = form_analisar_ordem_de_compra.pesquisar_nf.data
+
+    if pesquisar_nf:
+        form_analisar_ordem_de_compra.ordem_compra.data = ''
+
+    if request.method == 'POST':
+        try:
+            if 'botao_pesquisar_notafiscal' in request.form:
+                print('botao_pesquisar_notafiscal ACIONADO')
+        except Exception as e:
+            print('erro ao pesquisar nf')
+            print(e)
+        try:
+            lista_teste = []
+            if 'botao_pesquisar_ordem_de_compra' in request.form:
+                print('botao_pesquisar_ordem_de_compra ACIONADO')
+                print(f'Ordem a pesquisar >>> {ordem_compra, razao_social, nf}')
+
+                # faz a busca na base de dados pela ordem de compra, ou pela razao social,  ou por ambos
+                resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra, razao_social)
+            status_ordem = Buscadores.OrdemCompra.verifica_status_ordem(ordem_compra)
+            if 'ordem_para_analise' in request.form:  # retorna a opção selecionada na tela
+                print('Ordem_para_analise ACIONADO')
+
+                ordem_para_analise = request.form.get('ordem_para_analise')
+                detalhamento_ordem = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_para_analise)
+                print(f'detalhamento_ordem >>> {detalhamento_ordem}')
+
+                print('------------Teste funçoes validadoras----------')
+                print(geral.ValidaStatusPedido.validacao_1(status_ordem))
+
+                nome_arquivo = Buscadores.Xml.buscar_arquivo(nf)
+                print(f'nome_arquivo = {nome_arquivo}')
+                cnpj = Buscadores.Xml.buscar_cnpj(nome_arquivo)
+
+                print(geral.ValidaStatusPedido.validacao_2(cnpj))
+                print(f'cnpj = {cnpj}')
+                print(geral.ValidaStatusPedido.validacao_3(status_ordem, ordem_compra))
+                print(geral.ValidaStatusPedido.validacao_4(nf,ordem_compra))
+                print('---------fim do teste funçoes validadoras------\n')
+
+                print('---------teste valida status pedido------\n')
+                geral.Validadores.valida_status_pedido(ordem_compra)
+
+                print('---------fim do teste valida status pedido------\n')
+
+                for i in detalhamento_ordem:  # itens da ordem de compra
+                    lista_cadastro_produto.append(i)
+                    # print(i[7])
+                print(lista_teste)
+                itens__nf = geral.Buscadores.Xml.retorna_xml(str(nf))
+                xml = Formatadores.formatar_xml(itens__nf)  # retorna o xml
+                print(ordem_para_analise)
+
+        except Exception as e:
+            print('erro ao pesquisar nf')
+            print(e)
+
+        try:
+            if 'botao_liberar_recebimento' in request.form:
+                print('botao_liberar recebimento ACIONADO')
+
+        except Exception as e:
+            print('erro ao liberar recebimento')
+            print(e)
+
+        try:
+            if 'botao_recusar_recebimento' in request.form:
+                print('botao_recusar_recebimento ACIONADO')
+        except Exception as e:
+            print('erro ao recusar recebimento')
+            print(e)
+
+    return render_template('compras/analisar_ordem_de_compra.html',
+                           xml=xml,
+                           itens_xml=itens_xml,
+                           itens_oc=0,
+                           retorno_ordem_compra=resultado,
+                           detalhamento_ordem=detalhamento_ordem,
+                           data=Formatadores.formatar_data(Formatadores.os_data()),
+                           form_analisar_ordem_de_compra=form_analisar_ordem_de_compra
+                           )
+
+
+def gerar_ordem_compra():
+    print(geral.CorFonte.fonte_amarela() + 'Função gerar_ordem_compra' + geral.CorFonte.reset_cor())
+    # 1 - Definição das variáveis globais
+    global contador_item
+    global lista_ordem_compra
+    global total_ordem_compra
+    global result_pesq_forn
+
+    # 2 - Inicialização das variáveis
+    total_ordem_compra = 0
+    result_pesq_forn = []
+    item_ordem_compra = []
+    linha_selecionada = []
+    form_gerar_ordem_compra = ModCompras.GerarOrdemCompra()
+    data = Formatadores.os_data()
+    descricao = form_gerar_ordem_compra.descricao.data
+    ordem_compra = form_gerar_ordem_compra.ordem_compra.data
+    unidade = form_gerar_ordem_compra.unidade.data
+    categoria = form_gerar_ordem_compra.categoria.data
+    codigo = form_gerar_ordem_compra.codigo.data
+    ean = form_gerar_ordem_compra.ean.data
+    quantidade = form_gerar_ordem_compra.quantidade.data
+    preco_unitario = form_gerar_ordem_compra.preco_unitario.data
+    preco_historico = form_gerar_ordem_compra.preco_historico.data
+    preco_medio = form_gerar_ordem_compra.preco_medio.data
+    ultimo_preco = form_gerar_ordem_compra.ultimo_preco.data
+    alert = geral.AlertaMsg.cad_fornecedor_realizado()
+
+    if 'total_ordem_compra' not in session:
+        session['total_ordem_compra'] = 0
+    if 'preco_medio' not in session:
+        session['preco_medio'] = 0
+    if 'ultimo_preco' not in session:
+        session['ultimo_preco'] = 0
+    if 'preco_historico' not in session:
+        session['preco_historico'] = 0
+    if 'ordens_em_aberto' not in session:
+        session['ordens_em_aberto'] = 0
+
+    try:
+        if preco_unitario is None or quantidade is None:
+            total_item = 0
+
+        else:
+            total_item = quantidade * preco_unitario
+
+    except Exception as e:
+        print('total_item = quantidade * preco_unitario')
+        print(e)
+        total_item = 0
+
+    if preco_medio is None:
+        preco_medio = 0
+    if preco_historico is None:
+        preco_historico = 0
+    if ultimo_preco is None:
+        ultimo_preco = 0
+    resultado = None
+    lista_ean_temp = []
+    lista_ean = []
+
+    # 4 - Processamentos
+    if request.method == 'POST':
+        item_ordem_compra.clear()
+        result_pesq_forn = ''
+        try:
+            if 'botao_pesquisar_fornecedor' in request.form:
+                print('botao_pesquisar_fornecedor ACIONADO')
+                fornecedor = form_gerar_ordem_compra.fornecedor.data
+                print(f'Fornecedor: {fornecedor}')
+                session['fornecedor'] = fornecedor
+                result_pesq_forn = Buscadores.OrdemCompra.buscar_pelo_fornecedor(fornecedor)
+                # print(f'result_pesq_forn SESSION >>> {result_pesq_forn}')
+                session['result_pesq_forn'] = result_pesq_forn
+        except Exception as e:
+            print('erro no botao_pesquisar_fornecedor')
+            print(e)
+
+        try:
+            if 'botao_selecionar_item' in request.form:
+                print('botao_selecionar_item ACIONADO')
+                result_pesq_forn = session.get('result_pesq_forn')  # Recupera da sessão
+                fornecedor = session.get('fornecedor')
+                # print(f'teste fornecedor após acionamento do botao_selecionar_item {fornecedor}')
+
+            def busca_ean_selecionado():
+                print(geral.CorFonte.fonte_amarela() + 'SubFunção busca_ean_selecionado' + geral.CorFonte.reset_cor())
+                item_selecionado = request.form.getlist('incluir_item')
+                for i in item_selecionado:
+                    if i != '':
+                        item_selecionado = i
+                # print(f'EAN selecionado: {item_selecionado}')
+                return item_selecionado
+
+            item_selecionado = busca_ean_selecionado()
+            print(f'ean do item selecionado para adicionar à ordem de compra: {item_selecionado}')
+
+            def formata_linha_para_identificar_posicao(item_selecionado, result_pesq_forn):
+                print(geral.CorFonte.fonte_amarela() + 'SubFunção formata_linha_para_identificar_posicao' + geral.CorFonte.reset_cor())
+                conta_linha = 0
+                print(f'item_selecionado: {item_selecionado} || ean: {ean}')
+                pos_pesquisa = ''
+                linha_selecionada = []
+                for i in result_pesq_forn:
+                    if i[3] == item_selecionado:
+                        print(f'lista_ordem_compra: {lista_ordem_compra}')
+                        # for i in lista_ordem_compra:
+                        #     print(f'loop for i: {i}')
+                        pos_pesquisa = conta_linha
+                        linha_selecionada.append(i)
+                        print(f'o item selecionado está na linha {conta_linha}')
+                        # print(f'linha selecionada >>>{linha_selecionada[0]}')
+                    conta_linha += 1
+                return linha_selecionada
+
+            # executado após o acionamento de "botao_selecionar_item"
+            linha_selecionada = formata_linha_para_identificar_posicao(item_selecionado, result_pesq_forn)
+            linha_selecionada = linha_selecionada[0]
+            print(f'linha_selecionada para incluir à ordem de compra: {linha_selecionada}')
+        except Exception as e:
+            print('erro no botao_selecionar_item')
+            print(f'linha_selecionada: {linha_selecionada}')
+            # print(f'linha_selecionada[0]: {linha_selecionada[0]}')
+            print(e)
+
+        try:
+            result_pesq_forn = session.get('result_pesq_forn', [])  # Recupera da sessão
+            fornecedor = session.get('fornecedor')
+            if 'botao_incluir_item' in request.form:
+                print('botao_incluir_item ACIONADO')
+                for i in lista_ordem_compra:
+                    print(f'{i[6]} ||| ean a incluir na ordem: {ean}')
+                    if i[6] == ean:
+                        print(geral.CorFonte.fonte_vermelha() + 'item já digitado na ordem de compra' + geral.CorFonte.reset_cor())
+                        break
+
+                    else:
+                        try:
+                            contador_item = len(lista_contador_item_compra)
+                        except Exception as e:
+                            print('erro no contador_item = len(lista_contador_item_compra)')
+                            print(e)
+                            contador_item = 0
+                        contador_item += 1
+                        print(f'Item {contador_item} incluído ')
+
+                def atualizar_lista_ordem_compra():
+                    """
+                        Atualiza as listas relacionadas à ordem de compra com base nos dados do front-end.
+
+                        1. Adiciona as informações do item atual à lista `item_ordem_compra`.
+                        2. Copia o conteúdo de `item_ordem_compra` para a lista `lista_ordem_compra` e a limpa.
+                        3. Calcula o total da ordem de compra somando o preço total do item atual.
+                       :return: Tupla contendo o total da ordem de compra e a lista `lista_ordem_compra`.
+                    """
+                    print(geral.CorFonte.fonte_amarela() +
+                          f'FUNÇÃO GERAR_ORDEM_COMPRA | SubFunção atualizar_lista_ordem_compra'
+                          + geral.CorFonte.reset_cor())
+                    print(f'contador_item: {contador_item} |\n'
+                          f'data: {data} |\n'
+                          f'ordem_compra: {ordem_compra} |\n'
+                          f'descricao: {descricao} |\n'
+                          f'unidade: {unidade} |\n'
+                          f'categoria: {categoria} |\n'
+                          f'codigo: {codigo} |\n'
+                          f'ean: {ean} |\n'
+                          f'quantidade: {quantidade} |\n'
+                          f'preco_unitario: {preco_unitario} |\n'
+                          f'total_item: {total_item}')
+
+                    total_ordem_compra = 0
+                    lista_contador_item_compra.append(contador_item)
+                    item_ordem_compra.append(Formatadores.data_formato_db(data))
+                    item_ordem_compra.append(ordem_compra)
+                    item_ordem_compra.append(descricao)
+                    item_ordem_compra.append(unidade)
+                    item_ordem_compra.append(categoria)
+                    item_ordem_compra.append(codigo)
+                    item_ordem_compra.append(ean)
+                    item_ordem_compra.append(quantidade)
+                    item_ordem_compra.append(preco_unitario)
+                    item_ordem_compra.append(total_item)
+                    # item_ordem_compra.append(ultimo_preco)
+                    # item_ordem_compra.append(preco_historico)
+                    # item_ordem_compra.append(preco_medio)
+                    lista_ordem_compra.append(item_ordem_compra[:])
+                    # print(lista_ordem_compra)
+                    item_ordem_compra.clear()
+                    total_ordem_compra += lista_ordem_compra[-1][9]
+                    return total_ordem_compra, lista_ordem_compra
+
+
+                total_ordem_compra = atualizar_lista_ordem_compra()
+
+        except Exception as e:
+            print('erro no botao_incluir_item')
+            print(e)
+
+        try:
+            if 'botao_consulta' in request.form:
+                fornecedor = session.get('fornecedor')
+                print(f'teste fornecedor após acionamento do botao_consulta {fornecedor}')
+                print('botao_consulta pressionado')
+
+        except Exception as e:
+            print('erro no botao_consulta')
+            print(e)
+
+        try:
+            if 'botao_submit_compra' in request.form:
+                print('botao_submit_compra ACIONADO')
+                cont_temp = 1
+                print(f'lista_ordem_compra {lista_ordem_compra}')
+                print(f'len de lista_ordem_compra >>>> {len(lista_ordem_compra)}')
+                while cont_temp <= len(lista_ordem_compra):
+                    for i in lista_ordem_compra:
+                        print(f'i linha {cont_temp} >>>> {i}')
+                        values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
+                                  f"'{i[1]}',"
+                                  f"'{cont_temp}',"
+                                  f"'{i[2]}',"
+                                  f"'{i[3]}',"
+                                  f"'{i[4]}',"
+                                  f"'{i[5]}',"
+                                  f"'{i[6]}',"
+                                  f"'{i[7]}',"
+                                  f"'{i[8]}',"
+                                  f"'{i[9]}',"
+                                  f"'{i[8]}',"
+                                  f"'{i[9]}',"
+                                  f"'{modulos.admin.usuario}'")
+
+                        query = (f'INSERT INTO ORDEM_COMPRA'
+                                 f'(DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, '
+                                 f'CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, USUARIO)'
+                                 f' VALUES ({values});')
+
+                        print(f'Query {cont_temp} >>>> {query}')
+                        mydb.connect()
+                        mycursor.execute(query)
+                        mycursor.fetchall()
+                        fechadb = 'SET SQL_SAFE_UPDATES = 1'
+                        mycursor.execute(fechadb)
+                        mycursor.fetchall()
+                        mydb.commit()
+                        mydb.close()
+                        cont_temp += 1
+                    lista_ordem_compra.clear()  # limpa a lista para a proxima ordem de compra
+
+                return redirect(url_for('gerar_ordem_compra'))
+
+        except Exception as e:
+            print('erro no botao_submit_compra')
+            print(e)
+
+        try:
+            if 'botao_limpar_ordem' in request.form:
+                print('botao_limpar_ordem pressionado')
+                lista_ordem_compra.clear()
+                total_ordem_compra = 0
+                # ultimo_preco = 0
+                # preco_medio = 0
+
+                return redirect(url_for('gerar_ordem_compra'))
+
+        except Exception as e:
+            print('erro no botao_limpar_ordem')
+            print(e)
+
+        alert = session.pop('alert', None)
+
+        if result_pesq_forn is None:
+            result_pesq_forn = 0
+
+    return render_template('compras/gerar_ordem_compra.html',
+                           alert=alert,
+                           # fornecedor=fornecedor,
+                           linha_selecionada=linha_selecionada,
+                           total_ordem_compra=total_ordem_compra,
+                           preco_medio=preco_medio,
+                           ultimo_preco=ultimo_preco,
+                           preco_historico=preco_historico,
+                           contador_item=contador_item,  # informa o proximo item a ser incluido=
+                           dicionario_ordem_compra=lista_ordem_compra,
+                           ordens_em_aberto=Buscadores.OrdemCompra.ordem_compra_em_aberto(codigo),
+                           # informa os itens na ordem de compra para renderizar na tabela
+                           relatorio_produtos=Buscadores.mostrar_tabela_produtos(),
+                           # serve para mostrar os produtos na tela popup
+                           resultado_pesquisa=resultado,  # informa no html o resultado da busca pelo código
+                           result_pesq_forn=result_pesq_forn,
+                           form_gerar_ordem_compra=form_gerar_ordem_compra,  # renderiza os forms na pagina html
+                           cod_produto=AtualizaCodigo.cod_produto(),  # informa o proximo codigo do produto
+                           ordem_compra=AtualizaCodigo.ordem_compra(),
+                           # informa o proximo numero da ordem de compra
+                           data=Formatadores.formatar_data(Formatadores.os_data()))
+
+
 def editar_ordem_compra():
     form_editar_ordem_compra = ModCompras.EditarOrdemCompra()
     ordem_compra = request.form.get('pesquisar_ordem_compra')
@@ -361,6 +752,8 @@ def editar_ordem_compra():
                     print(f'ordem_pesquisada: {ordem_pesquisada}')
                     session['result_ordem_pesquisada'] = ordem_pesquisada
                     ordem_compra = ordem_pesquisada[0][1]
+                    session['ordem_compra'] = ordem_compra
+
 
                 except Exception as e:
                     print(f"Erro ao buscar ordem de compra: {e}")
@@ -565,429 +958,180 @@ def editar_ordem_compra():
                            data=Formatadores.formatar_data(Formatadores.os_data()))
 
 
-def analisar_ordem_de_compra():
-    resultado = ''
-    ordem_compra = ''
-    razao_social = ''
-    xml = ''
-    itens_xml = ''
-    detalhamento_ordem = ''
-    form_analisar_ordem_de_compra = ModCompras.AnalisarOrdemCompra()
-    nf = form_analisar_ordem_de_compra.nf.data
-    ordem_compra = form_analisar_ordem_de_compra.ordem_compra.data
-    razao_social = form_analisar_ordem_de_compra.razao_social.data
-    pesquisar_nf = form_analisar_ordem_de_compra.pesquisar_nf.data
-
-    if pesquisar_nf:
-        form_analisar_ordem_de_compra.ordem_compra.data = ''
-
-    if request.method == 'POST':
-        try:
-            if 'botao_pesquisar_notafiscal' in request.form:
-                print('botao_pesquisar_notafiscal ACIONADO')
-        except Exception as e:
-            print('erro ao pesquisar nf')
-            print(e)
-        try:
-            lista_teste = []
-            if 'botao_pesquisar_ordem_de_compra' in request.form:
-                print('botao_pesquisar_ordem_de_compra ACIONADO')
-                print(f'Ordem a pesquisar >>> {ordem_compra, razao_social, nf}')
-
-                # faz a busca na base de dados pela ordem de compra, ou pela razao social,  ou por ambos
-                resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra, razao_social)
-            status_ordem = Buscadores.OrdemCompra.verifica_status_ordem(ordem_compra)
-            if 'ordem_para_analise' in request.form:  # retorna a opção selecionada na tela
-                print('Ordem_para_analise ACIONADO')
-
-                ordem_para_analise = request.form.get('ordem_para_analise')
-                detalhamento_ordem = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_para_analise)
-                print(f'detalhamento_ordem >>> {detalhamento_ordem}')
-
-                print('------------Teste funçoes validadoras----------')
-                print(geral.ValidaStatusPedido.validacao_1(status_ordem))
-
-                nome_arquivo = Buscadores.Xml.buscar_arquivo(nf)
-                print(f'nome_arquivo = {nome_arquivo}')
-                cnpj = Buscadores.Xml.buscar_cnpj(nome_arquivo)
-
-                print(geral.ValidaStatusPedido.validacao_2(cnpj))
-                print(f'cnpj = {cnpj}')
-                print(geral.ValidaStatusPedido.validacao_3(status_ordem, ordem_compra))
-                print(geral.ValidaStatusPedido.validacao_4(nf,ordem_compra))
-                print('---------fim do teste funçoes validadoras------\n')
-
-                print('---------teste valida status pedido------\n')
-                geral.Validadores.valida_status_pedido(ordem_compra)
-
-                print('---------fim do teste valida status pedido------\n')
-
-
-
-                for i in detalhamento_ordem:  # itens da ordem de compra
-                    lista_cadastro_produto.append(i)
-                    # print(i[7])
-                print(lista_teste)
-                itens__nf = geral.Buscadores.Xml.retorna_xml(str(nf))
-                xml = Formatadores.formatar_xml(itens__nf)  # retorna o xml
-                print(ordem_para_analise)
-
-
-        except Exception as e:
-            print('erro ao pesquisar nf')
-            print(e)
-
-        try:
-            if 'botao_liberar_recebimento' in request.form:
-                print('botao_liberar recebimento ACIONADO')
-
-        except Exception as e:
-            print('erro ao liberar recebimento')
-            print(e)
-
-        try:
-            if 'botao_recusar_recebimento' in request.form:
-                print('botao_recusar_recebimento ACIONADO')
-        except Exception as e:
-            print('erro ao recusar recebimento')
-            print(e)
-
-    return render_template('compras/analisar_ordem_de_compra.html',
-                           xml=xml,
-                           itens_xml=itens_xml,
-                           itens_oc=0,
-                           retorno_ordem_compra=resultado,
-                           detalhamento_ordem=detalhamento_ordem,
-                           data=Formatadores.formatar_data(Formatadores.os_data()),
-                           form_analisar_ordem_de_compra=form_analisar_ordem_de_compra
-                           )
-
-
-def gerar_ordem_compra():
-    print(geral.CorFonte.fonte_amarela() + 'Função gerar_ordem_compra' + geral.CorFonte.reset_cor())
-    # 1 - Definição das variáveis globais
-    global contador_item
-    global lista_ordem_compra
-    global total_ordem_compra
-    global result_pesq_forn
-
-    # 2 - Inicialização das variáveis
-    total_ordem_compra = 0
-    result_pesq_forn = []
+def adicionar_item_ordem_compra():
+    print(geral.CorFonte.fonte_amarela() + 'adicionar_item_ordem_compra' + geral.CorFonte.reset_cor())
     item_ordem_compra = []
-    linha_selecionada = []
-    form_gerar_ordem_compra = ModCompras.GerarOrdemCompra()
+    lista_ordem_compra_com_item_add = []
+    form_adicionar_item_ordem_compra = ModCompras.AdicionarItemOrdemCompra()
     data = Formatadores.os_data()
-    descricao = form_gerar_ordem_compra.descricao.data
-    ordem_compra = form_gerar_ordem_compra.ordem_compra.data
-    # fornecedor = form_gerar_ordem_compra.fornecedor.data
-    unidade = form_gerar_ordem_compra.unidade.data
-    categoria = form_gerar_ordem_compra.categoria.data
-    codigo = form_gerar_ordem_compra.codigo.data
-    ean = form_gerar_ordem_compra.ean.data
-    quantidade = form_gerar_ordem_compra.quantidade.data
-    preco_unitario = form_gerar_ordem_compra.preco_unitario.data
-    preco_historico = form_gerar_ordem_compra.preco_historico.data
-    preco_medio = form_gerar_ordem_compra.preco_medio.data
-    ultimo_preco = form_gerar_ordem_compra.ultimo_preco.data
+    descricao = form_adicionar_item_ordem_compra.descricao.data
+    unidade = form_adicionar_item_ordem_compra.unidade.data
+    categoria = form_adicionar_item_ordem_compra.categoria.data
+    codigo = form_adicionar_item_ordem_compra.codigo.data
+    ean = form_adicionar_item_ordem_compra.ean.data
+    quantidade = form_adicionar_item_ordem_compra.quantidade.data
+    preco_unitario = form_adicionar_item_ordem_compra.preco_unitario.data
     alert = geral.AlertaMsg.cad_fornecedor_realizado()
-
-    if 'total_ordem_compra' not in session:
-        session['total_ordem_compra'] = 0
-    if 'preco_medio' not in session:
-        session['preco_medio'] = 0
-    if 'ultimo_preco' not in session:
-        session['ultimo_preco'] = 0
-    if 'preco_historico' not in session:
-        session['preco_historico'] = 0
-    if 'ordens_em_aberto' not in session:
-        session['ordens_em_aberto'] = 0
+    form_editar_ordem_compra = ModCompras.EditarOrdemCompra()
+    ordem_compra = session.get('ordem_compra')
+    fornecedor = session.get('fornecedor')
+    ordem_pesquisada = session.get('result_ordem_pesquisada')
+    ordem_pesquisada_COPIA = []
+    print(f'Ordem Pesquisada: {ordem_pesquisada}')
+    result_pesq_forn = Buscadores.OrdemCompra.buscar_pelo_fornecedor(fornecedor)
 
     try:
-        if preco_unitario is None or quantidade is None:
-            total_item = 0
+        if 'botao_selecionar_item' in request.form:
+            print('botao_selecionar_item ACIONADO')
+            #  SELECIONA LINHA DA TABELA DE ITENS CADASTRADOS NO FORNECEDOR
+            result_pesq_forn = session.get('result_pesq_forn')  # Recupera da sessão
+            fornecedor = session.get('fornecedor')
+            print(f'Result_pesquisa_forn: {result_pesq_forn}')
+            # print(f'Dicionário Ordem compra: {lista_ordem_compra}')
+        def busca_ean_selecionado():
+            print(geral.CorFonte.fonte_amarela() + 'SubFunção busca_ean_selecionado' + geral.CorFonte.reset_cor())
+            item_selecionado = request.form.getlist('incluir_item')
+            for i in item_selecionado:
+                if i != '':
+                    item_selecionado = i
+            # print(f'EAN selecionado: {item_selecionado}')
+            return item_selecionado
 
-        else:
-            total_item = quantidade * preco_unitario
+        item_selecionado = busca_ean_selecionado()
+        print(f'ean do item selecionado: {item_selecionado}')
+
+        def formata_linha_para_identificar_posicao(item_selecionado, result_pesq_forn):
+            print(
+                geral.CorFonte.fonte_amarela() + 'SubFunção formata_linha_para_identificar_posicao' + geral.CorFonte.reset_cor())
+            conta_linha = 0
+
+            pos_pesquisa = ''
+            linha_selecionada = []
+            for i in result_pesq_forn:
+                if i[3] == item_selecionado:
+                    print(f'lista_ordem_compra: {lista_ordem_compra}')
+                    # for i in lista_ordem_compra:
+                    #     print(f'loop for i: {i}')
+                    pos_pesquisa = conta_linha
+                    linha_selecionada.append(i)
+                    print(f'o item selecionado está na linha {conta_linha}')
+                    # print(f'linha selecionada >>>{linha_selecionada[0]}')
+                conta_linha += 1
+            return linha_selecionada
+
+        linha_selecionada = formata_linha_para_identificar_posicao(item_selecionado, result_pesq_forn)
+        linha_selecionada = linha_selecionada[0]
+        print(f'linha_selecionada: {linha_selecionada}')
 
     except Exception as e:
-        print('total_item = quantidade * preco_unitario')
+        print('erro no botao_selecionar_item')
         print(e)
-        total_item = 0
 
-    if preco_medio is None:
-        preco_medio = 0
-    if preco_historico is None:
-        preco_historico = 0
-    if ultimo_preco is None:
-        ultimo_preco = 0
-    resultado = None
-    lista_ean_temp = []
-    lista_ean = []
-    # 3 - funções locais
+    #  incluir try da linha 601
+    try:
+        if 'botao_incluir_item' in request.form:
+            print('botao_incluir_item ACIONADO.....')
+            ordem_pesquisada_COPIA = ordem_pesquisada
 
-    # def valida_ean_na_lista(ean):
-    #     print(geral.CorFonte.fonte_amarela() + 'funcao verifica_ean_na_lista' + geral.CorFonte.reset_cor())
-    #     print('Verifica se o ean já consta no pedido')
-    #     lista_ean_temp = []
-    #     if len(lista_ean) == 0:  # ou if lista_cadastro_produto == []
-    #         print('lista vazia')
-    #         lista_ean_temp.append(ean)
-    #         lista_ean.append(lista_ean_temp[:])
-    #         lista_ean_temp.clear()
-    #
-    #         print(f'lista_ean: {lista_ean}')
-    #         return True
-    #     else:
-    #         for i in lista_ean:  # verifica se o item ja existe no pedido
-    #             print(f'for lista_cadastro_produto {i}')
-    #             if i == ean:
-    #                 print('ean ja existente na lista de itens a cadastrar')
-    #                 return False
-    #             else:
-    #                 print('ean ainda nao digitado.')
-    #                 lista_ean_temp.append(ean)
-    #                 lista_ean.append(lista_ean_temp)
-    #                 lista_ean_temp.clear()
-    #
-    #                 print(f'lista_ean: {lista_ean}')
-    #                 return True
+            # IDENTIFICA O PEDIDO DE COMPRA
+            ordem_pesquisada_ = session.get('result_ordem_pesquisada')
+            print(f'ordem_pesquisada_: {ordem_pesquisada_}')
 
-    # 4 - Processamentos
-    if request.method == 'POST':
-        item_ordem_compra.clear()
-        result_pesq_forn = ''
+            # VALIDA O EAN QUE ESTÁ PARA SER INCLUÍDO
+            for i in ordem_pesquisada_:
+                if i[7] == ean:  # funcionando
+                    print(geral.CorFonte.fonte_vermelha() + 'item já digitado na ordem de compra' + geral.CorFonte.reset_cor())
+                    break
 
-        try:
-            if 'botao_pesquisar_fornecedor' in request.form:
-                print('botao_pesquisar_fornecedor ACIONADO')
-                fornecedor = form_gerar_ordem_compra.fornecedor.data
-                print(f'Fornecedor: {fornecedor}')
-                session['fornecedor'] = fornecedor
-                result_pesq_forn = Buscadores.OrdemCompra.buscar_pelo_fornecedor(fornecedor)
-                # print(f'result_pesq_forn SESSION >>> {result_pesq_forn}')
-                session['result_pesq_forn'] = result_pesq_forn
-        except Exception as e:
-            print('erro no botao_pesquisar_fornecedor')
-            print(e)
+                else:
+                    continue
 
-        try:
-            if 'botao_selecionar_item' in request.form:
-                print('botao_selecionar_item ACIONADO')
-                result_pesq_forn = session.get('result_pesq_forn')  # Recupera da sessão
-                fornecedor = session.get('fornecedor')
-                # print(f'teste fornecedor após acionamento do botao_selecionar_item {fornecedor}')
+            def atualizar_lista_ordem_compra():
+                print(geral.CorFonte.fonte_amarela() +
+                      'FUNÇÃO ADICIONAR_ITEM_ORDEM_COMPRA | SubFunção atualizar_lista_ordem_compra'
+                      + geral.CorFonte.reset_cor())
 
-            def busca_ean_selecionado():
-                print(geral.CorFonte.fonte_amarela() + 'SubFunção busca_ean_selecionado' + geral.CorFonte.reset_cor())
-                item_selecionado = request.form.getlist('incluir_item')
-                for i in item_selecionado:
-                    if i != '':
-                        item_selecionado = i
-                # print(f'EAN selecionado: {item_selecionado}')
-                return item_selecionado
-
-            item_selecionado = busca_ean_selecionado()
-            print(f'ean do item selecionado: {item_selecionado}')
-
-            def formata_linha_para_identificar_posicao(item_selecionado, result_pesq_forn):
-                print(geral.CorFonte.fonte_amarela() + 'SubFunção formata_linha_para_identificar_posicao' + geral.CorFonte.reset_cor())
-                conta_linha = 0
-                print(f'item_selecionado: {item_selecionado} || ean: {ean}')
-                pos_pesquisa = ''
-                linha_selecionada = []
-                for i in result_pesq_forn:
-                    if i[3] == item_selecionado:
-                        print(f'lista_ordem_compra: {lista_ordem_compra}')
-                        # for i in lista_ordem_compra:
-                        #     print(f'loop for i: {i}')
-                        pos_pesquisa = conta_linha
-                        linha_selecionada.append(i)
-                        print(f'o item selecionado está na linha {conta_linha}')
-                        # print(f'linha selecionada >>>{linha_selecionada[0]}')
-                    conta_linha += 1
-                return linha_selecionada
-
-            # executado após o acinamento de "botao_selecionar_item"
-            linha_selecionada = formata_linha_para_identificar_posicao(item_selecionado, result_pesq_forn)
-            linha_selecionada = linha_selecionada[0]
-            print(f'linha_selecionada: {linha_selecionada}')
-            # print(f'linha_selecionada[0]: {linha_selecionada[0]}')
-
-        except Exception as e:
-            print('erro no botao_selecionar_item')
-            print(f'linha_selecionada: {linha_selecionada}')
-            # print(f'linha_selecionada[0]: {linha_selecionada[0]}')
-            print(e)
-
-        try:
-            result_pesq_forn = session.get('result_pesq_forn', [])  # Recupera da sessão
-            fornecedor = session.get('fornecedor')
-            if 'botao_incluir_item' in request.form:
-                print('botao_incluir_item ACIONADO')
-                print('result_pesq_forn pos acionamento do incluir_item')
-                for i in lista_ordem_compra:
-                    print(f'{i[6]} ||| ean a incluir na ordem: {ean}')
-                    if i[6] == ean:
-                        print(geral.CorFonte.fonte_vermelha() + 'item já digitado na ordem de compra' + geral.CorFonte.reset_cor())
-
-                        break
-
-                    else:
-
-                        try:
-                            contador_item = len(lista_contador_item_compra)
-                        except Exception as e:
-                            print('erro no contador_item = len(lista_contador_item_compra)')
-                            print(e)
-                            contador_item = 0
-                        #  TRANSFORMAR EM FUNÇÃO
-                        contador_item += 1
-                        print(f'Item {contador_item} incluído ')
-
-                # retorna total_ordem_compra, lista_ordem_compra
-                def atualizar_lista_ordem_compra():
-                    print(geral.CorFonte.fonte_amarela() + 'SubFunção atualizar_lista_ordem_compra'+ geral.CorFonte.reset_cor())
-                    total_ordem_compra = 0
-                    lista_contador_item_compra.append(contador_item)
-                    item_ordem_compra.append(Formatadores.data_formato_db(data))
-                    item_ordem_compra.append(ordem_compra)
-                    item_ordem_compra.append(descricao)
-                    item_ordem_compra.append(unidade)
-                    item_ordem_compra.append(categoria)
-                    item_ordem_compra.append(codigo)
-                    item_ordem_compra.append(ean)
-                    item_ordem_compra.append(quantidade)
-                    item_ordem_compra.append(preco_unitario)
-                    item_ordem_compra.append(total_item)
-                    # item_ordem_compra.append(ultimo_preco)
-                    # item_ordem_compra.append(preco_historico)
-                    # item_ordem_compra.append(preco_medio)
-                    lista_ordem_compra.append(item_ordem_compra[:])
-                    # print(lista_ordem_compra)
-                    item_ordem_compra.clear()
-                    total_ordem_compra += lista_ordem_compra[-1][9]
-                    return total_ordem_compra, lista_ordem_compra
-                print('---------------------------------------------------')
-                print(f'ean: {ean}')
-                total_ordem_compra = atualizar_lista_ordem_compra()
-
-        except Exception as e:
-            print('erro no botao_incluir_item')
-            print(e)
-
-        try:
-            if 'botao_consulta' in request.form:
-                fornecedor = session.get('fornecedor')
-                print(f'teste fornecedor após acionamento do botao_consulta {fornecedor}')
-                print('botao_consulta pressionado')
-
-        except Exception as e:
-            print('erro no botao_consulta')
-            print(e)
-
-        try:
-            if 'botao_submit_compra' in request.form:
-                print('botao_submit_compra ACIONADO')
-                cont_temp = 1
-                print(f'lista_ordem_compra {lista_ordem_compra}')
-                print(f'len de lista_ordem_compra >>>> {len(lista_ordem_compra)}')
-                while cont_temp <= len(lista_ordem_compra):
-                    for i in lista_ordem_compra:
-                        print(f'i linha {cont_temp} >>>> {i}')
-                        values = (f"'{date.strftime(data, '%Y-%m-%d')}',"
-                                  f"'{i[1]}',"
-                                  f"'{cont_temp}',"
-                                  f"'{i[2]}',"
-                                  f"'{i[3]}',"
-                                  f"'{i[4]}',"
-                                  f"'{i[5]}',"
-                                  f"'{i[6]}',"
-                                  f"'{i[7]}',"
-                                  f"'{i[8]}',"
-                                  f"'{i[9]}',"
-                                  f"'{i[8]}',"
-                                  f"'{i[9]}',"
-                                  f"'{modulos.admin.usuario}'")
-
-                        query = (f'INSERT INTO ORDEM_COMPRA'
-                                 f'(DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, '
-                                 f'CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, USUARIO)'
-                                 f' VALUES ({values});')
-
-                        print(f'Query {cont_temp} >>>> {query}')
-                        mydb.connect()
-                        mycursor.execute(query)
-                        mycursor.fetchall()
-                        fechadb = 'SET SQL_SAFE_UPDATES = 1'
-                        mycursor.execute(fechadb)
-                        mycursor.fetchall()
-                        mydb.commit()
-                        mydb.close()
-                        cont_temp += 1
-                    lista_ordem_compra.clear()  # limpa a lista para a proxima ordem de compra
-
-                return redirect(url_for('gerar_ordem_compra'))
-
-        except Exception as e:
-            print('erro no botao_submit_compra')
-            print(e)
-
-        try:
-            if 'botao_limpar_ordem' in request.form:
-                print('botao_limpar_ordem pressionado')
-                lista_ordem_compra.clear()
                 total_ordem_compra = 0
-                # ultimo_preco = 0
-                # preco_medio = 0
+                try:
+                    if preco_unitario is None or quantidade is None:
+                        total_item = 0
+                    else:
+                        total_item = quantidade * preco_unitario
 
-                return redirect(url_for('gerar_ordem_compra'))
+                except Exception as e:
+                    print('total_item = quantidade * preco_unitario')
+                    print(e)
+                    total_item = 0
+                print('linha selecionada completa:')
+                print(linha_selecionada)
+                print(f'data: {data} |\n'
+                      f'ordem_compra: {ordem_compra} |\n'
+                      f'descricao: {descricao} |\n'
+                      f'unidade: {linha_selecionada[5]} |\n'
+                      f'categoria: {linha_selecionada[7]} |\n'
+                      f'codigo: {linha_selecionada[1]} |\n'
+                      f'ean: {ean} |\n'
+                      f'quantidade: {quantidade} |\n'
+                      f'preco_unitario: {preco_unitario} |\n'
+                      f'total_item: {total_item}')
 
-        except Exception as e:
-            print('erro no botao_limpar_ordem')
-            print(e)
+                item_ordem_compra.append(linha_selecionada[0]) # 0 - data -  ok
+                item_ordem_compra.append(ordem_compra)  # 1 - ordem_compra =  ok
+                lista_contador_item_compra.append(contador_item)  # 2 - contador item - ok
+                item_ordem_compra.append('0')  # --- sem uso
+                item_ordem_compra.append(linha_selecionada[4])  # - 3 - descricao - ok
+                item_ordem_compra.append(linha_selecionada[5])  # - 6 - codigo - ok
+                item_ordem_compra.append(linha_selecionada[6])  # - 7 - categoria - ok
+                item_ordem_compra.append(linha_selecionada[1])  # - 8 - codigo
+                item_ordem_compra.append(linha_selecionada[3])  # - 4 - ean - ok
+                item_ordem_compra.append(quantidade)  # - 9 - valor_unit - ok
+                item_ordem_compra.append(preco_unitario)  # - 10 - valor_total
+                item_ordem_compra.append(total_item)  # - 11 - valor_total - ok
 
-        alert = session.pop('alert', None)
-
-        if result_pesq_forn is None:
-            result_pesq_forn = 0
-
-    return render_template('compras/gerar_ordem_compra.html',
-                           alert=alert,
-                           # fornecedor=fornecedor,
-                           linha_selecionada=linha_selecionada,
-                           total_ordem_compra=total_ordem_compra,
-                           preco_medio=preco_medio,
-                           ultimo_preco=ultimo_preco,
-                           preco_historico=preco_historico,
-                           contador_item=contador_item,  # informa o proximo item a ser incluido=
-                           dicionario_ordem_compra=lista_ordem_compra,
-                           ordens_em_aberto=Buscadores.OrdemCompra.ordem_compra_em_aberto(codigo),
-                           # informa os itens na ordem de compra para renderizar na tabela
-                           relatorio_produtos=Buscadores.mostrar_tabela_produtos(),
-                           # serve para mostrar os produtos na tela popup
-                           resultado_pesquisa=resultado,  # informa no html o resultado da busca pelo código
-                           result_pesq_forn=result_pesq_forn,
-                           form_gerar_ordem_compra=form_gerar_ordem_compra,  # renderiza os forms na pagina html
-                           cod_produto=AtualizaCodigo.cod_produto(),  # informa o proximo codigo do produto
-                           ordem_compra=AtualizaCodigo.ordem_compra(),
-                           # informa o proximo numero da ordem de compra
-                           data=Formatadores.formatar_data(Formatadores.os_data()))
+                lista_ordem_compra.append(item_ordem_compra[:])
+                for i in lista_ordem_compra:
+                    (tuple(i))
+                item_ordem_compra.clear()
+                return i
 
 
+            atualizar_lista_ordem_compra()
+            linha_a_incluir_na_ordem_compra = tuple(atualizar_lista_ordem_compra())
+            lista_ordem_compra.clear()
+            print('tupla teste')
+            print(linha_a_incluir_na_ordem_compra)
 
-def adicionar_item_ordem_compra():
-    #  enviar o numero do pedido
-    #  enviar lista de itens do pedido
-    #  A tela deve conter uma tela similar à tabela inferior da tela gerar ordem, so que mais simplificada
-    # deve conter a relação de produtos cadastrados daquele cliente específico
-    form_editar_ordem_compra = ModCompras.EditarOrdemCompra()
+            ordem_pesquisada.append(linha_a_incluir_na_ordem_compra)
+            print('Ordem Pesquisada Atualizada')
+            print(ordem_pesquisada)
+            # ordem_pesquisada.clear()
 
-    form_adicionar_item_ordem_compra = ModCompras.AdicionarItemOrdemCompra()
+    except Exception as e:
+        print('erro no botao_incluir_item ( função adicionar_item_ordem_compra() ')
+        print(e)
+
+    # PROXIMO BACKLOG:
+    # ATUALIZAR ORDEMCOMPRA
+    # deve-se criar uma cópia da ordem_pesquisada
+    # se o botao salvar for acionado, ordem_pesquisada = ordem_pesquisada_copia
+    # se o botão cancelar for acionado, limpar ordem_pesquisada_copia, ou seja, limpar a tela
+    # # esta ordem deve receber a tupla linha_a_incluir_na_ordem_compra
+
+    # EXIBIR OC ATUALIZADA
+    # LIMPAR CAMPOS
+
+
+
+    # print(teste_teste)
     return render_template('compras/adicionar_item_ordem_compra.html',
+                           ordem_compra=ordem_compra,
+                           dicionario_ordem_compra=lista_ordem_compra_com_item_add,
+                           linha_selecionada=linha_selecionada,
+                           result_pesq_forn=result_pesq_forn,
                            data=Formatadores.formatar_data(Formatadores.os_data()),
                            form_editar_ordem_compra=form_editar_ordem_compra,
-                           form_adicionar_item_ordem_compra=form_adicionar_item_ordem_compra  # renderiza os forms na pagina html
+                           form_adicionar_item_ordem_compra=form_adicionar_item_ordem_compra,  # renderiza os forms na pagina html
+                           ordem_pesquisada=ordem_pesquisada
                            )
 
 
