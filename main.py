@@ -82,13 +82,10 @@ class Sobre:
 
 class Compras:
 
-
     @staticmethod
     @app.route('/cadastrar_fornecedores', methods=['POST', 'GET'])
     def cadastrar_fornecedores():
         return modulos.compras.cadastrar_fornecedores()
-
-
 
     @staticmethod
     @app.route('/editar_ordem_compra', methods=['POST', 'GET'])
@@ -132,7 +129,6 @@ class Logistica:
     @app.route('/estoque', methods=['POST', 'GET'])
     def estoque():
         return modulos.logistica.estoque()
-
 
     @staticmethod
     @app.route('/entrada_ordem_compra', methods=['POST', 'GET'])

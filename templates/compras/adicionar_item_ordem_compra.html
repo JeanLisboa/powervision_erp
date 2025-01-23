@@ -11,51 +11,6 @@ TELA ADICIONAR ITEM À ORDEM DE COMPRA
     <form action="" method="POST">
         {{form_adicionar_item_ordem_compra.csrf_token}}
         <!-- div1 -->
-        <div class="mb-1 float-child-ordem-compra1">
-            
-            <div class="col form-label btn btn-light">
-                {{form_adicionar_item_ordem_compra.data.label}}
-                {{form_adicionar_item_ordem_compra.data(class="form-control tam_campo_data", value=data)}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_editar_ordem_compra.pesquisar_ordem_compra.label}}
-                   {% if ordem_compra is not none %}
-                        {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", value=ordem_compra)}}
-                   {% else %}
-                       {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data, value=ordem_compra")}}
-                   {% endif %}
-            </div>
-            <br>
-            <div class="col form-label btn btn-light">
-                {{form_adicionar_item_ordem_compra.ean.label }}
-                {{form_adicionar_item_ordem_compra.ean(class="form-control", id=item_a_incluir,  value=linha_selecionada[3])}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_adicionar_item_ordem_compra.descricao.label}}
-                {{form_adicionar_item_ordem_compra.descricao(class="form-control tam_campo_descricao", id=item_a_incluir, value=linha_selecionada[4])}}
-            </div>
-            <br>
-            <br>
-            <div class="col form-label btn btn-light">
-                {{form_adicionar_item_ordem_compra.quantidade.label }}
-               {{form_adicionar_item_ordem_compra.quantidade(class="form-control",  id=item_a_incluir, value=1) }}
-            </div>
-
-
-            <div class="col form-label btn btn-light">
-                {{form_adicionar_item_ordem_compra.preco_unitario.label}}
-                {{form_adicionar_item_ordem_compra.preco_unitario(class="form-control", id=item_a_incluir, value=linha_selecionada[7], id="preco_unitario") }}
-            </div>
-
-            <div class="btn">
-                {{form_adicionar_item_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3") }}
-            </div>
-             <div class="col form-label btn btn-light">
-                Atualizar ordem-------|||||-------Cancelar
-            </div>
-            <script src="static/js/pesquisa_produto.js" defer></script>
-
-        </div>
         <div class="float-child-ordem-compra2">
             <div  class="borda_simples  container_com_barra_rolagem">
                 <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="">
@@ -98,6 +53,57 @@ TELA ADICIONAR ITEM À ORDEM DE COMPRA
             </table>
             </div>
             <br>
+        </div>
+        <div class="mb-1 float-child-ordem-compra1">
+
+            <div class="col form-label btn btn-light">
+                {{form_adicionar_item_ordem_compra.data.label}}
+                {{form_adicionar_item_ordem_compra.data(class="form-control tam_campo_data", value=data)}}
+            </div>
+            <div class="col form-label btn btn-light">
+                {{form_editar_ordem_compra.pesquisar_ordem_compra.label}}
+                {% if ordem_compra is not none %}
+                {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", value=ordem_compra)}}
+                {% else %}
+                {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data, value=ordem_compra")}}
+                {% endif %}
+            </div>
+            <br>
+            <div class="col form-label btn btn-light">
+                {{form_adicionar_item_ordem_compra.ean.label }}
+                {{form_adicionar_item_ordem_compra.ean(class="form-control", id=item_a_incluir,  value=linha_selecionada[3])}}
+            </div>
+            <div class="col form-label btn btn-light">
+                {{form_adicionar_item_ordem_compra.descricao.label}}
+                {{form_adicionar_item_ordem_compra.descricao(class="form-control tam_campo_descricao", id=item_a_incluir, value=linha_selecionada[4])}}
+            </div>
+            <br>
+            <br>
+            <div class="col form-label btn btn-light">
+                {{form_adicionar_item_ordem_compra.quantidade.label }}
+                {{form_adicionar_item_ordem_compra.quantidade(class="form-control",  id=item_a_incluir, value=1) }}
+            </div>
+
+
+            <div class="col form-label btn btn-light">
+                {{form_adicionar_item_ordem_compra.preco_unitario.label}}
+                {{form_adicionar_item_ordem_compra.preco_unitario(class="form-control", id=item_a_incluir, value=linha_selecionada[7], id="preco_unitario") }}
+            </div>
+
+            <div class="btn">
+                {{form_adicionar_item_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3") }}
+            </div>
+
+            <div class="col form-label btn btn-light">
+
+                {{form_adicionar_item_ordem_compra.botao_submit(class="btn btn-primary mt-3") }}
+            </div>
+            <div class="col form-label btn btn-light">
+                {{form_adicionar_item_ordem_compra.botao_cancelar(class="btn btn-primary mt-3") }}
+
+            </div>
+            <script src="static/js/pesquisa_produto.js" defer></script>
+
         </div>
 
     </form>

@@ -1,0 +1,97 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criador de Fluxogramas</title>
+  <style>
+    #canvas {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #ddd;
+      position: relative;
+    }
+    .node {
+      position: absolute;
+      border: 1px solid #000;
+      padding: 10px;
+      background: #fff;
+      cursor: move;
+    }
+  </style>
+</head>
+<body>
+  <h1>Criador de Fluxogramas</h1>
+  <button onclick="addNode()">Adicionar Nó</button>
+  <button onclick="saveDiagram()">Salvar</button>
+  <button onclick="loadDiagram()">Carregar</button>
+  <div id="canvas"></div>
+  <script src="app.js"></script>
+</body>
+</html>
+
+{% endblock %}
+
+<script>
+
+  const canvas = document.getElementById('canvas');
+let nodes = [];
+
+// Função para adicionar um novo nó
+function addNode() {
+  const node = document.createElement('div');
+  node.className = 'node';
+  node.contentEditable = true; // Permite edição de texto
+  node.style.top = `${Math.random() * 400}px`;
+  node.style.left = `${Math.random() * 600}px`;
+
+  // Torna o nó arrastável
+  node.draggable = true;
+  node.ondragstart = (e) => {
+    e.dataTransfer.setData('text/plain', e.target.id);
+  };
+  node.ondragend = (e) => {
+    e.target.style.top = `${e.pageY - 25}px`;
+    e.target.style.left = `${e.pageX - 25}px`;
+  };
+
+  canvas.appendChild(node);
+  nodes.push({ id: node.id, x: node.style.left, y: node.style.top, text: '' });
+}
+
+// Função para salvar o diagrama
+function saveDiagram() {
+  const nodeData = [...canvas.querySelectorAll('.node')].map((node) => ({
+    id: node.id,
+    x: node.style.left,
+    y: node.style.top,
+    text: node.innerText,
+  }));
+  localStorage.setItem('diagram', JSON.stringify(nodeData));
+  alert('Diagrama salvo!');
+}
+
+// Função para carregar o diagrama salvo
+function loadDiagram() {
+  const savedNodes = JSON.parse(localStorage.getItem('diagram'));
+  if (!savedNodes) return alert('Nenhum diagrama salvo encontrado!');
+
+  canvas.innerHTML = ''; // Limpa o canvas atual
+  savedNodes.forEach((data) => {
+    const node = document.createElement('div');
+    node.className = 'node';
+    node.contentEditable = true;
+    node.style.left = data.x;
+    node.style.top = data.y;
+    node.innerText = data.text;
+
+    canvas.appendChild(node);
+  });
+  alert('Diagrama carregado!');
+}
+
+</script>

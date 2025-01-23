@@ -65,41 +65,41 @@ class AlertaMsg:
 
     @staticmethod
     def produto_ja_cadastrado(ean):
-        print('\nclass AlertaMsg: produto_ja_cadastrado()')
+        print('class AlertaMsg: produto_ja_cadastrado()')
         session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
                             f'role="alert">PRODUTO JÁ CADASTRADO: EAN {ean}</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def produto_incluido_na_tabela(ean, descricao):
-        print('\nclass AlertaMsg: produto_incluido_na_tabela()')
+        print('class AlertaMsg: produto_incluido_na_tabela()')
         session['alert'] = (f'<div id = "alert" class="alert alert-success", '
                             f'role="alert">PRODUTO INCLUIDO NA TABELA: EAN {ean} | {descricao}</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def produto_ja_digitado():
-        print('\nclass AlertaMsg: produto_ja_digitado()')
+        print('class AlertaMsg: produto_ja_digitado()')
         session['alert'] = f'<div id = "alert" class="alert alert-danger", role="alert">PRODUTO JÁ DIGITADO</div>'
         # return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def campos_em_branco():
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: campos_em_branco()' + CorFonte.reset_cor(    ))
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: campos_em_branco()' + CorFonte.reset_cor(    ))
         session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
                             f'role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def ean_ja_digitado(ean):
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: ean_ja_digitado()' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: ean_ja_digitado()' + CorFonte.reset_cor())
         session['alert'] = (f'<div id = "alert" class="alert alert-danger", '
                             f'role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def produto_cadastrado_com_sucesso():
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: produto_cadastrado_com_sucesso()'+ CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: produto_cadastrado_com_sucesso()'+ CorFonte.reset_cor())
         session['alert'] = \
             ('<div id = "alert" class="alert alert-success", '
              'role="alert">PRODUTO CADASTRADO COM SUCESSO</div>')
@@ -107,41 +107,41 @@ class AlertaMsg:
 
     @staticmethod
     def fornecedor_invalido_cad_prod():
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: fornecedor_invalido_cad_prod()'+ CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: fornecedor_invalido_cad_prod()'+ CorFonte.reset_cor())
         session['alert'] = ('<div id="alert" class="alert alert-danger" '
                             'role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>')
         return redirect(url_for('cadastrar_produtos'))
 
     @staticmethod
     def cad_fornecedor_realizado():
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: cad_fornecedor_realizado()'+ CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: cad_fornecedor_realizado()'+ CorFonte.reset_cor())
         session['alert'] \
             = '<div id="alert" class="alert alert-success", role="alert">CADASTRO REALIZADO!</div>'
         return redirect(url_for('cadastrar_fornecedores'))
     @staticmethod
     def fornecedor_invalido():
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: fornecedor_invalido()' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: fornecedor_invalido()' + CorFonte.reset_cor())
         session['alert'] = '<div id="alert" class="alert alert-danger" role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>'
         return redirect(url_for('cadastrar_fornecedores'))
 
 
     @staticmethod
     def cnpj_invalido():
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: cnpj_invalido()'+ CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: cnpj_invalido()'+ CorFonte.reset_cor())
         session['alert'] = \
             '<div id = "alert" class="alert alert-danger" role="alert">CNPJ INVALIDO!</div>'
         return redirect(url_for('cadastrar_fornecedores'))
 
     @staticmethod
     def cnpj_ja_existente():
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: cnpj_ja_existente()' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: cnpj_ja_existente()' + CorFonte.reset_cor())
         session['alert'] = \
             '<div id = "alert" class="alert alert-danger" role="alert">CNPJ JA EXISTENTE!</div>'
         return redirect(url_for('cadastrar_fornecedores'))
 
     @staticmethod
     def cadastro_inexistente():
-        print(CorFonte.fonte_amarela() + '\nclass AlertaMsg: cadastro_inexistente()' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AlertaMsg: cadastro_inexistente()' + CorFonte.reset_cor())
         session['alert'] = \
             '<div id = "alert" class="alert alert-danger" role="alert">CADASTRO INEXISTENTE</div>'
         return redirect(url_for('gerar_ordem_de_compra'))
@@ -151,9 +151,9 @@ class Formatadores:
 
     @staticmethod
     def formatar_xml(nome_arquivo):
-        print(CorFonte.fonte_amarela() + '\nclass Formatadores | metodo formatar_xml' + CorFonte.reset_cor())
-        print('Método formatar_xml\n'
-              'Recebe a chave da nf e \n'
+        print(CorFonte.fonte_amarela() + 'class Formatadores | metodo formatar_xml' + CorFonte.reset_cor())
+        print('Método formatar_xml'
+              'Recebe a chave da nf e '
               'retorna ean, quantidade, preco unitário e total do item')
 
         # Definir namespace
@@ -229,17 +229,17 @@ class Formatadores:
 
     @staticmethod
     def formatar_data(data):
-        print(CorFonte.fonte_amarela() + '\nclass Formatadores | metodo formatar_data' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class Formatadores | metodo formatar_data' + CorFonte.reset_cor())
         return data.strftime('%d/%m/%Y')
 
     @staticmethod
     def data_formato_db(data):
-        print(CorFonte.fonte_amarela() + '\nclass Formatadores | metodo data_formato_db' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class Formatadores | metodo data_formato_db' + CorFonte.reset_cor())
         return data.strftime('%Y-%m-%d')
 
     @staticmethod
     def os_data():
-        print(CorFonte.fonte_amarela() + '\nclass Formatadores | metodo os_data' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class Formatadores | metodo os_data' + CorFonte.reset_cor())
         agora = date.today()
         return agora
 
@@ -247,8 +247,8 @@ class Formatadores:
 class ValidaStatusPedido:
     @staticmethod
     def validacao_1(status_ordem):
-        print(CorFonte.fonte_amarela() + '\nclass ValidaStatusPedido | metodo validacao_1' + CorFonte.reset_cor())
-        print('\nclass ValidaStatusPedido | metodo validacao_1\n'
+        print(CorFonte.fonte_amarela() + 'class ValidaStatusPedido | metodo validacao_1' + CorFonte.reset_cor())
+        print('class ValidaStatusPedido | metodo validacao_1'
               'Objetivo: Verificar se o xml está no servidor')
 
         if status_ordem is True:
@@ -258,10 +258,10 @@ class ValidaStatusPedido:
 
     @staticmethod
     def validacao_2(cnpj):
-        print(CorFonte.fonte_amarela() + '\nclass ValidaStatusPedido | metodo validacao_2' + CorFonte.reset_cor())
-        print('\nclass ValidaStatusPedido | metodo validacao_2\n'
+        print(CorFonte.fonte_amarela() + 'class ValidaStatusPedido | metodo validacao_2' + CorFonte.reset_cor())
+        print('class ValidaStatusPedido | metodo validacao_2'
               'Objetivo: Verificar se o fornecedor está cadastrado')
-        # print(fonte_amarela + '\nVALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO' + reset_cor)
+        # print(fonte_amarela + 'VALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO' + reset_cor)
         if Buscadores.buscar_cnpj(cnpj) is True:
             print(CorFonte.fonte_azul() + f'cnpj encontrado: {cnpj}' + CorFonte.reset_cor())
             # print(fonte_verde + 'VALIDAÇÃO 2 concluída' + reset_cor)
@@ -273,10 +273,10 @@ class ValidaStatusPedido:
 
     @staticmethod
     def validacao_3(status_ordem, ordem):
-        print(CorFonte.fonte_amarela() + '\nclass ValidaStatusPedido | metodo validacao_3' + CorFonte.reset_cor())
-        print('\nclass ValidaStatusPedido | metodo validacao_3\n'
+        print(CorFonte.fonte_amarela() + 'class ValidaStatusPedido | metodo validacao_3' + CorFonte.reset_cor())
+        print('class ValidaStatusPedido | metodo validacao_3'
               'Objetivo: Verificar se o pedido está aberto')
-        # print(fonte_amarela + '\nVALIDÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO' + reset_cor)
+        # print(fonte_amarela + 'VALIDÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO' + reset_cor)
         if status_ordem is True:
             # print(CorFonte.fonte_azul() + f'Pedido {ordem} aberto' + CorFonte.fonte_azul())
             # print(fonte_verde + 'VALIDAÇÃO 3 concluída' + reset_cor)
@@ -287,29 +287,29 @@ class ValidaStatusPedido:
 
     @staticmethod
     def validacao_4(nf,ordem):
-        print(CorFonte.fonte_amarela() + '\nclass ValidaStatusPedido | metodo validacao_4' + CorFonte.reset_cor())
-        print('\nclass ValidaStatusPedido | metodo validacao_4\n'
+        print(CorFonte.fonte_amarela() + 'class ValidaStatusPedido | metodo validacao_4' + CorFonte.reset_cor())
+        print('class ValidaStatusPedido | metodo validacao_4'
               'Objetivo: Verificar ordem x nf')
-        # print(fonte_amarela + '\nVALIDAÇÃO 4: VALIDAR PEDIDO X NF' + reset_cor)
+        # print(fonte_amarela + 'VALIDAÇÃO 4: VALIDAR PEDIDO X NF' + reset_cor)
         itens_nf = Buscadores.Xml.buscar_linhas_nf(str(nf))
-        # print(f'itens_nf = {itens_nf}\n')
-        # print(fonte_amarela + '\nVALIDAÇÃO 4: (2) RECEBER OC, CRIAR LISTA DE EAN E PRECO' + reset_cor)
+        # print(f'itens_nf = {itens_nf}')
+        # print(fonte_amarela + 'VALIDAÇÃO 4: (2) RECEBER OC, CRIAR LISTA DE EAN E PRECO' + reset_cor)
         itens_oc = Validadores.valida_pedido_recebido(ordem)
-        # print(f'itens_oc = {itens_oc}\n')
-        # print(fonte_amarela + '\nVALIDAÇÃO 4: (3) COMPARAR AS DUAS LISTAS' + reset_cor)
+        # print(f'itens_oc = {itens_oc}')
+        # print(fonte_amarela + 'VALIDAÇÃO 4: (3) COMPARAR AS DUAS LISTAS' + reset_cor)
         # maior_dif_permitida = modulos.admin.maior_dif_permitida
         maior_dif_permitida = 0.2
-        # print(f'maior_dif_permitida = {maior_dif_permitida}\n')
+        # print(f'maior_dif_permitida = {maior_dif_permitida}')
         cont_preco_fora_politica = 0
 
         # print('for ean_oc in itens_oc:')
         for ean_oc in itens_oc:  # 'oc' = 'ordem de compra'
-            # print(f'\nean pesquisado: {ean_oc[0]}')
+            # print(f'ean pesquisado: {ean_oc[0]}')
 
             for ean_nf in itens_nf:
                 # print(f'ean_nf = {ean_nf[0]}')
                 if ean_oc[0] == ean_nf[0]:
-                    # print(CorFonte.fonte_azul() + f'ean_oc[0] = {ean_oc[0]} || ean_oc[1] = {ean_oc[1]}\n'
+                    # print(CorFonte.fonte_azul() + f'ean_oc[0] = {ean_oc[0]} || ean_oc[1] = {ean_oc[1]}'
                     #                    f'ean_nf[0] = {ean_nf[0]} || ean_nf[1] = {ean_nf[1]}' + CorFonte.reset_cor())
                     if (ean_oc[1] - ean_nf[1]) <= maior_dif_permitida:
                         print(CorFonte.fonte_verde() + f'preco dentro da politica' + CorFonte.reset_cor())
@@ -328,7 +328,7 @@ class Validadores:
     @staticmethod
     def valida_pedido_recebido(pedido):
         # 1 faz a query no banco de dados e retorna uma lista com os itens do pedido
-        print(CorFonte.fonte_amarela() + '\nclass Validadores | metodo valida_pedido_recebido' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class Validadores | metodo valida_pedido_recebido' + CorFonte.reset_cor())
 
         lista_itens = []
         query = f"SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA  = '{pedido}'"
@@ -356,7 +356,7 @@ class Validadores:
 
     @staticmethod
     def valida_status_pedido(pedido):
-        print(CorFonte.fonte_amarela() + '\nclass Validadores | metodo valida_statuss_pedido' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class Validadores | metodo valida_statuss_pedido' + CorFonte.reset_cor())
         lista_itens = []
         # 1 faz a query no banco de dados e retorna uma lista com os itens do pedido
 
@@ -380,8 +380,8 @@ class Validadores:
 
     @staticmethod
     def valida_cnpj(cnpj):
-        print(CorFonte.fonte_amarela() + '\nclass Validadores | metodo valida_cnpj' + CorFonte.reset_cor())
-        print('\nclass Validadores | método valida_cnpj')
+        print(CorFonte.fonte_amarela() + 'class Validadores | metodo valida_cnpj' + CorFonte.reset_cor())
+        print('class Validadores | método valida_cnpj')
         print(f'cnpj original {cnpj}')
         cnpj = (str(cnpj))
         print(f'cnpj convertido {cnpj}')
@@ -389,7 +389,7 @@ class Validadores:
 
     @staticmethod
     def valida_inscricao_estadual(insc_estadual):
-        print(CorFonte.fonte_amarela() + '\nclass Validadores | metodo valida_inscricao_estadual' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class Validadores | metodo valida_inscricao_estadual' + CorFonte.reset_cor())
 
         insc_estadual = (str(insc_estadual))
         if len(insc_estadual) != 9:
@@ -401,7 +401,7 @@ class Validadores:
 class AtualizaCodigo:
     @staticmethod
     def cod_produto():
-        print(CorFonte.fonte_amarela() + '\nclass AtualizaCodigo | metodo cod_produto' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AtualizaCodigo | metodo cod_produto' + CorFonte.reset_cor())
         try:
             query = "SELECT MAX(CODIGO) FROM PRODUTOS"
             mydb.connect()
@@ -431,7 +431,7 @@ class AtualizaCodigo:
 
     @staticmethod
     def cod_fornecedor():
-        print(CorFonte.fonte_amarela() + '\nclass AtualizaCodigo | metodo cod_fornecedor' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AtualizaCodigo | metodo cod_fornecedor' + CorFonte.reset_cor())
         try:
             query = "SELECT MAX(CODIGO) FROM fornecedores"
             mydb.connect()
@@ -461,7 +461,7 @@ class AtualizaCodigo:
 
     @staticmethod
     def ordem_compra():
-        print(CorFonte.fonte_amarela() + '\nclass AtualizaCodigo | metodo ordem_compra' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class AtualizaCodigo | metodo ordem_compra' + CorFonte.reset_cor())
         try:
             query = "SELECT MAX(ORDEM_COMPRA) FROM ordem_compra"
             mydb.connect()
@@ -496,7 +496,7 @@ class Buscadores:
         pass
 
     def buscar_cnpj(cnpj):
-        print(CorFonte.fonte_amarela() + '\nclass Buscadores | metodo buscar_cnpj' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class Buscadores | metodo buscar_cnpj' + CorFonte.reset_cor())
         mydb.connect()
         query = f"SELECT * FROM fornecedores WHERE CNPJ = '{cnpj}'"
         mycursor.execute(query)
@@ -513,7 +513,7 @@ class Buscadores:
 
         @staticmethod
         def retorna_xml(nf):
-            print(CorFonte.fonte_amarela() + '\nclass Buscadores.Xml | metodo retorna_xml' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'class Buscadores.Xml | metodo retorna_xml' + CorFonte.reset_cor())
             print('Recebe a NF e retorna o caminho do XML')
             pasta_xml = r'C:\relato\XML\ANTIGOS'
             namespaces = {'ns1': 'http://www.portalfiscal.inf.br/nfe'}
@@ -529,7 +529,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_linhas_nf(nf):
-            print(CorFonte.fonte_amarela() + '\nclass Buscadores.Xml | metodo buscar_linhas_nf' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'class Buscadores.Xml | metodo buscar_linhas_nf' + CorFonte.reset_cor())
             pasta_xml = r'C:\relato\XML\ANTIGOS'
             namespaces = {'ns1': 'http://www.portalfiscal.inf.br/nfe'}
             arquivo_encontrado = None
@@ -569,7 +569,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_arquivo(nf):
-            print(CorFonte.fonte_amarela() + '\nclass Buscadores.Xml | metodo buscar_arquivo' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'class Buscadores.Xml | metodo buscar_arquivo' + CorFonte.reset_cor())
 
             nf = str(nf)
             for nome_arquivo in os.listdir(pasta_xml):
@@ -583,7 +583,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_colunas_xml(nome_arquivo):
-            print(CorFonte.fonte_amarela() + '\nclass Buscadores.Xml | metodo buscar_colunas_xml' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'class Buscadores.Xml | metodo buscar_colunas_xml' + CorFonte.reset_cor())
             nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
 
             def extrair_tags(element, prefix=''):
@@ -608,7 +608,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_cnpj(nome_arquivo):
-            print(CorFonte.fonte_amarela() + '\nclass Buscadores.Xml | metodo buscar_cnpj' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'class Buscadores.Xml | metodo buscar_cnpj' + CorFonte.reset_cor())
             nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
             try:
                 tree = ET.parse(nome_arquivo) # Parse do XML
@@ -641,7 +641,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_pedido(nome_arquivo):
-            print(CorFonte.fonte_amarela() + '\nclass Buscadores.Xml | metodo buscar_pedido' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'class Buscadores.Xml | metodo buscar_pedido' + CorFonte.reset_cor())
             nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
             try:
                 tree = ET.parse(nome_arquivo) # Parse do XML
@@ -671,7 +671,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_razao_social(nome_arquivo):
-            print(CorFonte.fonte_amarela() + '\nclass Buscadores.Xml | metodo buscar_razao_social' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'class Buscadores.Xml | metodo buscar_razao_social' + CorFonte.reset_cor())
             nome_arquivo = f'{pasta_xml}/{nome_arquivo}'
             try:
                 tree = ET.parse(nome_arquivo)  # Parse do XML
@@ -698,18 +698,18 @@ class Buscadores:
     class OrdemCompra:
         @staticmethod
         def atualizar_saldo_ordem_compra(ordem_compra):
-            print(CorFonte.fonte_amarela() + '\nclass Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra' + CorFonte.reset_cor())
 
         @staticmethod
         def atualizar_status_ordem_compra(ordem_compra):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo atualizar_status_ordem_compra | {ordem_compra}' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo atualizar_status_ordem_compra | {ordem_compra}' + CorFonte.reset_cor())
             # recebe a conferencia da ordem de compra
             # se todos os itens ok: status = pedido liquidado
             # caso contrário: status = recebido parcialmente
 
         @staticmethod
         def verifica_status_ordem(ordem_compra):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo verifica_status_ordem' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo verifica_status_ordem' + CorFonte.reset_cor())
             print(f'Verifica status_ordem_compra: {ordem_compra}')
             query = (f'SELECT SUM(SALDO_QTD) FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = "0{ordem_compra}";')
             # ajustar código para a que a qtde de '0' seja automática
@@ -728,8 +728,8 @@ class Buscadores:
 
         @staticmethod
         def buscar_nf2(nf):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo buscar_nf2' + CorFonte.reset_cor())
-            print('\nclass Buscadores.OrdemCompra | metodo buscar_nf2')
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo buscar_nf2' + CorFonte.reset_cor())
+            print('class Buscadores.OrdemCompra | metodo buscar_nf2')
             nf = str(nf)
             cnpj_encontrado = []
 
@@ -761,7 +761,7 @@ class Buscadores:
         chave_nf = ''
 
         def buscar_nf(pasta_xml, chave_nf, nf):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo buscar_nf' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo buscar_nf' + CorFonte.reset_cor())
             cnpjs_encontrados = []
             nf = str(nf)
             # Definir o caminho da pasta onde o arquivo XML está localizado
@@ -784,7 +784,7 @@ class Buscadores:
                                 root_element = tree.getroot()
                                 # Para ver o conteúdo do XML (opcional)
                                 xml_string = ET.tostring(root_element, encoding='utf-8').decode('utf-8')
-                                # print(f'Conteúdo do XML:\n{xml_string}')
+                                # print(f'Conteúdo do XML:{xml_string}')
 
                                 # Obter namespace
                                 namespaces = {'ns1': root_element.tag.split('}')[0].strip('{')}
@@ -814,8 +814,8 @@ class Buscadores:
 
         @staticmethod
         def buscar_ordem_compra2(ordem_compra, razaosocial):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo buscar_ordem_compra2' + CorFonte.reset_cor())
-            print('\nclass Buscadores.OrdemCompra | metodo buscar_ordem_compra2')
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo buscar_ordem_compra2' + CorFonte.reset_cor())
+            print('class Buscadores.OrdemCompra | metodo buscar_ordem_compra2')
             query = ''
             try:
                 if ordem_compra == '':
@@ -868,7 +868,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_ordem_compra(ordem_compra):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo buscar_ordem_compra' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo buscar_ordem_compra' + CorFonte.reset_cor())
 
             try:
                 query = f'select * from ordem_compra where ordem_compra = {ordem_compra}'
@@ -885,7 +885,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_ordem_compra_pela_razaosocial(razaosocial):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo buscar_ordem_compra_pela_razaosocial' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo buscar_ordem_compra_pela_razaosocial' + CorFonte.reset_cor())
             print('Buscadores.OrdemCompra.buscar_ordem_compra_pela_razaosocial()')
             try:
                 query = f'select * from ordem_compra where FORNECEDOR like "%{razaosocial}%"'
@@ -902,7 +902,7 @@ class Buscadores:
 
         @staticmethod
         def preco_medio(codigo):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo preco_medio' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo preco_medio' + CorFonte.reset_cor())
 
             try:
                 query = f'select avg(preco) from ordem_compra where codigo = {codigo}'
@@ -927,7 +927,7 @@ class Buscadores:
 
         @staticmethod
         def ordem_compra_em_aberto(codigo):
-            print(CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo ordem_compra_em_aberto' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo ordem_compra_em_aberto' + CorFonte.reset_cor())
             quantidade = 0
             valor = 0
             try:
@@ -966,7 +966,7 @@ class Buscadores:
         @staticmethod
         def ultimo_preco(codigo):
             print(
-                CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo ultimo_preco' + CorFonte.reset_cor())
+                CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo ultimo_preco' + CorFonte.reset_cor())
             try:
                 query = f'select preco from ordem_compra where codigo = {codigo} order by ordem_compra desc limit 1;'
                 mydb.connect()
@@ -988,7 +988,7 @@ class Buscadores:
         @staticmethod
         def buscar_fornecedor():
             print(
-                CorFonte.fonte_amarela() + f'\nclass Buscadores.OrdemCompra | metodo buscar_fornecedor' + CorFonte.reset_cor())
+                CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo buscar_fornecedor' + CorFonte.reset_cor())
             try:
                 query = f"select razaosocial from fornecedores order by razaosocial"
                 mydb.connect()
@@ -1007,7 +1007,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_pelo_fornecedor(fornecedor):
-            print(CorFonte.fonte_amarela() + '\nclasse Buscadores.OrdemCompra | Método buscar_pelo_fornecedor' + CorFonte.reset_cor())
+            print(CorFonte.fonte_amarela() + 'classe Buscadores.OrdemCompra | Método buscar_pelo_fornecedor' + CorFonte.reset_cor())
             try:
                 query = f"select * from produtos where fornecedor = '{fornecedor}' order by DESCRICAO"
                 mydb.connect()
@@ -1025,7 +1025,7 @@ class Buscadores:
                 return myresult
 
     def buscar_produto_pelo_ean(ean):
-        print(CorFonte.fonte_amarela() + '\nclasse Buscadores | método buscar_produto_pelo_ean' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe Buscadores | método buscar_produto_pelo_ean' + CorFonte.reset_cor())
         try:
             query = f'select * from produtos where ean = "{ean}"'
             mydb.connect()
@@ -1047,7 +1047,7 @@ class Buscadores:
             return e
 
     def buscar_produto_pelo_codigo(self):
-        print(CorFonte.fonte_amarela() + '\nclasse Buscadores | método buscar_produto_pelo_codigo' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe Buscadores | método buscar_produto_pelo_codigo' + CorFonte.reset_cor())
         try:
             mydb.commit()
             mydb.connect()
@@ -1063,7 +1063,7 @@ class Buscadores:
             pass
 
     def buscar_produto_pela_descricao(self):
-        print(CorFonte.fonte_amarela() + '\nclasse Buscadores | metodo buscar pela descricao' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe Buscadores | metodo buscar pela descricao' + CorFonte.reset_cor())
         try:
             query = f'select * from produtos where DESCRICAO = "{self}"'
             mydb.connect()
@@ -1078,7 +1078,7 @@ class Buscadores:
             pass
 
     def buscar_produto_pela_descricao_e_fornecedor(descricao, fornecedor):
-        print(CorFonte.fonte_amarela() + '\nclass Buscadores | metodo buscar_produto_pela_descricao_e_fornecedor' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'class Buscadores | metodo buscar_produto_pela_descricao_e_fornecedor' + CorFonte.reset_cor())
         try:
             query = f'select * from produtos where DESCRICAO like {descricao} and fornecedor = "{fornecedor}"'
             mydb.connect()
@@ -1094,7 +1094,7 @@ class Buscadores:
 
     @staticmethod
     def mostrar_tabela_produtos():
-        print(CorFonte.fonte_amarela() + '\nclasse Buscadores | metodo mostrar_tabela_de_produtos' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe Buscadores | metodo mostrar_tabela_de_produtos' + CorFonte.reset_cor())
         mydb.connect()
         query = 'select * from produtos'
 
@@ -1104,7 +1104,7 @@ class Buscadores:
 
     @staticmethod
     def buscar_nf_pelo_cnpj(cnpj):
-        print(CorFonte.fonte_amarela() + '\nclasse Buscadores | metodo buscar_nf_pelo_cnpj' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe Buscadores | metodo buscar_nf_pelo_cnpj' + CorFonte.reset_cor())
         nfs_encontradas = []
         print('metodo buscar nf pelo cnpj')
         print(f'buscar pelo cnpj >> {cnpj}')
@@ -1130,7 +1130,7 @@ class BancoDeDados:  # queries
 
     @staticmethod
     def listar_produtos():
-        print(CorFonte.fonte_amarela() + '\nclasse BancoDeDados | metodo listar_produtos' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe BancoDeDados | metodo listar_produtos' + CorFonte.reset_cor())
         mydb.connect()
         query = 'select * from produtos'
         mycursor.execute(query)
@@ -1139,7 +1139,7 @@ class BancoDeDados:  # queries
 
     @staticmethod
     def inserir_item_ordem_compra():
-        print(CorFonte.fonte_amarela() + '\nclasse BancoDeDados | metodo inserir_item_ordem_compra' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe BancoDeDados | metodo inserir_item_ordem_compra' + CorFonte.reset_cor())
         # mydb.connect()
         # query = 'insert into ordem_compra (CODIGO, DESCRICAO, UNIDADE, CATEGORIA, EAN) values (%s, %s, %s, %s, %s)'
         # mycursor.execute(query)
@@ -1147,14 +1147,14 @@ class BancoDeDados:  # queries
 
     @staticmethod
     def atualizar_ordem_compra():
-        print(CorFonte.fonte_amarela() + '\nclasse BancoDeDados | metodo atualizar_ordem_compra' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe BancoDeDados | metodo atualizar_ordem_compra' + CorFonte.reset_cor())
         pass
 
 
 class Estoque:
     @staticmethod
     def entrada_estoque():
-        print(CorFonte.fonte_amarela() + '\nclasse Estoque | metodo entrada_estoque' + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela() + 'classe Estoque | metodo entrada_estoque' + CorFonte.reset_cor())
         pass
 
 

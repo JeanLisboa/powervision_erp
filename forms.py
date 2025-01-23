@@ -138,12 +138,12 @@ class ModCompras:
         ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])
         preco_medio = FloatField("Preço Médio", validators=[DataRequired(), ReadOnly()])
         botao_consulta = SubmitField('Consulta')
-        botao_limpar_ordem = SubmitField('Limpar Ordem')
+        botao_cancelar = SubmitField('Cancelar')
         botao_pesquisar_item = SubmitField('Pesquisar Código')
         botao_pesquisar_fornecedor = SubmitField('Pesquisar Fornecedor')
         botao_incluir_item = SubmitField('Incluir Item')
         botao_selecionar_item = SubmitField('Selecionar')
-        botao_submit_compra = SubmitField('Gerar Ordem de Compra')
+        botao_submit = SubmitField('Atualizar Ordem de Compra')
 
     class BuscarItemOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])

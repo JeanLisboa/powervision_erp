@@ -13,6 +13,7 @@ from forms import ModCompras, Mod_Comercial, Mod_Pricing, Mod_Logistica
 # geral
 from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores, AlertaMsg
 import geral
+
 mydb = mysql.connector.connect(
     host="localhost",
     user="admin2024",
@@ -118,6 +119,7 @@ def cadastrar_produtos():
     fornecedor = form_cad_produtos.fornecedor.data
     session['fornecedor'] = fornecedor
     usuario = "ADMIN"
+
     # session['fornecedor'] = fornecedor
 
     # funções validadoras do item digitado na ordem de compra
@@ -166,11 +168,12 @@ def cadastrar_produtos():
 
         # fornecedor = ''
         if 'botao_incluir_item' in request.form:  # inclui o item na tabela
-            print(geral.CorFonte.fonte_amarela() +'botao_incluir_item acionado' + geral.CorFonte.reset_cor())
+            print(geral.CorFonte.fonte_amarela() + 'botao_incluir_item acionado' + geral.CorFonte.reset_cor())
             valida_campos = valida_campos()
             valida_ean_na_lista = valida_ean_na_lista()
             valida_ean_no_banco = valida_ean_no_banco()
-            print(geral.CorFonte.fonte_amarela() + '1 - Verifica se os campos estão validados' + geral.CorFonte.reset_cor())
+            print(
+                geral.CorFonte.fonte_amarela() + '1 - Verifica se os campos estão validados' + geral.CorFonte.reset_cor())
 
             #  *função* que será executada caso todos os campos sejam validados
             try:
@@ -324,7 +327,6 @@ def cadastrar_produtos():
             print(f'Valor produto >>> {valor_produto}')
             for i in lista_cadastro_produto:
                 if valor_produto == i[1][1]:
-
                     lista_cadastro_produto.remove(i)
                     redirect(url_for('cadastrar_produtos'))
             print('---------fim do teste----------')
@@ -391,7 +393,7 @@ def analisar_ordem_de_compra():
                 print(geral.ValidaStatusPedido.validacao_2(cnpj))
                 print(f'cnpj = {cnpj}')
                 print(geral.ValidaStatusPedido.validacao_3(status_ordem, ordem_compra))
-                print(geral.ValidaStatusPedido.validacao_4(nf,ordem_compra))
+                print(geral.ValidaStatusPedido.validacao_4(nf, ordem_compra))
                 print('---------fim do teste funçoes validadoras------\n')
 
                 print('---------teste valida status pedido------\n')
@@ -535,7 +537,8 @@ def gerar_ordem_compra():
             print(f'ean do item selecionado para adicionar à ordem de compra: {item_selecionado}')
 
             def formata_linha_para_identificar_posicao(item_selecionado, result_pesq_forn):
-                print(geral.CorFonte.fonte_amarela() + 'SubFunção formata_linha_para_identificar_posicao' + geral.CorFonte.reset_cor())
+                print(
+                    geral.CorFonte.fonte_amarela() + 'SubFunção formata_linha_para_identificar_posicao' + geral.CorFonte.reset_cor())
                 conta_linha = 0
                 print(f'item_selecionado: {item_selecionado} || ean: {ean}')
                 pos_pesquisa = ''
@@ -570,7 +573,8 @@ def gerar_ordem_compra():
                 for i in lista_ordem_compra:
                     print(f'{i[6]} ||| ean a incluir na ordem: {ean}')
                     if i[6] == ean:
-                        print(geral.CorFonte.fonte_vermelha() + 'item já digitado na ordem de compra' + geral.CorFonte.reset_cor())
+                        print(
+                            geral.CorFonte.fonte_vermelha() + 'item já digitado na ordem de compra' + geral.CorFonte.reset_cor())
                         break
 
                     else:
@@ -627,7 +631,6 @@ def gerar_ordem_compra():
                     item_ordem_compra.clear()
                     total_ordem_compra += lista_ordem_compra[-1][9]
                     return total_ordem_compra, lista_ordem_compra
-
 
                 total_ordem_compra = atualizar_lista_ordem_compra()
 
@@ -784,7 +787,6 @@ def editar_ordem_compra():
                     session['linha_para_editar'] = linha_para_editar
 
             if linha_para_editar:
-
                 ean = linha_para_editar[0][7]  #
                 form_editar_ordem_compra.ean.data = ean  # Define o valor no campo 'ean' do formulário
                 session['ean'] = ean
@@ -842,7 +844,7 @@ def editar_ordem_compra():
                          f"PRECO = '{preco_novo}',\n"
                          f"TOTAL_ITEM = '{total_item_novo}',\n"
                          f"SALDO_TOTAL_ITEM = '{saldo_total_item_novo}',\n"
-                        
+
                          f"SALDO_QTD = '{nova_qtde}'\n"
                          f"WHERE EAN = '{linha_para_editar[0][7]}'\n "
                          f"and ORDEM_COMPRA = '{linha_para_editar[0][1]}';")
@@ -867,6 +869,7 @@ def editar_ordem_compra():
                 form_editar_ordem_compra.descricao.data = ''
                 form_editar_ordem_compra.quantidade.data = ''
                 form_editar_ordem_compra.val_unitario.data = ''
+
                 def script():
                     html = """
                     <!DOCTYPE html>
@@ -901,13 +904,12 @@ def editar_ordem_compra():
                 form_editar_ordem_compra.quantidade.data = ''
                 form_editar_ordem_compra.val_unitario.data = ''
 
-
                 # retornar a lista ordem pesquisada com os valores já editados.
 
                 print(f'ordem_pesquisada = {ordem_pesquisada}')
                 # print(f'linha_para_editar: {linha_para_editar}')
                 return render_template('compras/editar_ordem_compra.html',
-                                        script=script(),
+                                       script=script(),
                                        ordem_compra=ordem_compra,
                                        ordem_pesquisada=ordem_pesquisada,
                                        form_editar_ordem_compra=form_editar_ordem_compra,
@@ -938,9 +940,7 @@ def editar_ordem_compra():
             print('Botao_adicionar_item acionado')
             return redirect(url_for('adicionar_item_ordem_compra'))
 
-
         if 'botao_pesquisar_novo_item' in request.form:
-
             print('botao_pesquisar_novo_item acionado')
             ean_novo_item = form_editar_ordem_compra.pesquisar_ean.data
             session['ean_novo_item'] = ean_novo_item
@@ -949,7 +949,7 @@ def editar_ordem_compra():
 
             descricao_novo_item = form_editar_ordem_compra.pesquisar_descricao.data
             print(descricao_novo_item)
-            Buscadores.buscar_produto_pela_descricao_e_fornecedor(descricao_novo_item,'')
+            Buscadores.buscar_produto_pela_descricao_e_fornecedor(descricao_novo_item, '')
 
     return render_template('compras/editar_ordem_compra.html',
                            ordem_compra=ordem_compra,
@@ -988,6 +988,7 @@ def adicionar_item_ordem_compra():
             fornecedor = session.get('fornecedor')
             print(f'Result_pesquisa_forn: {result_pesq_forn}')
             # print(f'Dicionário Ordem compra: {lista_ordem_compra}')
+
         def busca_ean_selecionado():
             print(geral.CorFonte.fonte_amarela() + 'SubFunção busca_ean_selecionado' + geral.CorFonte.reset_cor())
             item_selecionado = request.form.getlist('incluir_item')
@@ -1040,7 +1041,8 @@ def adicionar_item_ordem_compra():
             # VALIDA O EAN QUE ESTÁ PARA SER INCLUÍDO
             for i in ordem_pesquisada_:
                 if i[7] == ean:  # funcionando
-                    print(geral.CorFonte.fonte_vermelha() + 'item já digitado na ordem de compra' + geral.CorFonte.reset_cor())
+                    print(
+                        geral.CorFonte.fonte_vermelha() + 'item já digitado na ordem de compra' + geral.CorFonte.reset_cor())
                     break
 
                 else:
@@ -1075,11 +1077,11 @@ def adicionar_item_ordem_compra():
                       f'preco_unitario: {preco_unitario} |\n'
                       f'total_item: {total_item}')
 
-                item_ordem_compra.append(linha_selecionada[0]) # 0 - data -  ok
+                item_ordem_compra.append(linha_selecionada[0])  # 0 - data -  ok
                 item_ordem_compra.append(ordem_compra)  # 1 - ordem_compra =  ok
                 lista_contador_item_compra.append(contador_item)  # 2 - contador item - ok
                 item_ordem_compra.append('0')  # --- sem uso
-                item_ordem_compra.append(linha_selecionada[4])  # - 3 - descricao - ok
+                item_ordem_compra.append(descricao)  # - 3 - descricao - ok
                 item_ordem_compra.append(linha_selecionada[5])  # - 6 - codigo - ok
                 item_ordem_compra.append(linha_selecionada[6])  # - 7 - categoria - ok
                 item_ordem_compra.append(linha_selecionada[1])  # - 8 - codigo
@@ -1087,24 +1089,15 @@ def adicionar_item_ordem_compra():
                 item_ordem_compra.append(quantidade)  # - 9 - valor_unit - ok
                 item_ordem_compra.append(preco_unitario)  # - 10 - valor_total
                 item_ordem_compra.append(total_item)  # - 11 - valor_total - ok
-
+                item_ordem_compra_ajustado = tuple(item_ordem_compra)
+                ordem_pesquisada_ = session.get('result_ordem_pesquisada')
+                ordem_pesquisada_.append(item_ordem_compra_ajustado)
                 lista_ordem_compra.append(item_ordem_compra[:])
-                for i in lista_ordem_compra:
-                    (tuple(i))
                 item_ordem_compra.clear()
+
                 return i
 
-
-            atualizar_lista_ordem_compra()
-            linha_a_incluir_na_ordem_compra = tuple(atualizar_lista_ordem_compra())
-            lista_ordem_compra.clear()
-            print('tupla teste')
-            print(linha_a_incluir_na_ordem_compra)
-
-            ordem_pesquisada.append(linha_a_incluir_na_ordem_compra)
-            print('Ordem Pesquisada Atualizada')
-            print(ordem_pesquisada)
-            # ordem_pesquisada.clear()
+            atualizar_lista_ordem_compra()  # executa a função
 
     except Exception as e:
         print('erro no botao_incluir_item ( função adicionar_item_ordem_compra() ')
@@ -1120,8 +1113,6 @@ def adicionar_item_ordem_compra():
     # EXIBIR OC ATUALIZADA
     # LIMPAR CAMPOS
 
-
-
     # print(teste_teste)
     return render_template('compras/adicionar_item_ordem_compra.html',
                            ordem_compra=ordem_compra,
@@ -1130,11 +1121,7 @@ def adicionar_item_ordem_compra():
                            result_pesq_forn=result_pesq_forn,
                            data=Formatadores.formatar_data(Formatadores.os_data()),
                            form_editar_ordem_compra=form_editar_ordem_compra,
-                           form_adicionar_item_ordem_compra=form_adicionar_item_ordem_compra,  # renderiza os forms na pagina html
+                           form_adicionar_item_ordem_compra=form_adicionar_item_ordem_compra,
+                           # renderiza os forms na pagina html
                            ordem_pesquisada=ordem_pesquisada
                            )
-
-
-
-
-
