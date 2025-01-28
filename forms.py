@@ -143,7 +143,8 @@ class ModCompras:
         botao_pesquisar_fornecedor = SubmitField('Pesquisar Fornecedor')
         botao_incluir_item = SubmitField('Incluir Item')
         botao_selecionar_item = SubmitField('Selecionar')
-        botao_submit = SubmitField('Atualizar Ordem de Compra')
+        botao_submit_ordem_alterada = SubmitField('Atualizar Ordem de Compra')
+        botao_cancelar_alteracao_ordem = SubmitField('Cancelar Alteração')
 
     class BuscarItemOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
