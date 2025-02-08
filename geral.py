@@ -813,6 +813,22 @@ class Buscadores:
             return cnpjs_encontrados, chave_nf
 
         @staticmethod
+        def busca_fornecedor_pelo_ean(ean):
+            print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo buscar_fornecedor_pelo_ean' + CorFonte.reset_cor())
+            print('class Buscadores.OrdemCompra | metodo buscar_fornecedor_pelo_ean')
+            query = ''
+
+            if ean:
+                query = (f'select * from produtos where ean = {ean}')
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                return myresult
+
+
+        @staticmethod
         def buscar_ordem_compra2(ordem_compra, razaosocial):
             print(CorFonte.fonte_amarela() + f'class Buscadores.OrdemCompra | metodo buscar_ordem_compra2' + CorFonte.reset_cor())
             print('class Buscadores.OrdemCompra | metodo buscar_ordem_compra2')
@@ -872,7 +888,7 @@ class Buscadores:
 
             try:
                 query = f'select * from ordem_compra where ordem_compra = {ordem_compra}'
-                print(query)
+
                 mydb.connect()
                 mycursor.execute(query)
                 myresult = mycursor.fetchall()
@@ -889,7 +905,7 @@ class Buscadores:
             print('Buscadores.OrdemCompra.buscar_ordem_compra_pela_razaosocial()')
             try:
                 query = f'select * from ordem_compra where FORNECEDOR like "%{razaosocial}%"'
-                print(query)
+                # print(query)
                 mydb.connect()
                 mycursor.execute(query)
                 myresult = mycursor.fetchall()
@@ -974,7 +990,7 @@ class Buscadores:
                 myresult = mycursor.fetchall()
                 mydb.commit()
                 mydb.close()
-                print(myresult)
+                # print(myresult)
 
                 for i in myresult:
                     myresult = i[0]
@@ -1009,7 +1025,7 @@ class Buscadores:
         def buscar_pelo_fornecedor(fornecedor):
             print(CorFonte.fonte_amarela() + 'classe Buscadores.OrdemCompra | Método buscar_pelo_fornecedor' + CorFonte.reset_cor())
             try:
-                query = f"select * from produtos where fornecedor = '{fornecedor}' order by DESCRICAO"
+                query = f"select * from produtos where fornecedor LIKE '%{fornecedor}%' order by DESCRICAO"
                 mydb.connect()
                 mycursor.execute(query)
                 myresult = mycursor.fetchall()
