@@ -772,7 +772,7 @@ def gerar_ordem_compra():
                         )
 
                         print(f"Query {cont_temp} >>>> {query}")
-                        # mydb.connect()
+                        mydb.connect()
                         mycursor.execute(query)
                         mycursor.fetchall()
                         fechadb = "SET SQL_SAFE_UPDATES = 1"
