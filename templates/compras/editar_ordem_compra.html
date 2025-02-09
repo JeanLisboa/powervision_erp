@@ -26,9 +26,9 @@ TELA EDITAR ORDEM DE COMPRA
                 <div class="col form-label btn btn-light">
                    {{form_editar_ordem_compra.pesquisar_ordem_compra.label}}
                    {% if ordem_compra is not none %}
-                        {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", value=ordem_compra)}}
+                        {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", value=ordem_compra, id="pesquisar_ordem_compra")}}
                    {% else %}
-                       {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data")}}
+                       {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", id="pesquisar_ordem_compra")}}
                    {% endif %}
                 </div>
                 <div class="col form-label btn btn-light">
@@ -129,11 +129,14 @@ TELA EDITAR ORDEM DE COMPRA
         </div>
         <!-- inicio da estrutura do modal -->
 
-        {{form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5")}}
+
+        {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5", id="botao_adicionar_item") }}
+
+
         <div id="id02" class="w3-modal">
             <div class="w3-modal-content">
                 <header class="w3-container w3-teal">
-                    <span onclick="document.getElementById('id02').style.display='none'"
+                    <span onclick="document.getElementById('id02').style.display='none'"></span>
 <!--                    class="w3-button w3-display-topright">&times;</span>-->
                     <h2>Adicionar item Ordem Compra {{ordem_compra}}</h2>
                 </header>
