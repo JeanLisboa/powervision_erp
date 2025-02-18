@@ -846,13 +846,15 @@ def editar_ordem_compra():
         ean = ""
         quantidade = ""
         val_unitario = ""
-
         if "botao_pesquisar_ordem_compra" in request.form:
             print("botao pesquisar ordem_compra acionado")
             if ordem_compra:  # Verifica se o campo 'ordem_compra' está preenchido
                 try:
                     ordem_pesquisada = session.get("result_ordem_pesquisada")
                     ordem_compra = session.get("ordem_compra")
+                    session["ordem_compra"] = ordem_compra
+                    print(f"ordem_pesquisada: {ordem_pesquisada}")
+                    session["ordem_pesquisada"] = ordem_pesquisada
 
                 except Exception as e:
                     print(f"Erro ao buscar ordem de compra: {e}")
@@ -871,7 +873,7 @@ def editar_ordem_compra():
 
         if "botao_editar_item" in request.form:
             print("botao_editar_item acionado")
-            ordem_pesquisada = session.get("result_ordem_pesquisada")
+            ordem_pesquisada = session.get("ordem_pesquisada")
             ordem_compra = session.get("ordem_compra")
             item_selecionado = request.form.getlist("editar__item")
             item_selecionado = item_selecionado[0]
@@ -888,7 +890,6 @@ def editar_ordem_compra():
                     ean  # Define o valor no campo 'ean' do formulário
                 )
                 session["ean"] = ean
-
                 quantidade = linha_para_editar[0][8]
                 form_editar_ordem_compra.quantidade.data = quantidade
                 session["quantidade"] = quantidade
@@ -897,9 +898,14 @@ def editar_ordem_compra():
                 form_editar_ordem_compra.val_unitario.data = val_unitario
                 session["valor_unitario"] = val_unitario
 
+                ordem_compra = linha_para_editar[0][1]
+                session["ordem_compra"] = ordem_compra
                 form_editar_ordem_compra.descricao.data = linha_para_editar[0][3]
 
             print(f"linha_para_editar {linha_para_editar}")
+            print(f"ordem_pesquisada: {ordem_pesquisada}")
+            session["ordem_pesquisada"] = ordem_pesquisada
+            session["ordem_compra"] = ordem_compra
             # print(f'item_selecionado: {item_selecionado}')
             return render_template(
                 "compras/editar_ordem_compra.html",
@@ -922,19 +928,9 @@ def editar_ordem_compra():
                 linha_para_editar = session.get("linha_para_editar")
                 valor_unitario = session.get("valor_unitario")
                 print(f"linha_para_editar {linha_para_editar}")
-
                 nova_qtde = form_editar_ordem_compra.quantidade.data
                 preco_novo = form_editar_ordem_compra.val_unitario.data
-
                 print("botao_salvar_alteracoes acionado")
-                print("executar query")
-                print(f"Preço antigo: {linha_para_editar[0][9]}")
-                print(f"Preço novo: {preco_novo}")
-                print(f"Total Item antigo: {linha_para_editar[0][10]}")
-                print(f"Total item novo: {nova_qtde * preco_novo}")
-                # input('input >>>>')
-                print(f"Quantidade Antiga: {linha_para_editar[0][8]}")
-                print(f"Nova quantidade: {nova_qtde}")
                 total_item_novo = nova_qtde * preco_novo
                 saldo_total_item_novo = nova_qtde * preco_novo
                 query = (
@@ -948,7 +944,7 @@ def editar_ordem_compra():
                     f"WHERE EAN = '{linha_para_editar[0][7]}'\n "
                     f"and ORDEM_COMPRA = '{linha_para_editar[0][1]}';"
                 )
-                print(f"query {query}")
+                # print(f"query {query}")
 
                 mydb.connect()
                 mycursor.execute(query)
@@ -1018,25 +1014,69 @@ def editar_ordem_compra():
                 )
 
         if "botao_excluir_item" in request.form:
-            print("botao_excluir_item_acionado")
-            print(f"ordem_compra recuperado no session {ordem_compra}")
-            ordem_pesquisada = session.get("result_ordem_pesquisada")
-            ordem_compra = ordem_pesquisada[0][1]
-            # print(f'ordem_pesquisada: {ordem_pesquisada}')
-            item_selecionado = request.form.getlist("excluir__item")
-            item_selecionado = item_selecionado[0]
-            # print(f'item_selecionado{item_selecionado}')
-            query = f"DELETE FROM ORDEM_COMPRA WHERE ORDEM_COMPRA={ordem_pesquisada[0][1]} and EAN = {item_selecionado};"
-            mydb.connect()
-            mycursor.execute(query)
-            mycursor.fetchall()
-            fechadb = "SET SQL_SAFE_UPDATES = 1"
-            mycursor.execute(fechadb)
-            mycursor.fetchall()
-            mydb.commit()
-            mydb.close()
-            print(f"ordem_compra = {ordem_compra}")
-            ordem_pesquisada = Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
+            try:
+                print("botao_excluir_item_acionado")
+                ordem_compra = session.get("ordem_compra")
+                ordem_pesquisada = session.get("ordem_pesquisada")
+                session["ordem_pesquisada"] = ordem_pesquisada
+                session["ordem_compra"] = ordem_compra
+                ordem_pesquisada = ordem_pesquisada[0][1]
+                print(f"ordem_pesquisada: {ordem_pesquisada}")
+                item_selecionado = request.form.getlist("excluir__item")
+                item_selecionado = item_selecionado[0]
+                print(f"item_selecionado: {item_selecionado}")
+                query = f"DELETE FROM ORDEM_COMPRA WHERE ORDEM_COMPRA={ordem_pesquisada} and EAN = {item_selecionado};"
+
+                mydb.connect()
+                mycursor.execute(query)
+                mycursor.fetchall()
+                fechadb = "SET SQL_SAFE_UPDATES = 1"
+                mycursor.execute(fechadb)
+                mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                ordem_compra = session.get("ordem_compra")
+                ordem_pesquisada = session.get("ordem_pesquisada")
+                print(f"ordem_pesquisada: {ordem_pesquisada}")
+
+                print(f"ordem_pesquisada: {ordem_pesquisada}")
+                ordem_compra = ordem_pesquisada[0][1]
+
+                query_atualizada = (
+                    f"SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = {ordem_compra}"
+                )
+                mydb.connect()
+                mycursor.execute(query_atualizada)
+                mycursor.fetchall()
+                fechadb = "SET SQL_SAFE_UPDATES = 1"
+                mycursor.execute(fechadb)
+                mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                ordem_pesquisada = Buscadores.OrdemCompra.buscar_ordem_compra(
+                    ordem_compra
+                )
+                session["ordem_pesquisada"] = ordem_pesquisada
+                print("teste ordem_pesquisada")
+                print()
+                for i in ordem_pesquisada:
+                    print(i)
+                # return redirect(url_for("adicionar_item_ordem_compra"))  # teste
+            except:
+                pass
+
+            finally:
+                ordem_compra = ordem_pesquisada[0][1]
+                fornecedor = session.get("fornecedor")
+                ordem_pesquisada = session.get("ordem_pesquisada")
+                return render_template(
+                    "compras/editar_ordem_compra.html",
+                    ordem_compra=ordem_compra,
+                    ordem_pesquisada=ordem_pesquisada,
+                    form_editar_ordem_compra=form_editar_ordem_compra,
+                    linha_para_editar="",
+                    data=Formatadores.formatar_data(Formatadores.os_data()),
+                )
 
         if "botao_adicionar_item" in request.form and ordem_pesquisada is not None:
             print("Botao_adicionar_item ACIONADO")
@@ -1064,21 +1104,21 @@ def adicionar_item_ordem_compra():
     # alert = geral.AlertaMsg.cad_fornecedor_realizado()
     form_editar_ordem_compra = ModCompras.EditarOrdemCompra()
 
-    data = Formatadores.os_data()  # ok
-    ordem_compra = session.get("ordem_compra")  # ok
+    data = Formatadores.os_data()
+    ordem_compra = session.get("ordem_compra")
     print(f"ordem_compra: {ordem_compra}")
 
-    ordem_pesquisada = session.get("result_ordem_pesquisada")  # ok
+    ordem_pesquisada = session.get("result_ordem_pesquisada")
     print(f"Ordem Pesquisada: {ordem_pesquisada}")
-    teste = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra, "")
+    fornecedor = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra, "")
     item_ordem_compra = []
     lista_ordem_compra_com_item_add = []
-    fornecedor = teste[0][2]
-    # print(f'fornecedor: {fornecedor}')
+    fornecedor = fornecedor[0][2]
+    session["fornecedor"] = fornecedor
+    print(f"fornecedor: {fornecedor}")
     result_pesq_forn = Buscadores.OrdemCompra.buscar_pelo_fornecedor(fornecedor)
     session["result_pesq_forn"] = result_pesq_forn
     # print(f'result_pesq_forn: {result_pesq_forn}')
-
     descricao = form_adicionar_item_ordem_compra.descricao.data
     unidade = form_adicionar_item_ordem_compra.unidade.data
     categoria = form_adicionar_item_ordem_compra.categoria.data
@@ -1232,17 +1272,16 @@ def adicionar_item_ordem_compra():
         if "botao_submit_ordem_alterada" in request.form:
             print("botao_submit_ordem_alterada ACIONADO")
             ordem_pesquisada_copia = ordem_pesquisada[:]  # copia
-
             print(f"ordem_pesquisada_copia: {ordem_pesquisada_copia}")
             try:
-                # print("Deletando a ordem_compra antiga")
-                # query_01 = f"DELETE FROM ORDEM_COMPRA WHERE ORDEM_COMPRA={ordem_compra}"
-                # print(query_01)
-                # mydb.connect()
-                # mycursor.execute(query_01)
-                # mycursor.fetchall()
-                # mydb.commit()
-                # print(f"ordem_pesquisada: {ordem_pesquisada}")
+                mydb.connect()
+                print("Deletando a ordem_compra antiga")
+                query_01 = f"DELETE FROM ORDEM_COMPRA WHERE ORDEM_COMPRA={ordem_compra}"
+                print(query_01)
+                mycursor.execute(query_01)
+                mycursor.fetchall()
+                mydb.commit()
+                print(f"ordem_pesquisada: {ordem_pesquisada}")
                 print("Incluindo a ordem_compra atualizada")
                 print(f"ordem_compra atualizada:")
 
@@ -1251,21 +1290,20 @@ def adicionar_item_ordem_compra():
                     values = (
                         f"'{date.strftime(data, '%Y-%m-%d')}',"
                         f"'{i[1]}',"  # oc
-                        f"'{cont_temp}',"  # item
+                        f"'{i[2]}',"  # item
                         f"'{i[3]}',"  # descricao
                         f"'{i[4]}',"  #  unidade
-                        f"'{i[4]}',"  # categoria
-                        f"'{i[5]}',"  # codigo
-                        f"'{i[6]}',"  # ean
-                        f"'{i[7]}',"  # quantidade
-                        f"'{i[8]}',"  # preco
+                        f"'{i[5]}',"  # categoria
+                        f"'{i[6]}',"  # codigo
+                        f"'{i[7]}',"  # ean
+                        f"'{i[8]}',"  # quantidade
+                        f"'{i[9]}',"  # preco
                         f"'{i[9]}',"  # total_item
                         f"'{i[8]}',"  # saldo-qtd
                         f"'{i[9]}',"  # saldo_total
                         f"'{modulos.admin.usuario}'"
                     )
-
-                    query_02 = f"INSERT INTO ORDEM_COMPRA (DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, USUARIO VALUES ({values});"
+                    query_02 = f"INSERT INTO ORDEM_COMPRA (DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, USUARIO) VALUES ({values});"
                     print(query_02)
                     mycursor.execute(query_02)
                     mycursor.fetchall()
@@ -1274,15 +1312,13 @@ def adicionar_item_ordem_compra():
                 mycursor.execute(fechadb)
                 mycursor.fetchall()
                 mydb.close()
+                # linha_selecionada.clear()
+                ordem_pesquisada_copia.clear()
+
+                return redirect(url_for("adicionar_item_ordem_compra"))
             except Exception as e:
                 print(e)
             cont_temp += 1
-            #
-            # try:
-            #     ordem_pesquisada_copia = session.get("ordem_pesquisada_copia")
-            #
-            # except:
-            #     pass
 
     except Exception as e:
         print(e)
@@ -1291,7 +1327,7 @@ def adicionar_item_ordem_compra():
         if "botao_cancelar_alteracao_ordem" in request.form:
             print("botao_cancelar_alteracao_ordem ACIONADO")
             linha_selecionada = []
-            # return redirect(url_for('adicionar_item_ordem_compra'))
+            return redirect(url_for("adicionar_item_ordem_compra"))
 
             # ordem_pesquisada = []
             # result_pesq_forn = []
