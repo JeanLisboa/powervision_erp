@@ -66,7 +66,7 @@ def entrada_ordem_compra():
     validacao_2 = ""
     validacao_3 = ""
     validacao_4 = ""
-    lst_qtde_pedido = []
+    # lst_qtde_pedido = []
     lst_nf = []
     lst_itens_recebidos = []
     result_conferencia = []
@@ -381,7 +381,8 @@ def entrada_ordem_compra():
 
         try:
             if "botao_finalizar_conferencia" in request.form:
-                print("botao_finalizar_conferencia ACIONADO")
+
+                print(fonte_azul + "\nBotao_finalizar_conferencia ACIONADO" + reset_cor)
                 lst_nf = session.get("resultado_validacao")  # recupera as informações da tabela de pesquisa
                 print(f"lst_nf: {lst_nf}")
 
@@ -393,10 +394,12 @@ def entrada_ordem_compra():
                 print(f"lst_pedido_p_conferencia >>> {lst_pedido_p_conferencia}")
 
                 print("\n--------------ANALISE ENTRADA ESTOQUE------------------")
-                print("1 - COMPARA QUANTIDADE RECEBIDA X QUANTIDADE DO PEDIDO")
+                print("1 - COMPARA QUANTIDADE RECEBIDA X SALDO DO PEDIDO *** PENDENTE DE RECEBIMENTO *** ")
                 lst_qtde_recebida_a = []
                 lst_qtde_pedido_a = []
                 lst_an_ent_estoque = []
+                lst_auxiliar_temp = []
+                lst_auxiliar = []
                 for qtde_recebida in result_conferencia:
                     lst_qtde_recebida_a.append(qtde_recebida)
 
@@ -404,55 +407,56 @@ def entrada_ordem_compra():
                     lst_qtde_pedido_a.append(qtde_pedido[1])
 
                 lst_an_ent_estoque.append(lst_qtde_recebida_a)
-                # print(f"lst_qtde_recebida_a >>> {lst_qtde_recebida_a}")
                 lst_an_ent_estoque.append(lst_qtde_pedido_a)
-                # print(f"lst_qtde_pedido_a >>> {lst_qtde_pedido_a}")
                 print(f"lst_an_ent_estoque >>> {lst_an_ent_estoque}")
-                print("--------------FINALIZADO------------------\n")
 
+                print("--------------FINALIZADO------------------\n")
                 print("2 - MONTA LISTA DE ITENS QUE SERÃO INTERNALIZADOS")
+                print('itens_conferencia')
+                print(itens_conferencia)
                 for i in itens_conferencia:
                     lst_ent_estoque_temp.append(i[5])  # categoria
                     lst_ent_estoque_temp.append(i[7])  # ean
                     lst_ent_estoque_temp.append(i[6])  # codigo
                     lst_ent_estoque_temp.append(i[3])  # descricao
+                    lst_ent_estoque_temp.append(i[9])  # qtde
                     lst_ent_estoque.append(lst_ent_estoque_temp[:])
                     lst_ent_estoque_temp.clear()
 
                 lst_ent_estoque_final = []
+                print('================teste de lst_ent_estoque ===================')
+                print(f'lst_ent_estoque: {lst_ent_estoque}')
+                print(f'lst_qtde_recebida_a: {lst_qtde_recebida_a}')
+                print(f'lst_qtde_pedido_a: {lst_qtde_pedido_a}')
+                print('=============================================================')
                 for a, b, c in zip(
                         lst_ent_estoque, lst_qtde_recebida_a, lst_qtde_pedido_a):
                     a.append(c if int(b) > int(c) else b)  # Adiciona a quantidade à sublista
                     lst_ent_estoque_final.append(a)
 
-                # print(f"lst_ent_estoque_final >>> {lst_ent_estoque_final}")
-
-                print("--------------RESUMO------------------\n")
-
                 print("3 - BUSCA CRITERIO PARA ENTRADA ESTOQUE (PENDENTE)\n")
 
-                print("4 - ATUALIZA O ESTOQUE\n")
-                # print("    ITEM    -           DESCRICAO           -QUANTIDADE  -     STATUS ")
+                print("4 - ATUALIZA O ESTOQUE OK \n")
                 print(f'lst_ent_estoque_final completo\n: {lst_ent_estoque_final}')
-                for i in lst_ent_estoque_final:
-                    print(f"{i[1]}-{i[3]}-{i[4]}-")
 
-                    # atualizar estoque com as informações recebidas
+                for i in lst_ent_estoque_final:
                     # 1 - recebe as quantidades
                     data = datetime.date.today()
                     data = data.strftime("%Y-%m-%d")
                     tipo_mov = "ENTRADA"
                     ordem_compra = lst_nf[3]
                     nota_fiscal = lst_nf[2]
-                    ean = i[1]
+                    ean = i[1]  # ean
                     codigo = i[2]
                     descricao = i[3]
-                    quantidade = i[4]
-                    valor = 0
+                    quantidade = i[5]
+                    print(f'quantidade >>> {quantidade}')
+
+                    valor = i[4]
                     usuario = 'ADMIN'
                     # 2 - atualiza o estoque
-                    geral.Buscadores.OrdemCompra.atualizar_saldo_ordem_compra(
-                            data,
+                    geral.Buscadores.OrdemCompra.atualizar_estoque(
+                        data,
                         tipo_mov,
                         ordem_compra,
                         nota_fiscal,
@@ -463,7 +467,12 @@ def entrada_ordem_compra():
                         valor,
                         usuario)
 
-                    # 3 - atualiza o saldo da ordem de compra
+                    print('3 - ATUALIZA O SALDO DA ORDEM_COMPRA - OK')
+
+                    geral.Buscadores.OrdemCompra.atualizar_saldo_ordem_compra(ordem_compra, ean, quantidade, valor)
+
+                    #  TRAVAR QUANDO O ITEM ESTIVER 100% ENTREGUE
+
 
                 def atualiza_status_ordem_compra(lst_diferenca):
                     print("Função atualiza_status_ordem_compra\n")
@@ -476,7 +485,7 @@ def entrada_ordem_compra():
 
                 print("5 - ATUALIZA O STATUS ORDEM COMPRA")
 
-                # geral/class Buscadores.OrdemCompra/atualizar_ordem_compra
+
 
                 # se status todos os itens da oc forem ok, entao pedido finalizado,
                 # caso nao, 'parcialmente recebido'
@@ -488,17 +497,39 @@ def entrada_ordem_compra():
                 print("6 - ATUALIZA SALDO ORDEM COMPRA")
                 print("Recebe o pedido e a lista dos itens recebidos")
                 print("gera lista com os itens recebidos")
+                print("atualiza a coluna saldo")
+                ordem_compra = lst_nf[3]
+                print('FUNÇÃO geral.Buscadores.OrdemCompra.busca_saldo_ordem_compra(ordem_compra)')
+                list_temp = []
+                ean_saldo = None
+                preco = None
+                saldo_qtd = None
+                for i in geral.Buscadores.OrdemCompra.busca_saldo_ordem_compra(ordem_compra):
+                    ean_saldo = i[7]
+                    preco = i[9]
+                    saldo_qtd = i[12]
+                    list_temp.append((ean_saldo, preco, saldo_qtd))
 
-                linha_entrada_estoque = 0
-                for i in lst_ent_estoque_final:
-                    print(f"linha_entrada_estoque: {linha_entrada_estoque}")
-                    if type(lst_ent_estoque_final) is not list:
-                        print(f"{lst_ent_estoque_final}")
-                    else:
-                        pass
-                    linha_entrada_estoque += 1
-                # se quantidade recebida for maior do que o pedido, devolver a sobra
-                # post atualizacao saldo quantidade e saldo valor
+
+                print('i do lst_nf')
+                print('list_temp')
+
+                for a in list_temp:
+                    print(a)
+                    for i in lst_ent_estoque_final:
+                        ean = i[1]
+                        quantidade = i[4]
+                        quantidade = list(quantidade)
+                        if a[0] == ean:
+                            list_temp = list_temp + quantidade
+
+                print(list_temp)
+
+                # geral.Estoque.atualiza_saldo_ordem_compra(ean, ordem_compra, quantidade, saldo_qtd, preco)
+
+                # BUSCAR PELO EAN.
+                # VARIAVEL SALDO_QTD = SALDO_QTD - QUANTIDADE RECEBIDO
+                # VARIAVEL SALDO_TOTAL_ITEM = SALDO_QTD * PRECO
 
         except Exception as e:
             print(e)
@@ -537,9 +568,9 @@ def analisa_diferenca(diferenca):
     return status
 
 
-def analisa_criterios_recebimento(
-    lst_pedido_p_conferencia, lst_itens_recebidos, lst_diferenca
-):
+def analisa_criterios_recebimento(lst_pedido_p_conferencia,
+                                  lst_itens_recebidos,
+                                  lst_diferenca):
     print("\nFunção analisa_criterios_recebimento\n")
     print(f"lst_pedido_p_conferencia : {lst_pedido_p_conferencia}")
     print(f"lst_itens_recebidos : {lst_itens_recebidos}")

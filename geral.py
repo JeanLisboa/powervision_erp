@@ -1,14 +1,11 @@
 from datetime import date
 import mysql.connector
+from pandas.io.formats.info import series_see_also_sub
 from pycpfcnpj import cpfcnpj as validador_cnpj
 from flask import session, redirect, url_for, request
 import xml.etree.ElementTree as ET
 import openpyxl
 import os
-
-import forms
-
-# import modulos.admin
 
 pasta_xml = r"C:\relato\XML\ANTIGOS"
 
@@ -469,11 +466,6 @@ class Validadores:
 
         try:
             if itens_ordem_de_compra:
-                # print('chama função lista_itens_de_compra...'
-                #       'esta função serve para criar uma lista '
-                #       'e comparar com as linhas do xml, afim '
-                #       'de validar os itens de acordo com a política')
-
                 for i in itens_ordem_de_compra:
                     item_zip = (i[7], i[9])
                     lista_itens.append(item_zip)
@@ -485,11 +477,7 @@ class Validadores:
 
     @staticmethod
     def valida_status_pedido(pedido):
-        print(
-            CorFonte.fonte_amarela()
-            + "class Validadores | metodo valida_statuss_pedido"
-            + CorFonte.reset_cor()
-        )
+        print(CorFonte.fonte_amarela() + "class Validadores | metodo valida_status_pedido" + CorFonte.reset_cor())
         lista_itens = []
         # 1 faz a query no banco de dados e retorna uma lista com os itens do pedido
 
@@ -901,8 +889,9 @@ class Buscadores:
                 return None
 
     class OrdemCompra:
+
         @staticmethod
-        def atualizar_saldo_ordem_compra(
+        def atualizar_estoque(
             data,
             tipo_mov,
             ordem_compra,
@@ -935,24 +924,68 @@ class Buscadores:
                 quantidade,
                 valor,
                 usuario)
-            print(f'query: {query}-{valores}')
+            # print(f'query: {query}-{valores}')
             mydb.connect()
             mycursor.execute(query, valores)
             mycursor.fetchall()
             mydb.commit()
             mydb.close()
 
+        @staticmethod
+        def atualizar_saldo_ordem_compra(ordem_compra, ean, quantidade, valor):
+            saldo_qtd_consulta = 0
+            saldo_valor_consulta = 0
+
+            print(CorFonte.fonte_amarela()
+                + f"class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra | {ordem_compra}"
+                + CorFonte.reset_cor())
+
+            consulta = f'SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = "0{ordem_compra}" and EAN = "{ean}";'
+            mydb.connect()
+            mycursor.execute(consulta)
+
+            resultado_consulta = mycursor.fetchall()
+            print(f'res consulta: {resultado_consulta}')
+            input('>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            saldo_qtd_consulta = resultado_consulta[0][11]
+            # saldo_qtd_consulta = int(saldo_qtd_consulta)
+            print(f'saldo_qtd_consulta: {saldo_qtd_consulta}')
+            quantidade = int(quantidade)
+            print(f'quantidade: {quantidade}')
+
+            input('>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            saldo_valor_consulta = resultado_consulta[0][12]
+            saldo_valor_consulta = float(saldo_valor_consulta)
+            print(f'saldo_valor_consulta: {saldo_valor_consulta} {type(saldo_valor_consulta)}')
+
+            input('>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            saldo_total_item = (saldo_qtd_consulta-quantidade) * valor
+            print(f'saldo_total_item: {saldo_total_item}')
+            query = f'UPDATE ORDEM_COMPRA SET SALDO_QTD = "{saldo_qtd_consulta-quantidade}", SALDO_TOTAL_ITEM = "{saldo_total_item}" WHERE ORDEM_COMPRA = "0{ordem_compra}" and EAN = "{ean}" ;'
+            print(query)
+            input('>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            mycursor.execute(query)
+            mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+
 
         @staticmethod
-        def atualizar_status_ordem_compra(ordem_compra):
+        def busca_saldo_ordem_compra(ordem_compra):
             print(
                 CorFonte.fonte_amarela()
-                + f"class Buscadores.OrdemCompra | metodo atualizar_status_ordem_compra | {ordem_compra}"
+                + f"class Buscadores.OrdemCompra | metodo buscar_saldo_ordem_compra | {ordem_compra}"
                 + CorFonte.reset_cor()
             )
-            # recebe a conferencia da ordem de compra
-            # se todos os itens ok: status = pedido liquidado
-            # caso contrário: status = recebido parcialmente
+            query = f'SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = "0{ordem_compra}";'
+            # ajustar código para a que a qtde de '0' seja automática
+            mydb.connect()
+            mycursor.execute(query)
+            resultado = mycursor.fetchall()
+
+            mydb.commit()
+            mydb.close()
+            return resultado
 
         @staticmethod
         def verifica_status_ordem(ordem_compra):
@@ -1173,11 +1206,9 @@ class Buscadores:
 
         @staticmethod
         def buscar_ordem_compra(ordem_compra):
-            print(
-                CorFonte.fonte_amarela()
+            print(CorFonte.fonte_amarela()
                 + f"class Buscadores.OrdemCompra | metodo buscar_ordem_compra"
-                + CorFonte.reset_cor()
-            )
+                + CorFonte.reset_cor())
 
             try:
                 query = (
@@ -1437,7 +1468,8 @@ class Buscadores:
             mydb.close()
             print(myresult)
             return myresult
-        except:
+        except Exception as e:
+            print(e)
             # geral.AlertaMsg.cadastro_inexistente()
             pass
 
@@ -1497,37 +1529,31 @@ class BancoDeDados:  # queries
         myresult = mycursor.fetchall()
         return myresult
 
-    @staticmethod
-    def inserir_item_ordem_compra():
-        print(
-            CorFonte.fonte_amarela()
-            + "classe BancoDeDados | metodo inserir_item_ordem_compra"
-            + CorFonte.reset_cor()
-        )
-        # mydb.connect()
-        # query = 'insert into ordem_compra (CODIGO, DESCRICAO, UNIDADE, CATEGORIA, EAN) values (%s, %s, %s, %s, %s)'
-        # mycursor.execute(query)
-        pass
-
-    @staticmethod
-    def atualizar_ordem_compra():
-        print(
-            CorFonte.fonte_amarela()
-            + "classe BancoDeDados | metodo atualizar_ordem_compra"
-            + CorFonte.reset_cor()
-        )
-        pass
-
 
 class Estoque:
     @staticmethod
-    def entrada_estoque():
-        print(
-            CorFonte.fonte_amarela()
-            + "classe Estoque | metodo entrada_estoque"
-            + CorFonte.reset_cor()
-        )
-        pass
+    def atualiza_saldo_ordem_compra(ean, ordem_compra, quantidade, saldo_qtd, preco):
+        qtd_atualizada = saldo_qtd - quantidade
+        if qtd_atualizada < 0:
+            qtd_atualizada = saldo_qtd
+        saldo_total_item = qtd_atualizada * preco
+        print(CorFonte.fonte_amarela() + "class Estoque | metodo atualiza_saldo_ordem_compra" + CorFonte.reset_cor())
+        try:
+            query = (f"UPDATE ORDEM_COMPRA SET "
+                     f"SALDO_QTD ='{qtd_atualizada}'"
+                     f"SALDO_TOTAL_ITEM = {saldo_total_item} "
+                     f"WHERE EAN = '{ean}' and ordem_compra = {ordem_compra} ;")
+            mydb.connect()
+            mycursor.execute(query)
+            myresult = mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+            print(myresult)
+            return myresult
+        except Exception as e:
+            print(e)
+            # geral.AlertaMsg.cadastro_inexistente()
+            pass
 
 
 def download_planilha():
