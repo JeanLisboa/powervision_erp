@@ -86,8 +86,8 @@ class ModCompras:
 
     class CadFornecedores(FlaskForm):
         cod_fornecedor = StringField("Código", validators=[ReadOnly()])
-        razao_social = StringField("Nome Fantasia", validators=[DataRequired()])
-        # razao_social = StringField("Razão Social", validators=[DataRequired()])
+        nome_fantasia = StringField("Nome Fantasia", validators=[DataRequired()])
+        razao_social = StringField("Razão Social", validators=[DataRequired()])
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cnpj = StringField("CNPJ", validators=[DataRequired(), Length(14)])
         insc_estadual = IntegerField(

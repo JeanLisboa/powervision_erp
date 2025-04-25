@@ -1000,11 +1000,15 @@ class Buscadores:
             mydb.connect()
             mycursor.execute(query)
             resultado = mycursor.fetchall()
+
+
+
             mydb.commit()
             mydb.close()
+            print(f'resultado:\n {resultado}')
             i = 0
             for i in resultado:
-                # print(i[0])
+                print(f'>>>>>>>>>>{i[0]}')
                 if i[0] > 0:
                     return True
                 else:
@@ -1139,7 +1143,8 @@ class Buscadores:
                 mydb.commit()
                 mydb.close()
                 return myresult
-
+        # CRIAR UMA FUNÇÃO PARA PUXAR A ORDEM DE COMPRA E O SALDO DOS PRODUTOS.
+        # SSE O SALDO FOR 0, PRINTAR 'FINALIZADO' NA COLUNA STATUSS
         @staticmethod
         def buscar_ordem_compra2(ordem_compra, razaosocial):
             print(

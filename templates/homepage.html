@@ -6,98 +6,98 @@
 <script src="script.js"></script>
 
 TELA INICIAL
-<script>
-let pontos = [];
-let numPontos = 100;
-let distanciaMax = 100;
-let mouseDentro = false;
-let corMudanca = 0; // Controlador de mudança de cor
+<!--<script>-->
+<!--let pontos = [];-->
+<!--let numPontos = 100;-->
+<!--let distanciaMax = 100;-->
+<!--let mouseDentro = false;-->
+<!--let corMudanca = 0; // Controlador de mudança de cor-->
 
-function setup() {
-    createCanvas(windowWidth, windowHeight);
-    background(227, 227, 241);
+<!--function setup() {-->
+<!--    createCanvas(windowWidth, windowHeight);-->
+<!--    background(227, 227, 241);-->
 
-    for (let i = 0; i < numPontos; i++) {
-        pontos.push({
-            x: random(width),
-            y: random(height),
-            vx: random(-0.3, 0.3), // Velocidade inicial lenta
-            vy: random(-0.3, 0.3)
-        });
-    }
-}
+<!--    for (let i = 0; i < numPontos; i++) {-->
+<!--        pontos.push({-->
+<!--            x: random(width),-->
+<!--            y: random(height),-->
+<!--            vx: random(-0.3, 0.3), // Velocidade inicial lenta-->
+<!--            vy: random(-0.3, 0.3)-->
+<!--        });-->
+<!--    }-->
+<!--}-->
 
-function draw() {
-    background(227, 227, 241);
+<!--function draw() {-->
+<!--    background(227, 227, 241);-->
 
-    // Variáveis para cores com base na mudança de cor
-    let pontoCor = color(100 + sin(corMudanca) * 0, 0, 0 - sin(corMudanca) * 100);
-    let linhaCor = color(255 - sin(corMudanca) * 100, 100 + sin(corMudanca) * 100, 100, 100);
+<!--    // Variáveis para cores com base na mudança de cor-->
+<!--    let pontoCor = color(100 + sin(corMudanca) * 0, 0, 0 - sin(corMudanca) * 100);-->
+<!--    let linhaCor = color(255 - sin(corMudanca) * 100, 100 + sin(corMudanca) * 100, 100, 100);-->
 
-    // Incrementa para efeito de mudança de cor constante
-    corMudanca += 0.02;
+<!--    // Incrementa para efeito de mudança de cor constante-->
+<!--    corMudanca += 0.02;-->
 
-    noStroke();
+<!--    noStroke();-->
 
-    // Desenha e move cada ponto
-    for (let i = 0; i < pontos.length; i++) {
-        let p = pontos[i];
+<!--    // Desenha e move cada ponto-->
+<!--    for (let i = 0; i < pontos.length; i++) {-->
+<!--        let p = pontos[i];-->
 
-        // Movimento dos pontos
-        p.x += p.vx;
-        p.y += p.vy;
+<!--        // Movimento dos pontos-->
+<!--        p.x += p.vx;-->
+<!--        p.y += p.vy;-->
 
-        // Reverter direção ao bater nas bordas
-        if (p.x < 0 || p.x > width) p.vx *= -1;
-        if (p.y < 0 || p.y > height) p.vy *= -1;
+<!--        // Reverter direção ao bater nas bordas-->
+<!--        if (p.x < 0 || p.x > width) p.vx *= -1;-->
+<!--        if (p.y < 0 || p.y > height) p.vy *= -1;-->
 
-        // Desenha o ponto com cor variável
-        fill(pontoCor);
-        ellipse(p.x, p.y, 9, 9);
+<!--        // Desenha o ponto com cor variável-->
+<!--        fill(pontoCor);-->
+<!--        ellipse(p.x, p.y, 9, 9);-->
 
-        // Desenha linhas entre pontos próximos
-        for (let j = i + 1; j < pontos.length; j++) {
-            let q = pontos[j];
-            let d = dist(p.x, p.y, q.x, q.y);
-            if (d < distanciaMax) {
-                stroke(linhaCor);
-                line(p.x, p.y, q.x, q.y);
-            }
-        }
-    }
+<!--        // Desenha linhas entre pontos próximos-->
+<!--        for (let j = i + 1; j < pontos.length; j++) {-->
+<!--            let q = pontos[j];-->
+<!--            let d = dist(p.x, p.y, q.x, q.y);-->
+<!--            if (d < distanciaMax) {-->
+<!--                stroke(linhaCor);-->
+<!--                line(p.x, p.y, q.x, q.y);-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
 
-    // Atração e desaceleração gradual
-    if (mouseDentro) {
-        for (let p of pontos) {
-            let d = dist(mouseX, mouseY, p.x, p.y);
-            if (d < distanciaMax) {
-                let atração = 0.05;
-                p.vx += (mouseX - p.x) * atração / d;
-                p.vy += (mouseY - p.y) * atração / d;
-            }
-        }
-    } else {
-        // Desaceleração quando o mouse sai
-        for (let p of pontos) {
-            p.vx *= 1.09;
-            p.vy *= 1.09;
-        }
-    }
-}
+<!--    // Atração e desaceleração gradual-->
+<!--    if (mouseDentro) {-->
+<!--        for (let p of pontos) {-->
+<!--            let d = dist(mouseX, mouseY, p.x, p.y);-->
+<!--            if (d < distanciaMax) {-->
+<!--                let atração = 0.05;-->
+<!--                p.vx += (mouseX - p.x) * atração / d;-->
+<!--                p.vy += (mouseY - p.y) * atração / d;-->
+<!--            }-->
+<!--        }-->
+<!--    } else {-->
+<!--        // Desaceleração quando o mouse sai-->
+<!--        for (let p of pontos) {-->
+<!--            p.vx *= 1.09;-->
+<!--            p.vy *= 1.09;-->
+<!--        }-->
+<!--    }-->
+<!--}-->
 
-// Detecta quando o mouse entra e sai da área de desenho
-function mouseMoved() {
-    mouseDentro = true;
-}
+<!--// Detecta quando o mouse entra e sai da área de desenho-->
+<!--function mouseMoved() {-->
+<!--    mouseDentro = true;-->
+<!--}-->
 
-function mouseOut() {
-    mouseDentro = false;
-}
+<!--function mouseOut() {-->
+<!--    mouseDentro = false;-->
+<!--}-->
 
-// Ajusta o tamanho da tela ao redimensionar a janela
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-}
+<!--// Ajusta o tamanho da tela ao redimensionar a janela-->
+<!--function windowResized() {-->
+<!--    resizeCanvas(windowWidth, windowHeight);-->
+<!--}-->
 
-</script>
+<!--</script>-->
 {% endblock %}

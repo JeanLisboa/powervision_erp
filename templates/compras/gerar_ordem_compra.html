@@ -16,6 +16,12 @@ TELA GERAR ORDEM DE COMPRA
             <pre>
                 2 - (B)AJUSTAR CAMPO PARA RECEBER VIRGULA NO LUGAR DE PONTO
                 3 - (B)BLOQUEAR A ENTRADA DE EAN JÁ DIGITADO NA ORDEM
+                4 - Query 1 >>>> INSERT INTO ORDEM_COMPRA(DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA,
+                CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, USUARIO) VALUES
+                ('2025-04-08','011146','1','SITE COMPLETO','UN','OUTROS','000053','17896020158926','1','3334.3',
+                '3334.3','3334.3','3334.3','admin');
+                erro no botao_submit_compra
+1364 (HY000): Field 'STATUS' doesn't have a default value
             </pre>
             <div class="col form-label btn btn-light">
                 {{form_gerar_ordem_compra.data.label}}
@@ -161,6 +167,7 @@ TELA GERAR ORDEM DE COMPRA
 
                     {% for i in dicionario_ordem_compra %}
                         {% set contador_item = loop.index0 + 1 %}
+
                         {% set total_item = i[7] * i[8] %}
                     <tr class=" width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                         <td>{{i[0]}}</td>

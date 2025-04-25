@@ -2,6 +2,7 @@
 import mysql.connector
 import webbrowser
 # flask
+# flask
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFProtect
 from forms import Mod_Comercial, Mod_Pricing, Mod_Logistica, ModAdmin, ModCompras
@@ -184,4 +185,4 @@ def teste():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8000)
+    app.run(host='0.0.0.0',  debug=True, port=5000)

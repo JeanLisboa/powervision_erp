@@ -89,9 +89,13 @@ TELA EDITAR ORDEM DE COMPRA
                         <thead>
                             <tr class="cab_tabela">
                                 <th>DESCRIÇÃO</th>
-                                <th>QUANTIDADE</th>
-                                <th>VALOR UNITÁRIO</th>
-                                <th>VALOR TOTAL</th>
+                                <th>QTD. TOTAL</th>
+                                <th>PRECO</th>
+                                <th>VAL. TOTAL</th>
+                                <th>SALDO QTD</th>
+                                <th>SALDO VAL</th>
+
+
                                 <th>STATUS</th>
                             </tr>
                         </thead>
@@ -102,7 +106,9 @@ TELA EDITAR ORDEM DE COMPRA
                                 <td>{{ i[8] }}</td>
                                 <td>{{ i[9] }}</td>
                                 <td>{{ i[10] }}</td>
-                                <td></td>
+                                <td>{{ i[11] }}</td>
+                                <td>{{ i[12] }}</td>
+                                <td>{{ i[14] | upper }}</td>
                                 <td>
                                     <form method="POST">
                                         {{ form_editar_ordem_compra.hidden_tag() }}

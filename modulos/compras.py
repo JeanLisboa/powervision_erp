@@ -3,15 +3,14 @@ from datetime import date
 import mysql.connector
 
 # flask
-from flask import Flask, render_template, redirect, url_for, request, session, flash
-from flask_wtf.csrf import CSRFProtect
+from flask import render_template, redirect, url_for, request, session
+# from flask_wtf.csrf import CSRFProtect
 
-import main
 import modulos.admin
-from forms import ModCompras, Mod_Comercial, Mod_Pricing, Mod_Logistica
+from forms import ModCompras
 
 # geral
-from geral import Validadores, Formatadores, AtualizaCodigo, Buscadores, AlertaMsg
+from geral import Formatadores, AtualizaCodigo, Buscadores, AlertaMsg
 import geral
 
 mydb = mysql.connector.connect(
@@ -29,11 +28,13 @@ contador_item_cadastro_produto = 0
 lista_contador_cadastro_produto = []
 lista_cadastro_produto = []
 datalista_cadastro_produto = []
+result_pesq_forn = None
 
 
 def cadastrar_fornecedores():
     cod_fornecedor = geral.AtualizaCodigo.cod_fornecedor()
     form_fornecedores = ModCompras.CadFornecedores()
+    nome_fantasia = form_fornecedores.nome_fantasia.data
     razao_social = form_fornecedores.razao_social.data
     cnpj = form_fornecedores.cnpj.data
     inscricaoestadual = form_fornecedores.insc_estadual.data
@@ -49,21 +50,17 @@ def cadastrar_fornecedores():
         if geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is False:
             alert = geral.AlertaMsg.cnpj_invalido()
 
-        if (
-            geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is True
-            and Buscadores.buscar_cnpj(form_fornecedores.cnpj.data) is True
-        ):
+        if (geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is True and
+                Buscadores.buscar_cnpj(form_fornecedores.cnpj.data) is True):
             alert = geral.AlertaMsg.cnpj_ja_existente()
 
-        if (
-            geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is True
-            and Buscadores.buscar_cnpj(form_fornecedores.cnpj.data) is False
-        ):
+        if (geral.Validadores.valida_cnpj(form_fornecedores.cnpj.data) is True and
+                Buscadores.buscar_cnpj(form_fornecedores.cnpj.data) is False):
             print("informações validadas - cadastrar no banco de dados")
             values = (
                 f"'{date.strftime(data, '%Y-%m-%d')}',"
                 f"'{cod_fornecedor}',"
-                # f"'{nome_fantasia}',"
+                f"'{nome_fantasia}',"
                 f"'{razao_social}',"
                 f"'{cnpj}',"
                 f"'{inscricaoestadual}',"
@@ -80,6 +77,7 @@ def cadastrar_fornecedores():
                 f"TELEFONE, CEP, ENDERECO, MUNICIPIO, UF) "
                 f"VALUES ({values})"
             )
+            print(query)
             mycursor.execute(query)
             mycursor.fetchall()
             fechadb = "SET SQL_SAFE_UPDATES = 1"
@@ -424,15 +422,10 @@ def analisar_ordem_de_compra():
             if "botao_pesquisar_ordem_de_compra" in request.form:
                 print("botao_pesquisar_ordem_de_compra ACIONADO")
                 print(f"Ordem a pesquisar >>> {ordem_compra, razao_social, nf}")
-
                 # faz a busca na base de dados pela ordem de compra, ou pela razao social,  ou por ambos
-                resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(
-                    ordem_compra, razao_social
-                )
+                resultado = Buscadores.OrdemCompra.buscar_ordem_compra2(ordem_compra, razao_social)
             status_ordem = Buscadores.OrdemCompra.verifica_status_ordem(ordem_compra)
-            if (
-                "ordem_para_analise" in request.form
-            ):  # retorna a opção selecionada na tela
+            if ("ordem_para_analise" in request.form):  # retorna a opção selecionada na tela
                 print("Ordem_para_analise ACIONADO")
 
                 ordem_para_analise = request.form.get("ordem_para_analise")
@@ -499,11 +492,47 @@ def analisar_ordem_de_compra():
 
 
 def gerar_ordem_compra():
-    print(
-        geral.CorFonte.fonte_amarela()
-        + "Função gerar_ordem_compra"
-        + geral.CorFonte.reset_cor()
-    )
+    print(geral.CorFonte.fonte_amarela() + "Função gerar_ordem_compra" + geral.CorFonte.reset_cor())
+    """
+    1. USUÁRIO DEFINE O FORNECEDOR E CLICA EM PESQUISAR FORNECEDOR
+    2. BACKEND: 
+     . result_pesq_forn = Buscadores.OrdemCompra.buscar_pelo_fornecedor(
+                    fornecedor
+     . RENDERIZA NO HTML OS PRODUTOS DO FORNECEDOR JÁ CADASTRADOS 
+    3. O USUÁRIO CLICA EM UM PRODUTO
+    4. BACKEND: 
+     . item_selecionado = busca_ean_selecionado(item_selecionado)
+     . linha_selecionada = formata_linha_para_identificar_posicao(
+                item_selecionado, result_pesq_forn
+            )
+     . linha_selecionada = linha_selecionada[0]
+     4.1 RENDERIZA O ITEM NA TELA COM OS CAMPOS QTDE E VALOR
+     5. O USUARIO CLICA EM INCLUIR ITEM
+     6. BACKEND:
+      . VALIDA SE O EAN JÁ FOI DIGITADO NA LISTA FINAL
+      . EXECUTA SubFunção "atualizar_lista_ordem_compra"
+     7. O USUARIO CLICA EM GERAR ORDEM DE COMPRA
+     8. BACKEND:
+      . ATUALIZA BANCO DE DADOS, TABELA ORDEM_COMPRA
+      * CAMPOS DO BANCO DE DADOS:
+        . DATA
+        . ORDEM_COMPRA
+        . ITEM
+        . DESCRICAO
+        . UNIDADE
+        . CATEGORIA
+        . CODIGO
+        . EAN    
+        . QTDE
+        . PRECO
+        . TOTAL_ITEM
+        . SALDO_QTD
+        . SALDO_TOTAL_ITEM
+        . STATUS
+        . USUARIO
+             
+    """
+
     # 1 - Definição das variáveis globais
     global contador_item
     global lista_ordem_compra
@@ -542,6 +571,11 @@ def gerar_ordem_compra():
         session["ordens_em_aberto"] = 0
 
     try:
+        if preco_unitario is not None:
+            preco_unitario = preco_unitario.replace(",", ".")
+        else:
+            pass
+
         if preco_unitario is None or quantidade is None:
             total_item = 0
 
@@ -649,6 +683,7 @@ def gerar_ordem_compra():
             fornecedor = session.get("fornecedor")
             if "botao_incluir_item" in request.form:
                 print("botao_incluir_item ACIONADO")
+
                 for i in lista_ordem_compra:
                     print(f"{i[6]} ||| ean a incluir na ordem: {ean}")
                     if i[6] == ean:
@@ -658,7 +693,6 @@ def gerar_ordem_compra():
                             + geral.CorFonte.reset_cor()
                         )
                         break
-
                     else:
                         try:
                             contador_item = len(lista_contador_item_compra)
@@ -696,6 +730,7 @@ def gerar_ordem_compra():
                         f"ean: {ean} |\n"
                         f"quantidade: {quantidade} |\n"
                         f"preco_unitario: {preco_unitario} |\n"
+                    
                         f"total_item: {total_item}"
                     )
 
@@ -709,6 +744,7 @@ def gerar_ordem_compra():
                     item_ordem_compra.append(codigo)
                     item_ordem_compra.append(ean)
                     item_ordem_compra.append(quantidade)
+
                     item_ordem_compra.append(preco_unitario)
                     item_ordem_compra.append(total_item)
                     # item_ordem_compra.append(ultimo_preco)
@@ -846,16 +882,29 @@ def editar_ordem_compra():
         ean = ""
         quantidade = ""
         val_unitario = ""
+
         if "botao_pesquisar_ordem_compra" in request.form:
+            status = 'PENDENTE'
             print("botao pesquisar ordem_compra acionado")
+
             if ordem_compra:  # Verifica se o campo 'ordem_compra' está preenchido
+
                 try:
                     ordem_pesquisada = session.get("result_ordem_pesquisada")
                     ordem_compra = session.get("ordem_compra")
                     session["ordem_compra"] = ordem_compra
-                    print(f"ordem_pesquisada: {ordem_pesquisada}")
-                    session["ordem_pesquisada"] = ordem_pesquisada
+                    print(f"ordem_pesquisada antes da modificação: {ordem_pesquisada}")
+                    # ✅ Inicializa `nova_ordem_pesquisada` como uma lista vazia para evitar erro
+                    nova_ordem_pesquisada = []
+                    if ordem_pesquisada:
+                        # Criar uma nova lista de tuplas com o status incluído
+                        nova_ordem_pesquisada = [i + (status,) for i in ordem_pesquisada]
+                        print(f"ordem_pesquisada modificada: {nova_ordem_pesquisada}")
 
+                        # Atualiza a session com os novos valores
+                        session["ordem_pesquisada"] = nova_ordem_pesquisada
+                    for i in nova_ordem_pesquisada:
+                        print(i)
                 except Exception as e:
                     print(f"Erro ao buscar ordem de compra: {e}")
 
@@ -865,7 +914,7 @@ def editar_ordem_compra():
             return render_template(
                 "compras/editar_ordem_compra.html",
                 ordem_compra=ordem_compra,
-                ordem_pesquisada=ordem_pesquisada,
+                ordem_pesquisada=nova_ordem_pesquisada,
                 form_editar_ordem_compra=form_editar_ordem_compra,
                 linha_para_editar="",
                 data=Formatadores.formatar_data(Formatadores.os_data()),

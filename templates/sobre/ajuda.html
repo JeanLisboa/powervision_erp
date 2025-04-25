@@ -2,5 +2,9 @@
 
 {% block content %}
 TELA AJUDA
+  <h2>Vídeo Incorporado do Google Drive</h2>
 
+    <!-- Player de vídeo do Google Drive -->
+    <iframe src="https://drive.google.com/file/d/{{ video_id }}/preview"
+            width="640" height="480" allow="autoplay"></iframe>
 {% endblock %}

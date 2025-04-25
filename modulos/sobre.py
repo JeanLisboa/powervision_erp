@@ -1,7 +1,9 @@
 from flask import render_template
 
 def ajuda():
-    return render_template('sobre/ajuda.html')
+    video_id = "1idax6j0mlLy8YihkNCrSopzio6Cka26h"  # Substitua pelo ID do seu vídeo
+
+    return render_template('sobre/ajuda.html', video_id=video_id)
 
 
 def contato():
