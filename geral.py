@@ -200,7 +200,6 @@ class AlertaMsg:
 
 
 class Formatadores:
-
     @staticmethod
     def formatar_xml(nome_arquivo):
         print(
@@ -327,6 +326,10 @@ class Formatadores:
 
 
 class ValidaStatusPedido:
+
+    def __init__(self):
+        pass
+
     @staticmethod
     def validacao_1(status_ordem):
         print(
@@ -604,26 +607,40 @@ class AtualizaCodigo:
         )
         try:
             query = "SELECT MAX(ORDEM_COMPRA) FROM ordem_compra"
+            print(f'query: {query}')
             mydb.connect()
             mycursor.execute(query)
             myresult = mycursor.fetchall()
+            print(f'myresult: {myresult}')
             mydb.commit()
             ordem_compra_atual = 0
             for x in myresult:
                 ordem_compra_atual = x[0]
             ordem_compra_atual = int(ordem_compra_atual)
+
             ordem_compra_atual = ordem_compra_atual + 1
             ordem_compra_atual = str(ordem_compra_atual)
+
             if len(ordem_compra_atual) == 1:
                 ordem_compra_atual = "00000" + ordem_compra_atual
+
             if len(ordem_compra_atual) == 2:
                 ordem_compra_atual = "0000" + ordem_compra_atual
+
             if len(ordem_compra_atual) == 3:
                 ordem_compra_atual = "000" + ordem_compra_atual
+
+
             if len(ordem_compra_atual) == 4:
                 ordem_compra_atual = "00" + ordem_compra_atual
+
+
             if len(ordem_compra_atual) == 5:
                 ordem_compra_atual = "0" + ordem_compra_atual
+
+            else:
+                ordem_compra_atual = ordem_compra_atual
+
             return ordem_compra_atual
         except Exception as e:
             print(e)
@@ -889,7 +906,6 @@ class Buscadores:
                 return None
 
     class OrdemCompra:
-
         @staticmethod
         def atualizar_estoque(
             data,
@@ -1144,7 +1160,7 @@ class Buscadores:
                 mydb.close()
                 return myresult
         # CRIAR UMA FUNÇÃO PARA PUXAR A ORDEM DE COMPRA E O SALDO DOS PRODUTOS.
-        # SSE O SALDO FOR 0, PRINTAR 'FINALIZADO' NA COLUNA STATUSS
+        # SE O SALDO FOR 0, PRINTAR 'FINALIZADO' NA COLUNA STATUSS
         @staticmethod
         def buscar_ordem_compra2(ordem_compra, razaosocial):
             print(
@@ -1588,4 +1604,4 @@ def download_planilha():
 
     print(f"Planilha salva em: {file_path}")
 
-    pass
+

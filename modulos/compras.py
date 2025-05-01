@@ -754,6 +754,7 @@ def gerar_ordem_compra():
                     # print(lista_ordem_compra)
                     item_ordem_compra.clear()
                     total_ordem_compra += lista_ordem_compra[-1][9]
+                    print(f'lista_ordem_compra: {lista_ordem_compra}')
                     return total_ordem_compra, lista_ordem_compra
 
                 total_ordem_compra = atualizar_lista_ordem_compra()
@@ -779,31 +780,32 @@ def gerar_ordem_compra():
                 print("botao_submit_compra ACIONADO")
                 cont_temp = 1
                 print(f"lista_ordem_compra {lista_ordem_compra}")
-                print(f"len de lista_ordem_compra >>>> {len(lista_ordem_compra)}")
+                # print(f"len de lista_ordem_compra >>>> {len(lista_ordem_compra)}")
                 while cont_temp <= len(lista_ordem_compra):
                     for i in lista_ordem_compra:
                         print(f"i linha {cont_temp} >>>> {i}")
                         values = (
-                            f"'{date.strftime(data, '%Y-%m-%d')}',"
-                            f"'{i[1]}',"
-                            f"'{cont_temp}',"
-                            f"'{i[2]}',"
-                            f"'{i[3]}',"
-                            f"'{i[4]}',"
-                            f"'{i[5]}',"
-                            f"'{i[6]}',"
+                            f"'{date.strftime(data, '%Y-%m-%d')}',"  # data
+                            f"'{i[1]}',"  # ordem
+                            f"'{cont_temp}',"  # item
+                            f"'{i[2]}',"  # descricao
+                            f"'{i[3]}',"  # unidade
+                            f"'{i[4]}',"  # categoria
+                            f"'{i[5]}',"  # codigo
+                            f"'{i[6]}',"  # ean
+                            f"'{i[7]}',"  # quantidade
+                            f"'{i[8]}',"  # preco
+                            f"'{(int(i[7]) * int(i[8]))}',"  # total_item
                             f"'{i[7]}',"
-                            f"'{i[8]}',"
-                            f"'{i[9]}',"
-                            f"'{i[8]}',"
-                            f"'{i[9]}',"
+                            f"'{(int(i[7]) * int(i[8]))}',"  # saldo total_item
+                            f"'{'PENDENTE'}',"
                             f"'{modulos.admin.usuario}'"
                         )
-
+                        print(f"values >>>> {values}")
                         query = (
                             f"INSERT INTO ORDEM_COMPRA"
                             f"(DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, "
-                            f"CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, USUARIO)"
+                            f"CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, STATUS, USUARIO)"
                             f" VALUES ({values});"
                         )
 
@@ -817,6 +819,13 @@ def gerar_ordem_compra():
                         mydb.commit()
                         mydb.close()
                         cont_temp += 1
+
+                    # alert = AlertaMsg.produto_cadastrado_com_sucesso()
+                    # session["alert"] = alert
+
+                    # geral.AtualizaCodigo.ordem_compra()
+
+
                     lista_ordem_compra.clear()  # limpa a lista para a proxima ordem de compra
 
                 return redirect(url_for("gerar_ordem_compra"))
@@ -886,12 +895,11 @@ def editar_ordem_compra():
         if "botao_pesquisar_ordem_compra" in request.form:
             status = 'PENDENTE'
             print("botao pesquisar ordem_compra acionado")
-
             if ordem_compra:  # Verifica se o campo 'ordem_compra' está preenchido
-
                 try:
                     ordem_pesquisada = session.get("result_ordem_pesquisada")
-                    ordem_compra = session.get("ordem_compra")
+                    ordem_compra = request.form.get("pesquisar_ordem_compra")
+                    print(f"ordem_compra: {ordem_compra}")
                     session["ordem_compra"] = ordem_compra
                     print(f"ordem_pesquisada antes da modificação: {ordem_pesquisada}")
                     # ✅ Inicializa `nova_ordem_pesquisada` como uma lista vazia para evitar erro
