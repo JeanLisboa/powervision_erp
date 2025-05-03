@@ -6,6 +6,7 @@ from wtforms import (
     FloatField,
     HiddenField,
     DateField,
+    ValidationError
 )
 from wtforms.validators import (
     DataRequired,
@@ -135,6 +136,12 @@ class ModCompras:
         valor_produto = HiddenField("Valor do Produto")
 
     class GerarOrdemCompra(FlaskForm):
+
+
+        def no_comma(form, field):
+            if ',' in str(field.data):
+                raise ValidationError('Use ponto (.) como separador decimal, não vírgula.')
+
         buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
@@ -150,7 +157,7 @@ class ModCompras:
         unidade = StringField("Un", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
         quantidade = IntegerField(
-            "Quantidade", validators=[DataRequired(), NumberRange(min=1)]
+            "Quantidade", validators=[DataRequired(), NumberRange(min=1), no_comma]
         )
         preco_unitario = FloatField(
             "Preço Unitário", validators=[NumberRange(min=1.00)]

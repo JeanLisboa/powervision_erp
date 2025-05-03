@@ -109,27 +109,28 @@ def entrada_ordem_compra():
                 )  # busca o pedido no banco de dados
 
                 def validacao_1():
+                    print('fonte_amarela + \nVALIDaÇÃO 1: VERIFICAR SE O ARQUIVO XML ESTÁ NO SERVIDOR' + reset_cor)
                     if status_ordem is True:  # VERIFICAR SE O XML ESTÁ NO SERVIDOR
                         return True
                     else:  # xml nao localizado
                         return False
 
                 def validacao_2():
-                    # print(fonte_amarela + '\nVALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO' + reset_cor)
+                    print(fonte_amarela + '\nVALIDAÇÃO 2: VERIFICAR SE O FORNECEDOR ESTÁ CADASTRADO' + reset_cor)
                     if Buscadores.buscar_cnpj(cnpj) is True:
                         print(fonte_azul + f"cnpj encontrado: {cnpj}" + reset_cor)
-                        # print(fonte_verde + 'VALIDAÇÃO 2 concluída' + reset_cor)
+                        print(fonte_verde + 'VALIDAÇÃO 2 concluída' + reset_cor)
                         return True
                     else:
                         print("cnpj não encontrado")
-                        # lst_nf = ['Fornecedor não encontrado']
+                        lst_nf = ['Fornecedor não encontrado']
                         return False
 
                 def validacao_3():
-                    # print(fonte_amarela + '\nVALIDÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO' + reset_cor)
+                    print(fonte_amarela + '\nVALIDÇÃO 3: VERIFICAR SE O PEDIDO ESTÁ EM ABERTO' + reset_cor)
                     if status_ordem is True:
                         print(fonte_azul + f"Pedido {lst_nf[3]} aberto" + reset_cor)
-                        # print(fonte_verde + 'VALIDAÇÃO 3 concluída' + reset_cor)
+                        print(fonte_verde + 'VALIDAÇÃO 3 concluída' + reset_cor)
                         return True
                     else:
                         print(
@@ -138,7 +139,7 @@ def entrada_ordem_compra():
                         return False
 
                 def validacao_4():
-                    # print(fonte_amarela + '\nVALIDAÇÃO 4: VALIDAR PEDIDO X NF' + reset_cor)
+                    print(fonte_amarela + '\nVALIDAÇÃO 4: VALIDAR PEDIDO X NF' + reset_cor)
                     itens_nf = Buscadores.Xml.buscar_linhas_nf(str(nf))
                     print(f"itens_nf = {itens_nf}\n")
                     # print(fonte_amarela + '\nVALIDAÇÃO 4: (2) RECEBER OC, CRIAR LISTA DE EAN E PRECO' + reset_cor)
@@ -149,9 +150,9 @@ def entrada_ordem_compra():
                     print(f"maior_dif_permitida = {maior_dif_permitida}")
                     cont_preco_fora_politica = 0
 
-                    # print("for ean_oc in itens_oc:")
+                    print("for ean_oc in itens_oc:")
                     for ean_oc in itens_oc:  # 'oc' = 'ordem de compra'
-                        # print(f"\nean pesquisado: {ean_oc[0]}")
+                        print(f"\nean pesquisado: {ean_oc[0]}")
 
                         for ean_nf in itens_nf:
                             # print(f"ean_nf = {ean_nf[0]}")
@@ -329,17 +330,18 @@ def entrada_ordem_compra():
                 pos = 0
                 for i in itens_conferencia:
                     #  formata quantidade da NF e cria uma lista
-                    qtde_pedido = int(i[8])
-                    qtde_pedido = str(qtde_pedido)
+                    saldo_qtd = int(i[11])
+                    print(f'saldo_qtd = {saldo_qtd}')
+                    saldo_qtd = str(saldo_qtd)
                     ean_pedido = i[7]
-                    zipped = (ean_pedido, qtde_pedido)  # (ean, quantidade nf)
+                    zipped = (ean_pedido, saldo_qtd)  # (ean, quantidade nf)
                     lst_pedido_p_conferencia.append(zipped)
                     session["lst_pedido_p_conferencia"] = lst_pedido_p_conferencia
 
                     #  formata quantidade digitada e cria uma lista
                     zipped_2 = (ean_pedido, result_conferencia[pos])  # (ean, quantidade recebida)
                     lst_itens_recebidos.append(zipped_2)
-                    diferenca = int(result_conferencia[pos]) - int(qtde_pedido)
+                    diferenca = int(result_conferencia[pos]) - int(saldo_qtd)
                     analisa_diferenca(diferenca)
                     zipped_3 = (lst_itens_recebidos[pos], diferenca, analisa_diferenca(diferenca))
                     lst_diferenca.append(zipped_3)
@@ -381,18 +383,15 @@ def entrada_ordem_compra():
 
         try:
             if "botao_finalizar_conferencia" in request.form:
-
                 print(fonte_azul + "\nBotao_finalizar_conferencia ACIONADO" + reset_cor)
                 lst_nf = session.get("resultado_validacao")  # recupera as informações da tabela de pesquisa
                 print(f"lst_nf: {lst_nf}")
-
                 itens_conferencia = session.get("itens_conferencia", [])  # Recupera as informações da ordem de compra
                 print(f'itens_conferencia: {itens_conferencia}')
                 result_conferencia = session.get("result_conferencia")
                 print(f'result_conferencia: {result_conferencia}')
                 lst_pedido_p_conferencia = session.get("lst_pedido_p_conferencia")
                 print(f"lst_pedido_p_conferencia >>> {lst_pedido_p_conferencia}")
-
                 print("\n--------------ANALISE ENTRADA ESTOQUE------------------")
                 print("1 - COMPARA QUANTIDADE RECEBIDA X SALDO DO PEDIDO *** PENDENTE DE RECEBIMENTO *** ")
                 lst_qtde_recebida_a = []
@@ -435,7 +434,6 @@ def entrada_ordem_compra():
                     lst_ent_estoque_final.append(a)
 
                 print("3 - BUSCA CRITERIO PARA ENTRADA ESTOQUE (PENDENTE)\n")
-
                 print("4 - ATUALIZA O ESTOQUE OK \n")
                 print(f'lst_ent_estoque_final completo\n: {lst_ent_estoque_final}')
 
@@ -450,6 +448,7 @@ def entrada_ordem_compra():
                     codigo = i[2]
                     descricao = i[3]
                     quantidade = i[5]
+
                     print(f'quantidade >>> {quantidade}')
 
                     valor = i[4]
@@ -468,10 +467,7 @@ def entrada_ordem_compra():
                         usuario)
 
                     print('3 - ATUALIZA O SALDO DA ORDEM_COMPRA - OK')
-
                     geral.Buscadores.OrdemCompra.atualizar_saldo_ordem_compra(ordem_compra, ean, quantidade, valor)
-
-                    #  TRAVAR QUANDO O ITEM ESTIVER 100% ENTREGUE
 
 
                 def atualiza_status_ordem_compra(lst_diferenca):
@@ -484,20 +480,14 @@ def entrada_ordem_compra():
                             return True
 
                 print("5 - ATUALIZA O STATUS ORDEM COMPRA")
-
-
-
-                # se status todos os itens da oc forem ok, entao pedido finalizado,
-                # caso nao, 'parcialmente recebido'
                 if atualiza_status_ordem_compra(lst_diferenca) is True:
                     print("Pedido encerrado")
                 else:
                     print("pedido parcialmente recebido")
 
                 print("6 - ATUALIZA SALDO ORDEM COMPRA")
-                print("Recebe o pedido e a lista dos itens recebidos")
-                print("gera lista com os itens recebidos")
-                print("atualiza a coluna saldo")
+
+
                 ordem_compra = lst_nf[3]
                 print('FUNÇÃO geral.Buscadores.OrdemCompra.busca_saldo_ordem_compra(ordem_compra)')
                 list_temp = []
@@ -524,12 +514,6 @@ def entrada_ordem_compra():
                             list_temp = list_temp + quantidade
 
                 print(list_temp)
-
-                # geral.Estoque.atualiza_saldo_ordem_compra(ean, ordem_compra, quantidade, saldo_qtd, preco)
-
-                # BUSCAR PELO EAN.
-                # VARIAVEL SALDO_QTD = SALDO_QTD - QUANTIDADE RECEBIDO
-                # VARIAVEL SALDO_TOTAL_ITEM = SALDO_QTD * PRECO
 
         except Exception as e:
             print(e)
@@ -577,10 +561,4 @@ def analisa_criterios_recebimento(lst_pedido_p_conferencia,
     print(f"lista_diferenca : {lst_diferenca}")
 
     print("\nFim da função analisa_criterios_recebimento\n")
-    # print("-------------------------------------------------")
 
-    # recebe uma lista com os criterios para recebimento
-    # retorna a informação se recebe ou recusa a mercadoria
-    # caso precise ser recebido, solicitar liberação de compras
-    # neste caso, o pedido precisará ser liberado pelo comprador
-    # se o pedido não for recebido completo, deverá ser finalizado ou gerar saldo

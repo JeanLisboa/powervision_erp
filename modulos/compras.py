@@ -798,14 +798,27 @@ def gerar_ordem_compra():
                             f"'{(int(i[7]) * int(i[8]))}',"  # total_item
                             f"'{i[7]}',"
                             f"'{(int(i[7]) * int(i[8]))}',"  # saldo total_item
-                            f"'{'PENDENTE'}',"
+                            f"'{'ABERTO'}',"
                             f"'{modulos.admin.usuario}'"
                         )
                         print(f"values >>>> {values}")
                         query = (
                             f"INSERT INTO ORDEM_COMPRA"
-                            f"(DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, "
-                            f"CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, STATUS, USUARIO)"
+                            f"(DATA, "
+                            f"ORDEM_COMPRA, "
+                            f"ITEM, "
+                            f"DESCRICAO, "
+                            f"UNIDADE, "
+                            f"CATEGORIA, "
+                            f"CODIGO, "
+                            f"EAN, "
+                            f"QUANTIDADE, "
+                            f"PRECO, "
+                            f"TOTAL_ITEM, "
+                            f"SALDO_QTD, "
+                            f"SALDO_TOTAL_ITEM, "
+                            f"STATUS, "
+                            f"USUARIO)"
                             f" VALUES ({values});"
                         )
 
@@ -1341,26 +1354,42 @@ def adicionar_item_ordem_compra():
                 print(f"ordem_pesquisada: {ordem_pesquisada}")
                 print("Incluindo a ordem_compra atualizada")
                 print(f"ordem_compra atualizada:")
-
+                print(f'ordem_pesquisada_copia: {ordem_pesquisada_copia}')
                 for i in ordem_pesquisada_copia:
                     print()
                     values = (
-                        f"'{date.strftime(data, '%Y-%m-%d')}',"
-                        f"'{i[1]}',"  # oc
-                        f"'{i[2]}',"  # item
+                        f"'{date.strftime(data, '%Y-%m-%d')}',"  # data
+                        f"'{i[1]}',"  # ordem
+                        f"'{cont_temp}',"  # item
                         f"'{i[3]}',"  # descricao
-                        f"'{i[4]}',"  #  unidade
+                        f"'{i[4]}',"  # unidade
                         f"'{i[5]}',"  # categoria
                         f"'{i[6]}',"  # codigo
                         f"'{i[7]}',"  # ean
                         f"'{i[8]}',"  # quantidade
                         f"'{i[9]}',"  # preco
-                        f"'{i[9]}',"  # total_item
-                        f"'{i[8]}',"  # saldo-qtd
-                        f"'{i[9]}',"  # saldo_total
+                        f"'{(int(i[9]) * int(i[8]))}',"  # total_item
+                        f"'{i[8]}',"
+                        f"'{(int(i[9]) * int(i[8]))}',"  # saldo total_item
+                        f"'{'ABERTO'}',"
                         f"'{modulos.admin.usuario}'"
                     )
-                    query_02 = f"INSERT INTO ORDEM_COMPRA (DATA, ORDEM_COMPRA, ITEM, DESCRICAO, UNIDADE, CATEGORIA, CODIGO, EAN, QUANTIDADE, PRECO, TOTAL_ITEM, SALDO_QTD, SALDO_TOTAL_ITEM, USUARIO) VALUES ({values});"
+                    query_02 = (f"INSERT INTO ORDEM_COMPRA ("
+                                f"DATA, "
+                                f"ORDEM_COMPRA, "
+                                f"ITEM, "
+                                f"DESCRICAO, "
+                                f"UNIDADE, "
+                                f"CATEGORIA, "
+                                f"CODIGO, "
+                                f"EAN, "
+                                f"QUANTIDADE, "
+                                f"PRECO, "
+                                f"TOTAL_ITEM, "
+                                f"SALDO_QTD, "
+                                f"SALDO_TOTAL_ITEM, "
+                                f"STATUS, "
+                                f"USUARIO) VALUES ({values});")
                     print(query_02)
                     mycursor.execute(query_02)
                     mycursor.fetchall()

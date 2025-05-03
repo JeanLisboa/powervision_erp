@@ -5,16 +5,15 @@
 <!-- as duas linhas abaixo pertencem ao modal -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-
-
 TELA EDITAR ORDEM DE COMPRA
-<pre>4 - incluir tela de visualização e exclusao de saldo de pedidos</pre>
-
-
+<pre>CRIAR TRAVA PARA QUE O USUARIO NAO:
+    EXCLUA O ITEM DA OC, CASO ELE JÁ TENHA SIDO TOTAL, OU PARCIALMENTE RECEBIDO
+    DIMINUA A QUANTIDADE DO ITEM DA OC PARA UMA QUANTIDADE MENOR DO QUE JÁ FOI RECEBIDO
+</pre>
 <div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
     <form action="" method="POST">
     {{form_editar_ordem_compra.csrf_token }}
-        <div class="container p-3 mb-3 div_principal" xmlns="http://www.w3.org/1999/html">
+        <div class="container p-1 mb-2 div_principal" xmlns="http://www.w3.org/1999/html">
             <div class="mb-1 float-esquerda-40pp">
                 <div class="col form-label btn btn-light">
                    {{form_editar_ordem_compra.data.label }}
@@ -84,7 +83,11 @@ TELA EDITAR ORDEM DE COMPRA
         .catch(error => console.error("Erro:", error));
     }
 </script>
-            <div class="mt-5 float-child-ordem-compra">
+
+
+        {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5", id="botao_adicionar_item") }}
+
+            <div class="mt-2 float-child-ordem-compra">
                 <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
                         <thead>
                             <tr class="cab_tabela">
@@ -108,7 +111,7 @@ TELA EDITAR ORDEM DE COMPRA
                                 <td>{{ i[10] }}</td>
                                 <td>{{ i[11] }}</td>
                                 <td>{{ i[12] }}</td>
-                                <td>{{ i[14] | upper }}</td>
+                                <td>{{ i[13] | upper }}</td>
                                 <td>
                                     <form method="POST">
                                         {{ form_editar_ordem_compra.hidden_tag() }}
@@ -131,10 +134,6 @@ TELA EDITAR ORDEM DE COMPRA
             </div>
         </div>
         <!-- inicio da estrutura do modal -->
-
-
-        {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5", id="botao_adicionar_item") }}
-
 
         <div id="id02" class="w3-modal">
             <div class="w3-modal-content">

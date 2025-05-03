@@ -6,8 +6,7 @@ TELA ENTRADA ORDEM DE COMPRA
 
   <form action="" method="POST"> {{ form_entrada_ordem_compra.csrf_token }}
     <pre>
-      - NF TESTE: 2112 E 2299
-      1 -  APOS A CONFIRM DA ENTRADA DOS PEDIDOS: ATUALIZAR ORDEM DE COMPRA
+      - NF TESTE:2299
       2 - CORRIGIR TELA PARA NAO LIMPAR OS CAMPOS APÓS CLICAR EM ANALISAR CONFERENCIA
       3 - O BOTAO ANALISAR CONFERENCIA SÓ DEVE APARECER APÓS CLICAR EM REALIZAR CONFERENCIA
       *** - DEVEM SER RESPEITADOS OS CRITÉRIOS PARA RECEBIMENTO.
@@ -93,11 +92,13 @@ TELA ENTRADA ORDEM DE COMPRA
           </div> <!-- FIM DO DIV 1 INFERIOR -->
 
           <div> <!-- DIV 2  INFERIOR (TABELA DA DIREITA)-->
+
             <table class="table table-hover table-striped float-tela-conferencia-direita" style="position:sticky" cellpadding="2" cellspacing="2" >
+
               <thead>
                 <tr class="cab_tabela">
-                   <th class="tam_campo_codigo">ENTRADA</th> <!-- col1 -->
-                   <th class="tam_campo_codigo">DIFERENÇA</th> <!-- col2 -->
+                  <th class="tam_campo_codigo">ENTRADA</th> <!-- col1 -->
+                  <th class="tam_campo_codigo">DIFERENÇA</th> <!-- col2 -->
                   <th class="tam_campo_descricao_tabela">STATUS</th> <!-- col3 -->
                 </tr>
               </thead>

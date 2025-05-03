@@ -606,12 +606,15 @@ class AtualizaCodigo:
             + CorFonte.reset_cor()
         )
         try:
-            query = "SELECT MAX(ORDEM_COMPRA) FROM ordem_compra"
+            query =f"SELECT MAX(ORDEM_COMPRA) FROM ordem_compra"
+
             print(f'query: {query}')
             mydb.connect()
             mycursor.execute(query)
             myresult = mycursor.fetchall()
-            print(f'myresult: {myresult}')
+            print(f'myresult: {myresult[0][0]}')
+            if myresult[0][0] is None:  # se nao houver ordem_compra cadastrada
+                myresult = '000000'
             mydb.commit()
             ordem_compra_atual = 0
             for x in myresult:
@@ -949,41 +952,112 @@ class Buscadores:
 
         @staticmethod
         def atualizar_saldo_ordem_compra(ordem_compra, ean, quantidade, valor):
-            saldo_qtd_consulta = 0
-            saldo_valor_consulta = 0
 
             print(CorFonte.fonte_amarela()
-                + f"class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra | {ordem_compra}"
-                + CorFonte.reset_cor())
-
+                  + f"class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra | {ordem_compra}"
+                  + CorFonte.reset_cor())
+            status = 'ABERTO'
             consulta = f'SELECT * FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = "0{ordem_compra}" and EAN = "{ean}";'
             mydb.connect()
             mycursor.execute(consulta)
 
+            #  1 - mostra o saldo da ordem de compra
             resultado_consulta = mycursor.fetchall()
             print(f'res consulta: {resultado_consulta}')
-            input('>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-            saldo_qtd_consulta = resultado_consulta[0][11]
-            # saldo_qtd_consulta = int(saldo_qtd_consulta)
-            print(f'saldo_qtd_consulta: {saldo_qtd_consulta}')
+
+            # 2 - compara o saldo_qtd com a quantidade digitada pelo usuario
+            saldo_qtd = resultado_consulta[0][11]
+            qtde_inicial = resultado_consulta[0][8]
+
+            # 3 - se o saldo_qtd  for maior que 0 e menor que qtde_inicial, entao o status eh PARCIALMENTE RECEBIDO
+
             quantidade = int(quantidade)
             print(f'quantidade: {quantidade}')
+            if quantidade == 0:
+                pass
 
-            input('>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-            saldo_valor_consulta = resultado_consulta[0][12]
-            saldo_valor_consulta = float(saldo_valor_consulta)
-            print(f'saldo_valor_consulta: {saldo_valor_consulta} {type(saldo_valor_consulta)}')
 
-            input('>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-            saldo_total_item = (saldo_qtd_consulta-quantidade) * valor
-            print(f'saldo_total_item: {saldo_total_item}')
-            query = f'UPDATE ORDEM_COMPRA SET SALDO_QTD = "{saldo_qtd_consulta-quantidade}", SALDO_TOTAL_ITEM = "{saldo_total_item}" WHERE ORDEM_COMPRA = "0{ordem_compra}" and EAN = "{ean}" ;'
-            print(query)
-            input('>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-            mycursor.execute(query)
-            mycursor.fetchall()
-            mydb.commit()
-            mydb.close()
+            elif saldo_qtd > 0 and ((saldo_qtd - quantidade) > 0):
+                status = 'PARCIALMENTE RECEBIDO'
+                print(f'saldo_qtd: {saldo_qtd} | status: {status}')
+
+                saldo_valor_consulta = resultado_consulta[0][12]
+                saldo_valor_consulta = float(saldo_valor_consulta)
+
+                saldo_total_item = (saldo_qtd - quantidade) * valor
+                print(f'saldo_total_item: {saldo_total_item}')
+                query = (f'UPDATE ORDEM_COMPRA SET '
+                         f'SALDO_QTD = "{saldo_qtd - quantidade}", '
+                         f'SALDO_TOTAL_ITEM = "{saldo_total_item}",'
+                         f'STATUS = "{status}"'
+                         f'WHERE ORDEM_COMPRA = "0{ordem_compra}" and EAN = "{ean}" ;')
+
+                print(query)
+                mycursor.execute(query)
+                mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+
+            elif saldo_qtd > 0 and ((saldo_qtd - quantidade) == 0):
+                status = 'RECEBIMENTO FINALIZADO'
+                print(f'saldo_qtd: {saldo_qtd} | status: {status}')
+
+                quantidade = int(quantidade)
+                print(f'Foram Recebidas {quantidade} Unidades de Venda')
+
+                saldo_valor_consulta = resultado_consulta[0][12]
+                saldo_valor_consulta = float(saldo_valor_consulta)
+
+                saldo_total_item = (saldo_qtd - quantidade) * valor
+                print(f'saldo_total_item: {saldo_total_item}')
+                query = (f'UPDATE ORDEM_COMPRA SET '
+                         f'SALDO_QTD = "{saldo_qtd - quantidade}", '
+                         f'SALDO_TOTAL_ITEM = "{saldo_total_item}",'
+                         f'STATUS = "{status}"'
+                         f'WHERE ORDEM_COMPRA = "0{ordem_compra}" and EAN = "{ean}" ;')
+
+                print(query)
+                mycursor.execute(query)
+                mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+
+            elif saldo_qtd > 0 and ((saldo_qtd - quantidade) < 0):
+                status = 'RECEBIMENTO FINALIZADO'
+                print(f'saldo_qtd: {saldo_qtd} | status: {status}')
+                quantidade = int(saldo_qtd)
+                print(f'Foram Recebidas {quantidade} Unidades de Venda')
+                print(f'Sobra de {quantidade - saldo_qtd} Unidades de Venda')
+                saldo_valor_consulta = resultado_consulta[0][12]
+                saldo_valor_consulta = float(saldo_valor_consulta)
+                saldo_total_item = (saldo_qtd - quantidade) * valor
+                print(f'saldo_total_item: {saldo_total_item}')
+                query = (f'UPDATE ORDEM_COMPRA SET '
+                         f'SALDO_QTD = "0", '
+                         f'SALDO_TOTAL_ITEM = "0",'
+                         f'STATUS = "{status}"'
+                         f'WHERE ORDEM_COMPRA = "0{ordem_compra}" and EAN = "{ean}" ;')
+
+                # print(query)
+                mycursor.execute(query)
+                mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+
+            elif saldo_qtd < 0:
+                status = 'RECEBIMENTO FINALIZADO'
+                query = (f'UPDATE ORDEM_COMPRA SET '
+                         f'SALDO_QTD = "0", '
+                         f'SALDO_TOTAL_ITEM = "0",'
+                         f'STATUS = "{status}"'
+                         f'WHERE ORDEM_COMPRA = "0{ordem_compra}" and EAN = "{ean}" ;')
+
+                # print(query)
+                mycursor.execute(query)
+                mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+
 
 
         @staticmethod
@@ -1011,7 +1085,18 @@ class Buscadores:
                 + CorFonte.reset_cor()
             )
             print(f"Verifica status_ordem_compra: {ordem_compra}")
-            query = f'SELECT SUM(SALDO_QTD) FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = "0{ordem_compra}";'
+            if len(ordem_compra) == 5:
+                ordem_compra = f'0{ordem_compra}'
+            if len(ordem_compra) == 4:
+                ordem_compra = f'00{ordem_compra}'
+            if len(ordem_compra) == 3:
+                ordem_compra = f'000{ordem_compra}'
+            if len(ordem_compra) == 2:
+                ordem_compra = f'0000{ordem_compra}'
+            if len(ordem_compra) == 1:
+                ordem_compra = f'00000{ordem_compra}'
+
+            query = f'SELECT SUM(SALDO_QTD) FROM ORDEM_COMPRA WHERE ORDEM_COMPRA = "{ordem_compra}";'
             # ajustar código para a que a qtde de '0' seja automática
             mydb.connect()
             mycursor.execute(query)
@@ -1554,6 +1639,11 @@ class BancoDeDados:  # queries
 class Estoque:
     @staticmethod
     def atualiza_saldo_ordem_compra(ean, ordem_compra, quantidade, saldo_qtd, preco):
+        print(
+            CorFonte.fonte_amarela()
+            + "class Estoque | metodo atualiza_saldo_ordem_compra" + CorFonte.reset_cor())
+
+
         qtd_atualizada = saldo_qtd - quantidade
         if qtd_atualizada < 0:
             qtd_atualizada = saldo_qtd
@@ -1562,8 +1652,10 @@ class Estoque:
         try:
             query = (f"UPDATE ORDEM_COMPRA SET "
                      f"SALDO_QTD ='{qtd_atualizada}'"
-                     f"SALDO_TOTAL_ITEM = {saldo_total_item} "
+                     f"SALDO_TOTAL_ITEM = '{saldo_total_item}'"
+                     # f"STATUS = '{status}'"
                      f"WHERE EAN = '{ean}' and ordem_compra = {ordem_compra} ;")
+            print(query)
             mydb.connect()
             mycursor.execute(query)
             myresult = mycursor.fetchall()
