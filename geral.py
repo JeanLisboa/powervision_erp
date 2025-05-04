@@ -100,6 +100,18 @@ class AlertaMsg:
         return redirect(url_for("cadastrar_produtos"))
 
     @staticmethod
+    def campo_nf_em_branco():
+        print(
+            CorFonte.fonte_amarela()
+            + "class AlertaMsg: campos_em_branco()"
+            + CorFonte.reset_cor()
+        )
+        session["alert"] = (
+            f'<div id = "alert" class="alert alert-danger", '
+            f'role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>'
+        )
+        return redirect(url_for("cadastrar_produtos"))
+    @staticmethod
     def ean_ja_digitado(ean):
         print(
             CorFonte.fonte_amarela()
@@ -927,6 +939,7 @@ class Buscadores:
                 + "class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra"
                 + CorFonte.reset_cor()
             )
+
             query = """
             INSERT INTO ESTOQUE 
             (DATA, TIPO_MOV, ORDEM_COMPRA, NOTA_FISCAL, EAN, CODIGO, DESCRICAO, QUANTIDADE, VALOR, USUARIO) 
@@ -963,7 +976,7 @@ class Buscadores:
 
             #  1 - mostra o saldo da ordem de compra
             resultado_consulta = mycursor.fetchall()
-            print(f'res consulta: {resultado_consulta}')
+            # print(f'res consulta: {resultado_consulta}')
 
             # 2 - compara o saldo_qtd com a quantidade digitada pelo usuario
             saldo_qtd = resultado_consulta[0][11]
@@ -1668,6 +1681,33 @@ class Estoque:
             # geral.AlertaMsg.cadastro_inexistente()
             pass
 
+    @staticmethod
+    def relatorio_estoque():
+        estoque_processado = []
+        estoque = []
+        print(f'Relatorio Estoque')
+        try:
+            query = "SELECT * FROM ESTOQUE;"
+            print(f'query: {query}')
+            mydb.connect()
+            mycursor.execute(query)
+            estoque = mycursor.fetchall()
+            saldo_qtd = 0
+            saldo_valor = 0
+            for item in estoque:
+                data, tipo, ordem, nota, ean, cod, desc, qtd, valor, usuario = item
+                total = qtd * valor
+                saldo_qtd += qtd
+                saldo_valor += total
+                processamento = (item, total,saldo_qtd, saldo_valor)
+                estoque_processado.append(processamento)
+            mydb.commit()
+            mydb.close()
+        except Exception as e:
+            print(e)
+            pass
+
+        return estoque_processado
 
 def download_planilha():
     pasta = r"C:\Users\jean.lino\Downloads"  # Substitua pelo caminho da sua pasta

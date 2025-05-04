@@ -309,7 +309,7 @@ class Mod_Logistica:
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         data_ini = DateField("Data Inicial", validators=[DataRequired()])
         data_final = DateField("Data Final", validators=[DataRequired()])
-        botao_pesquisar = SubmitField("Pesquisar")
+        botao_relatorio_estoque = SubmitField("pesquisar")
 
     class Realizar_conferencia(FlaskForm):
         ordem_compra = StringField("Ordem de Compra")

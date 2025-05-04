@@ -1,6 +1,7 @@
 import datetime
 
-from flask import render_template, request, session
+import flash
+from flask import render_template, request, session, redirect
 import modulos.admin
 from forms import Mod_Logistica
 from geral import Validadores, Formatadores, Buscadores
@@ -56,6 +57,7 @@ def entrada_ordem_compra():
     10.9 - ATUALIZA O ESTOQUE
     
     """
+
     form_entrada_ordem_compra = Mod_Logistica.EntradaOrdemCompra()
     razao_social = form_entrada_ordem_compra.razao_social.data
     cnpj = form_entrada_ordem_compra.cnpj.data
@@ -84,10 +86,14 @@ def entrada_ordem_compra():
 
     # processamento dos botões
     if request.method == "POST":
+
         try:
             if "botao_pesquisar_ordem_compra" in request.form:
+                validacao_final = False
+                session['validacao_final'] = validacao_final
                 print("botao_pesquisar_NF ACIONADO")
             if nf is not None:
+                session['nf'] = nf
                 #  redefine as variáveis
                 nome_arquivo = Buscadores.Xml.buscar_arquivo(nf)
                 cnpj = Buscadores.Xml.buscar_cnpj(nome_arquivo)
@@ -263,6 +269,7 @@ def entrada_ordem_compra():
 
                 if validacao_1() is False:
                     lst_nf.append("NOTA FISCAL NÃO ENCONTRADA")
+                    alert = "NOTA FISCAL NÃO ENCONTRADA"
                     session["resultado_validacao"] = lst_nf
                     session["validacao_final"] = validacao_final
 
@@ -288,6 +295,10 @@ def entrada_ordem_compra():
             try:
                 if "botao_limpar_pesquisa" in request.form:
                     print("\nbotao_limpar_pesquisa ACIONADO")
+                    nf = ''
+                    session['nf'] = nf
+
+
             except Exception as e:
                 print(e)
 
@@ -310,8 +321,14 @@ def entrada_ordem_compra():
 
         try:
             if "botao_analisar_conferencia" in request.form:
+                nf = form_entrada_ordem_compra.nf.data
                 print(fonte_azul + "\nbotao_analisar_conferencia ACIONADO" + reset_cor)
-
+                nf = session.get('nf')
+                validacao_final = session.get('validacao_final', False)
+                # Validação necessária
+                if not nf or not validacao_final:
+                    flash("Preencha o campo NF e conclua a validação antes de prosseguir com a conferência.")
+                    return redirect(request.url)  # ou outro redirect conforme sua lógica
                 lst_nf = session.get("resultado_validacao")  # recupera as informações da tabela de pesquisa
                 print(f"lst_nf >>> {lst_nf}")
 
@@ -392,7 +409,9 @@ def entrada_ordem_compra():
                 print(f'result_conferencia: {result_conferencia}')
                 lst_pedido_p_conferencia = session.get("lst_pedido_p_conferencia")
                 print(f"lst_pedido_p_conferencia >>> {lst_pedido_p_conferencia}")
+
                 print("\n--------------ANALISE ENTRADA ESTOQUE------------------")
+
                 print("1 - COMPARA QUANTIDADE RECEBIDA X SALDO DO PEDIDO *** PENDENTE DE RECEBIMENTO *** ")
                 lst_qtde_recebida_a = []
                 lst_qtde_pedido_a = []
@@ -409,10 +428,9 @@ def entrada_ordem_compra():
                 lst_an_ent_estoque.append(lst_qtde_pedido_a)
                 print(f"lst_an_ent_estoque >>> {lst_an_ent_estoque}")
 
-                print("--------------FINALIZADO------------------\n")
                 print("2 - MONTA LISTA DE ITENS QUE SERÃO INTERNALIZADOS")
-                print('itens_conferencia')
-                print(itens_conferencia)
+                # print('itens_conferencia')
+                # print(itens_conferencia)
                 for i in itens_conferencia:
                     lst_ent_estoque_temp.append(i[5])  # categoria
                     lst_ent_estoque_temp.append(i[7])  # ean
@@ -423,11 +441,11 @@ def entrada_ordem_compra():
                     lst_ent_estoque_temp.clear()
 
                 lst_ent_estoque_final = []
-                print('================teste de lst_ent_estoque ===================')
-                print(f'lst_ent_estoque: {lst_ent_estoque}')
-                print(f'lst_qtde_recebida_a: {lst_qtde_recebida_a}')
-                print(f'lst_qtde_pedido_a: {lst_qtde_pedido_a}')
-                print('=============================================================')
+                # print('================teste de lst_ent_estoque ===================')
+                # print(f'lst_ent_estoque: {lst_ent_estoque}')
+                # print(f'lst_qtde_recebida_a: {lst_qtde_recebida_a}')
+                # print(f'lst_qtde_pedido_a: {lst_qtde_pedido_a}')
+                # print('=============================================================')
                 for a, b, c in zip(
                         lst_ent_estoque, lst_qtde_recebida_a, lst_qtde_pedido_a):
                     a.append(c if int(b) > int(c) else b)  # Adiciona a quantidade à sublista
@@ -454,17 +472,24 @@ def entrada_ordem_compra():
                     valor = i[4]
                     usuario = 'ADMIN'
                     # 2 - atualiza o estoque
-                    geral.Buscadores.OrdemCompra.atualizar_estoque(
-                        data,
-                        tipo_mov,
-                        ordem_compra,
-                        nota_fiscal,
-                        ean,
-                        codigo,
-                        descricao,
-                        quantidade,
-                        valor,
-                        usuario)
+
+                    # evita a exceção de quantidade = 0
+                    if quantidade == '0':
+                        print(f'item sem quantidade >>> {quantidade}')
+                        pass
+                    else:
+                        print('Item será atualizado')
+                        geral.Buscadores.OrdemCompra.atualizar_estoque(
+                            data,
+                            tipo_mov,
+                            ordem_compra,
+                            nota_fiscal,
+                            ean,
+                            codigo,
+                            descricao,
+                            quantidade,
+                            valor,
+                            usuario)
 
                     print('3 - ATUALIZA O SALDO DA ORDEM_COMPRA - OK')
                     geral.Buscadores.OrdemCompra.atualizar_saldo_ordem_compra(ordem_compra, ean, quantidade, valor)
@@ -500,10 +525,6 @@ def entrada_ordem_compra():
                     saldo_qtd = i[12]
                     list_temp.append((ean_saldo, preco, saldo_qtd))
 
-
-                print('i do lst_nf')
-                print('list_temp')
-
                 for a in list_temp:
                     print(a)
                     for i in lst_ent_estoque_final:
@@ -523,9 +544,11 @@ def entrada_ordem_compra():
     else:
         validacao_final = session.get("validacao_final")
     print(f"validação_final antes do render_template = {validacao_final}")
+
     return render_template(
         "logistica/entrada_ordem_compra.html",
         form_entrada_ordem_compra=form_entrada_ordem_compra,
+        nf=nf,
         validacao_final=validacao_final,
         lst_nf=lst_nf,
         lst_diferenca=lst_diferenca,
@@ -534,12 +557,25 @@ def entrada_ordem_compra():
         itens_conferencia=itens_conferencia,
         data=Formatadores.formatar_data(Formatadores.os_data()))
 
-
 def estoque():
     print("Função estoque")
+    estoque_processado = []
     form_estoque = Mod_Logistica.Estoque()
+    if request.method == "POST":
+        try:
+            if "botao_relatorio_estoque" in request.form:
+                print("botao_relatorio_estoque")
+                estoque_processado = geral.Estoque.relatorio_estoque()
+                for i in estoque_processado:
+                    print(i)
+        except Exception as e:
+            print("Erro ao processar estoque:", e)
 
-    return render_template("logistica/estoque.html", form_estoque=form_estoque)
+    return render_template(
+        "logistica/estoque.html",
+        form_estoque=form_estoque,
+        estoque_processado=estoque_processado
+    )
 
 
 def analisa_diferenca(diferenca):
