@@ -2,6 +2,8 @@ import datetime
 
 import flash
 from flask import render_template, request, session, redirect
+from tensorflow.python.ops.gen_experimental_dataset_ops import experimental_assert_next_dataset
+
 import modulos.admin
 from forms import Mod_Logistica
 from geral import Validadores, Formatadores, Buscadores
@@ -561,13 +563,28 @@ def estoque():
     print("Função estoque")
     estoque_processado = []
     form_estoque = Mod_Logistica.Estoque()
+
+    data_inicial = form_estoque.data_de.data
+    data_final = form_estoque.data_ate.data
+    ordem_compra = form_estoque.ordem_compra.data
+    ean = form_estoque.ean.data
+    tipo_mov = form_estoque.tipo_mov.data
+    nota_fiscal = form_estoque.nota_fiscal.data
+    descricao = form_estoque.descricao.data
+
     if request.method == "POST":
         try:
             if "botao_relatorio_estoque" in request.form:
                 print("botao_relatorio_estoque")
-                estoque_processado = geral.Estoque.relatorio_estoque()
-                for i in estoque_processado:
-                    print(i)
+                estoque_processado = geral.Estoque.relatorio_estoque(data_inicial, data_final, ordem_compra, ean, tipo_mov, nota_fiscal, descricao)
+                print(f'data_inicial = {data_inicial}')
+                print(f'data_final = {data_final}')
+                print(f'ordem_compra = {ordem_compra}')
+                print(f'ean = {ean}')
+                print(f'tipo_mov = {tipo_mov}')
+                print(f'nota_fiscal = {nota_fiscal}')
+                print(f'descricao = {descricao}')
+
         except Exception as e:
             print("Erro ao processar estoque:", e)
 

@@ -6,32 +6,85 @@ TELA ESTOQUE
      xmlns="http://www.w3.org/1999/html">
   <form action="" method="POST">
     {{ form_estoque.csrf_token }}
-    {{ form_estoque.botao_pesquisar(class="btn btn-primary") }}
+  <div class="row">
+    <div class="col-auto">
+      {{ form_estoque.data_de.label(class="form-label") }}
+      {{ form_estoque.data_de(class="form-control tam_campo_data") }}
+    </div>
+    <div class="col-auto">
+      {{ form_estoque.data_ate.label(class="form-label") }}
+      {{ form_estoque.data_ate(class="form-control tam_campo_data") }}
+    </div>
+
+    <div class="col-auto">
+      {{ form_estoque.ordem_compra.label(class="form-label") }}
+      {{ form_estoque.ordem_compra(class="form-control tam_campo_data") }}
+    </div>
+    <div class="col-auto">
+      {{ form_estoque.tipo_mov.label(class="form-label") }}
+      {{ form_estoque.tipo_mov(class="form-control tam_campo_data") }}
+    </div>
+
+
+  <div class="col-auto">
+    {{ form_estoque.nota_fiscal.label(class="form-label") }}
+    {{ form_estoque.nota_fiscal(class="form-control tam_campo_data") }}
+  </div>
+
+  <div class="col-auto">
+    {{ form_estoque.ean.label(class="form-label tam_campo_data") }}
+    {{ form_estoque.ean(class="form-control tam_campo_data") }}
+  </div>
+  <div class="col-auto">
+  </div>
+
+  </div>
+
+
+    {{ form_estoque.botao_relatorio_estoque(class="btn btn-primary") }}
   </form>
 
     <div> <!-- DIV 1 INFERIOR (TABELA DA ESQUERDA) -->
       <table class="table table-hover table-striped float-tela-conferencia-esquerda" style="position:sticky" cellpadding="2" cellspacing="2" >
         <thead>
           <tr class="cab_tabela">
-            <th class="tam_campo_codigo">CATEGORIA</th>
-            <th class="tam_campo_codigo">EAN</th>
-            <th class="tam_campo_codigo">CODIGO</th>
-            <th class="tam_campo_descricao_tabela">DESCRICAO</th>
-            <th class="tam_coluna_quantidade">QUANTIDADE</th>
-            <th class="tam_coluna_quantidade">CUSTO MEDIO</th>
-            <th class="tam_coluna_quantidade">CUSTO TOTAL</th>
+            <th class="tam_campo_codigo">Data</th>
+            <th class="tam_campo_codigo">Tipo Mov</th>
+            <th class="tam_campo_codigo">Ordem Compra</th>
+            <th class="tam_campo_descricao_tabela">Nota Fiscal</th>
+            <th class="tam_coluna_quantidade">Ean</th>
+            <th class="tam_coluna_quantidade">Codigo</th>
+            <th class="tam_coluna_quantidade">Descricao</th>
+            <th class="tam_coluna_quantidade">Quantidade</th>
+            <th class="tam_coluna_quantidade">Preço Unitário</th>
+            <th class="tam_coluna_quantidade">Total Item</th>
+            <th class="tam_coluna_quantidade">Saldo Qtd</th>
+            <th class="tam_coluna_quantidade">Saldo Valor</th>
+            <th class="tam_coluna_quantidade">Usuario</th>
+
           </tr>
         </thead>
         <tbody>
 
+          {% for i in estoque_processado %}
+
           <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td>{{ i[0][0] }}</td> <!-- DATA -->
+            <td>{{ i[0][1] }}</td> <!-- TIPO MOV -->
+            <td>{{ i[0][2] }}</td>  <!-- ORDEM COMPRA -->
+            <td>{{ i[0][3] }}</td> <!-- NOTA FISCAL -->
+            <td>{{ i[0][4] }}</td> <!-- EAN -->
+            <td>{{ i[0][5] }}</td> <!-- CODIGO -->
+            <td>{{ i[0][6] }}</td> <!-- DESCRIÇÃO -->
+            <td>{{ i[0][7] }}</td> <!-- QUANTIDADE -->
+            <td>{{ i[0][8] }}</td> <!-- PREÇO UNITARIO -->
 
-            <td></td>
+            <td>{{ i[1] }}</td> <!-- ITEM * QUANTIDADE -->
+            <td>{{ i[2] }}</td> <!-- SALDO QUANTIDADE -->
+            <td>{{ i[3] }}</td> <!-- SALDO VALOR -->
+            <td>{{ i[0][9] }}</td> <!-- USUARIO -->
 
+          {% endfor %}
 
           </tr>
         </tbody>

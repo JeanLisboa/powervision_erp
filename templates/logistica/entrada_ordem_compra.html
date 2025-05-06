@@ -7,11 +7,8 @@ TELA ENTRADA ORDEM DE COMPRA
   <form action="" method="POST"> {{ form_entrada_ordem_compra.csrf_token }}
     <pre>
       - NF TESTE:2299
-      2 - CORRIGIR TELA PARA NAO LIMPAR OS CAMPOS APÓS CLICAR EM ANALISAR CONFERENCIA
-      3 - O BOTAO ANALISAR CONFERENCIA SÓ DEVE APARECER APÓS CLICAR EM REALIZAR CONFERENCIA
-      *** - DEVEM SER RESPEITADOS OS CRITÉRIOS PARA RECEBIMENTO.
-        - SE ACEITA PARCIAL
-        - SE GERA SALDO DE PEDIDO.
+         *** - DEVEM SER RESPEITADOS OS CRITÉRIOS PARA RECEBIMENTO. | 1.SE ACEITA PARCIAL | 2.SE GERA SALDO DE PEDIDO.
+
    </pre>
 
   <div class="mb-3 float-child-tela-pesquisa"> <!-- DIV 1 SUPERIOR (ESQUERDA) -->
@@ -21,11 +18,11 @@ TELA ENTRADA ORDEM DE COMPRA
     </div>
     <div class="col form-label btn btn-light">
       {{ form_entrada_ordem_compra.nf.label }}
-      {{ form_entrada_ordem_compra.nf(class="form-control tam_campo_data", value=ordem_compra) }}
+      {{ form_entrada_ordem_compra.nf(class="form-control tam_campo_data", value=nf) }}
     </div>
-    <div class="col form-label btn btn-light">
+
       {{ form_entrada_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-4") }}
-    </div>
+
   </div> <!--  FIM DA DIV 1 SUPERIOR -->
   <div class=" mb-3 float-child-tela-pesquisa"> <!-- DIV 2 SUPERIOR (DIREITA) -->
     <table class="table table-striped mt-0" style="position:sticky" cellpadding="2" cellspacing="2">
@@ -62,6 +59,25 @@ TELA ENTRADA ORDEM DE COMPRA
       {% endif %}
 
   </div> <!-- FIM DA DIV 2 SUPERIOR -->
+          {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
+
+
+          {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
+
+
+          {% if validacao_final == False %}
+            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", disabled="disabled") }}
+          {% else %}
+            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", enabled="enabled") }}
+          {% endif %}
 
 
           <div> <!-- DIV 1 INFERIOR (TABELA DA ESQUERDA) -->
@@ -116,28 +132,8 @@ TELA ENTRADA ORDEM DE COMPRA
               </tbody>
             </table>
           </div> <!-- div 3 -->
-          <div class="col form-label btn btn-light">
-           {% if validacao_final == False %}
-            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
-          {% else %}
-            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
-          {% endif %}
 
-            <br>
-          {% if validacao_final == False %}
-            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
-          {% else %}
-            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
-          {% endif %}
 
-            <br>
-          {% if validacao_final == False %}
-            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", disabled="disabled") }}
-          {% else %}
-            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", enabled="enabled") }}
-          {% endif %}
-
-          </div>
 
   </form>
 

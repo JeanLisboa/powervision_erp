@@ -100,13 +100,14 @@ def cadastrar_fornecedores():
 
 
 def cadastrar_produtos():
+
     alert = None
 
     # global contador_item_cadastro
     global lista_cadastro_produto
     global total_cadastro_produto
     global lista_contador_cadastro_produto
-
+    lista_cadastro_produto = ''
     contador_item_cadastro_produto = 0
     item_cadastro_produto = []
     form_cad_produtos = ModCompras.CadProduto()

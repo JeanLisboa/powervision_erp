@@ -1682,15 +1682,66 @@ class Estoque:
             pass
 
     @staticmethod
-    def relatorio_estoque():
+    def relatorio_estoque(data_inicial, data_final, ordem_compra, ean, tipo_mov, nota_fiscal, descricao):
         estoque_processado = []
         estoque = []
         print(f'Relatorio Estoque')
+
         try:
-            query = "SELECT * FROM ESTOQUE;"
+            query = "SELECT * FROM ESTOQUE WHERE 1=1"  # query base
+            parametros = []
+
+            if data_inicial is not None and data_inicial is not '':
+
+                query += " AND DATA >= %s"
+                data_inicial = data_inicial.strftime('%Y-%m-%d')
+                parametros.append(data_inicial)
+                print(f'data_inicial = {data_inicial}')
+            else:
+                pass
+
+            if data_final is not None and data_final is not '':
+                query += " AND DATA <= %s"
+                data_final = data_final.strftime('%Y-%m-%d')
+                parametros.append(data_final)
+                print(f'data_final = {data_final}')
+
+            if ordem_compra is not None and ordem_compra is not '':
+                query += " AND ORDEM_COMPRA = %s"
+                parametros.append(ordem_compra)
+
+            if ean is not None and ean is not '':
+                query += " AND EAN = %s"
+                parametros.append(f'{ean}')
+            else:
+                pass
+
+            if tipo_mov is not None and tipo_mov is not '' and tipo_mov != 'Todos':
+                query += " AND TIPO_MOV = %s"
+                if tipo_mov == 'Saída':
+                    tipo_mov = 'saida'
+                parametros.append(tipo_mov.upper())
+            else:
+                pass
+
+            if nota_fiscal is not None and nota_fiscal is not '':
+                query += " AND NOTA_FISCAL = %s"
+                parametros.append(nota_fiscal)
+            else:
+                pass
+
+            if descricao is not None:
+                query += " AND DESCRICAO LIKE %s"
+                parametros.append(f"%s{descricao}%")
+
+
+            query += ";"
             print(f'query: {query}')
+            print(f'parametros: {parametros}')
+
+
             mydb.connect()
-            mycursor.execute(query)
+            mycursor.execute(query, parametros)
             estoque = mycursor.fetchall()
             saldo_qtd = 0
             saldo_valor = 0

@@ -294,9 +294,7 @@ class Mod_Logistica:
         nf = IntegerField("NF", validators=[NumberRange(min=1)])
         razao_social = StringField("Nome Fantasia")
         ordem_compra = IntegerField("Ordem de Compra", validators=[NumberRange(min=1)])
-        quantidade = IntegerField(
-            "Quantidade", validators=[NumberRange(min=0), DataRequired()]
-        )
+        quantidade = IntegerField("Quantidade", validators=[NumberRange(min=0), DataRequired()]        )
         cnpj = IntegerField("CNPJ", validators=[Length(14, 14)])
         botao_pesquisar_ordem_compra = SubmitField("Pesquisar Ordem")
         botao_realizar_conferencia = SubmitField("Realizar Conferência")
@@ -306,10 +304,15 @@ class Mod_Logistica:
         botao_limpar_pesquisa = SubmitField("Limpar")
 
     class Estoque(FlaskForm):
-        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        data_ini = DateField("Data Inicial", validators=[DataRequired()])
-        data_final = DateField("Data Final", validators=[DataRequired()])
-        botao_relatorio_estoque = SubmitField("pesquisar")
+        data = StringField("Data", validators=[])
+        data_de = DateField("Data Inicial", validators=[])
+        data_ate = DateField("Data Final", validators=[])
+        ordem_compra = StringField('Ordem de Compra')
+        nota_fiscal = StringField('Nota Fiscal')
+        ean = StringField('Ean')
+        tipo_mov = SelectField(coerce=str, label='Tipo de Movimento', choices=['Todos','Entrada', 'Saída'])
+        descricao = StringField('Descrição')
+        botao_relatorio_estoque = SubmitField("Pesquisar")
 
     class Realizar_conferencia(FlaskForm):
         ordem_compra = StringField("Ordem de Compra")
