@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+PAGINA BACKLOG
+
+<div>
+    Sites para estudo:
+    html:
+    <a href="">https://www.w3schools.com/</a><br>
+    css:
+ <a href="">https://getbootstrap.com/</a><br>
+ <a href="">https://tailwindcss.com/</a>
+
+<pre>
+-Plano sugerido HOSTINGER VPS: KVM 1 oferece recursos suficientes para um setup normal.
+-Plano de assinatura: R$ 26,99/Mês (1 ano) valor total: R$ 323,88/ano
+-Como subir o projeto para a hostinger ?
+-Para subir  projeto Python para o VPS da Hostinger, precisará realizar a migração manualmente. Passos básicos:
+
+1 - Configurar o VPS: Acesse seu VPS e configure o ambiente necessário (por exemplo, instale Python, configure o servidor web, etc.).
+2 - Transferir Arquivos: Use ferramentas como SCP, SFTP ou rsync para transferir seus arquivos do projeto para o VPS.
+3 - Configurar o Projeto: Configure seu projeto no VPS, incluindo a instalação de dependências e a configuração do servidor web.
+4 - Iniciar o Projeto: Execute seu projeto e verifique se está funcionando corretamente.
+
+Alterando o projeto localmente:
+É possível fazer alterações localmente no seu projeto e depois subir essas alterações para o servidor utilizando o Git.
+Fluxo básico:
+
+1 - Desenvolvimento Local: Faça as alterações no seu projeto localmente.
+2 - Commit e Push: Use Git para fazer commit das suas alterações e push para um repositório remoto (como GitHub ou GitLab).
+3 - Pull no VPS: No seu VPS, faça um pull do repositório remoto para atualizar o projeto com as últimas alterações.
+</pre>
+    <hr>
+    <pre>
+        INSTRUÇÕES DO CHATGPT
+1. Escolha e Configure o VPS
+    Servidor VPS: Escolha um provedor (DigitalOcean, AWS, Linode, Vultr, etc.).
+    Acesso ao VPS: Use SSH para acessar o servidor VPS.
+        bash
+        ssh usuario@ip_do_servidor
+
+2. Instale Dependências no Servidor
+    Atualize pacotes:
+        bash
+        sudo apt update && sudo apt upgrade
+    Instale Python, Pip e Git:
+        bash
+        sudo apt install python3 python3-pip git
+
+3. Configurar o Ambiente do Projeto
+    Clone o repositório:
+        bash
+        git clone https://github.com/seu-usuario/powervision.git
+        cd powervision
+    Configurar ambiente virtual:
+        bash
+        python3 -m venv venv
+        source venv/bin/activate
+    Instalar dependências:
+        bash
+        pip install -r requirements.txt
+
+4. Configurar e Testar a Aplicação
+    Variáveis de ambiente: Crie um arquivo .env (ou outra configuração que seu projeto use) com variáveis de ambiente, como credenciais e configurações.
+    Teste a aplicação localmente:
+        bash
+        python app.py  # ou o comando que inicie o PowerVision
+
+5. Configurar o Servidor Web (como Gunicorn + Nginx)
+    a. Instale o Gunicorn:
+        bash
+        pip install gunicorn
+    b. Inicie o Gunicorn:
+        bash
+        gunicorn --workers 3 app:app --bind 0.0.0.0:8000
+    c. Instale e configure o Nginx:
+        bash
+        sudo apt install nginx
+        Crie uma configuração Nginx:
+        bash
+        sudo nano /etc/nginx/sites-available/powervision
+            Exemplo de configuração:
+                nginx
+                server {
+                    listen 80;
+                    server_name seu_dominio.com;
+
+                    location / {
+                        proxy_pass http://127.0.0.1:8000;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                }
+        Habilite o Nginx:
+            bash
+            sudo ln -s /etc/nginx/sites-available/powervision /etc/nginx/sites-enabled
+            sudo nginx -t
+            sudo systemctl restart nginx
+
+6. Configurar o Supervisor para Executar em Segundo Plano
+    Instale o Supervisor:
+        bash
+        sudo apt install supervisor
+    Crie uma configuração Supervisor:
+    bash
+    sudo nano /etc/supervisor/conf.d/powervision.conf
+    Exemplo de configuração:
+        conf
+        [program:powervision]
+        directory=/caminho/para/powervision
+        command=/caminho/para/venv/bin/gunicorn --workers 3 app:app --bind 127.0.0.1:8000
+        autostart=true
+        autorestart=true
+        stderr_logfile=/var/log/powervision.err.log
+        stdout_logfile=/var/log/powervision.out.log
+    Recarregue o Supervisor:
+        bash
+        sudo supervisorctl reread
+        sudo supervisorctl update
+        sudo supervisorctl start powervision
+    </pre>
+</div>
+
+
+{% endblock %}

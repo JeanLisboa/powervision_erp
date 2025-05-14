@@ -108,23 +108,19 @@ class ModCompras:
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ean = StringField("EAN", validators=[Length(13)])
         descricao = StringField("Descrição")
-
         fornecedor = SelectField(
             "Fornecedor",
             choices=["Selecionar um fornecedor"] + [f[0] for f in buscar_fornecedor],
-            validators=[DataRequired()],
-        )
+            validators=[DataRequired()])
         unidade = SelectField(
             coerce=str,
             choices=["", "KG", "G", "CX", "UN", "L", "M", "CM"],
-            validators=[ReadOnly()],
-        )
+            validators=[ReadOnly()])
 
         valor = FloatField("Valor", validators=[NumberRange(min=0.01)])
         categoria = SelectField(
             coerce=str,
-            choices=["", "VESTUARIO", "BEBIDAS", "ALIMENTOS", "HIGIENE", "OUTROS"],
-        )
+            choices=["", "VESTUARIO", "BEBIDAS", "ALIMENTOS", "HIGIENE", "OUTROS"])
         botao_incluir_item = SubmitField("Incluir Item")
         botao_baixar_planilha = SubmitField("Baixar Arquivo Excel")
         botao_submit_cad_prod = SubmitField("Cadastrar")

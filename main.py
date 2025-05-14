@@ -21,6 +21,7 @@ import modulos.pricing
 import modulos.sobre
 
 
+
 global alert
 usuario = 'ADMIN'
 app = Flask(__name__)
@@ -40,7 +41,7 @@ mycursor = mydb.cursor()
 
 @app.route('/')
 def main():
-    return render_template('homepage.html')
+    return render_template('/homepage.html')
 
 
 class Admin:
@@ -179,9 +180,9 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/teste', methods=['POST', 'GET'])
+@app.route('/deploy', methods=['POST', 'GET'])
 def teste():
-    return render_template('teste.html')
+    return render_template('deploy.html')
 
 
 if __name__ == "__main__":
