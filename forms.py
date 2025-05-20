@@ -1,3 +1,7 @@
+from flask_wtf import FlaskForm
+from datetime import date
+import geral
+
 from wtforms import (
     StringField,
     SubmitField,
@@ -6,20 +10,14 @@ from wtforms import (
     FloatField,
     HiddenField,
     DateField,
-    ValidationError
-)
+    ValidationError)
 from wtforms.validators import (
     DataRequired,
     Email,
     Disabled,
     Length,
     ReadOnly,
-    NumberRange,
-)
-from flask_wtf import FlaskForm
-from datetime import date
-
-import geral
+    NumberRange)
 
 os_date = date.today()
 
@@ -47,7 +45,7 @@ class ModAdmin:
         botao_salvar = SubmitField("Salvar Alterações")
         botao_editar = SubmitField("Editar")
 
-
+from modulos.utils import buscadores
 class ModCompras:
     class AnalisarOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
@@ -103,6 +101,8 @@ class ModCompras:
         botao_submit_cad_fornecedor = SubmitField("Cadastrar")
 
     class CadProduto(FlaskForm):
+        # buscar_fornecedor = modulos.utils.Buscadores.OrdemCompra.buscar_fornecedor()
+        # buscar_fornecedor = modulos.utils.buscadores.OrdemCompra.buscar_fornecedor()
         buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         cod_produto = StringField("Código: ", validators=[Disabled()])
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
@@ -132,8 +132,6 @@ class ModCompras:
         valor_produto = HiddenField("Valor do Produto")
 
     class GerarOrdemCompra(FlaskForm):
-
-
         def no_comma(form, field):
             if ',' in str(field.data):
                 raise ValidationError('Use ponto (.) como separador decimal, não vírgula.')
@@ -142,28 +140,16 @@ class ModCompras:
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
         codigo = StringField("Código")
-        fornecedor = SelectField(
-            "Fornecedor",
-            choices=["Selecionar um fornecedor"] + [f[0] for f in buscar_fornecedor],
-            validators=[DataRequired()],
-        )
+        fornecedor = SelectField("Fornecedor",choices=["Selecionar um fornecedor"] + [f[0] for f in buscar_fornecedor],
+            validators=[DataRequired()])
         # fornecedor = StringField("Fornecedor")
         ean = StringField("EAN")
         descricao = StringField("Descrição", validators=[ReadOnly()])
         unidade = StringField("Un", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
-        quantidade = IntegerField(
-            "Quantidade", validators=[DataRequired(), NumberRange(min=1), no_comma]
-        )
-        preco_unitario = FloatField(
-            "Preço Unitário", validators=[NumberRange(min=1.00)]
-        )
-        preco_historico = FloatField(
-            "Preço Histórico", validators=[DataRequired(), ReadOnly()]
-        )
-        ultimo_preco = FloatField(
-            "Ultimo Preço", validators=[DataRequired(), ReadOnly()]
-        )
+        quantidade = IntegerField("Quantidade", validators=[DataRequired(), NumberRange(min=1), no_comma])
+        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00)])
+        ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])
         preco_medio = FloatField("Preço Médio", validators=[DataRequired(), ReadOnly()])
         botao_consulta = SubmitField("Consulta")
         botao_limpar_ordem = SubmitField("Limpar Ordem")
@@ -275,13 +261,31 @@ class Mod_Comercial:
         pass
 
 
-class Mod_Pricing:
+class ModPricing:
     class CadastrarTabela(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cod_tabela = StringField("Código", validators=[ReadOnly()])
         nome_tabela = StringField("Nome da Tabela", validators=[DataRequired()])
         botao_incluir_tabela = SubmitField("Incluir Tabela")
         botao_submit_cad_fornecedor = SubmitField("Cadastrar")
+
+    class Precificacao(FlaskForm):
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        fornecedor = SelectField("Fornecedor")
+        ean = StringField("Ean")
+        descricao = StringField("Descrição")
+        unidade = StringField("Unidade")
+        categoria = StringField("Categoria")
+        margem_lucro = FloatField("Margem de Lucro")
+        custo_total = FloatField("Custo Total")
+        preco_final = FloatField("Preço Final", validators=[ReadOnly()])
+        markup = FloatField("Markup")
+        desconto = FloatField("Desconto")
+        acrescimo = FloatField("Acrescimo")
+        botao_pesquisar = SubmitField("Pesquisar")
+        botao_calcular = SubmitField("Calcular")
+        botao_salvar = SubmitField("Salvar")
+        botao_cancelar = SubmitField("Cancelar")
 
 
 class Mod_Logistica:

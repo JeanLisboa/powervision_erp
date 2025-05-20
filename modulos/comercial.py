@@ -38,4 +38,3 @@
 # RELATORIO DE PEDIDOS DE VENDAS. COM POSSIBILIDADE DE EDITAR, CASO O PEDIDO AINDA NÃO TENHA SIDO SEPARADO
 from flask import render_template
 from forms import Mod_Logistica
-from geral import Formatadores

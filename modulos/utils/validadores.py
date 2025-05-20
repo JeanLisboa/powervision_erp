@@ -340,7 +340,7 @@ class ValidacoesCadastroProduto:
             + CorFonte.reset_cor())
 
         try:
-            if not lista_cadastro_produto:  # ou if lista_cadastro_produto == []
+            if not lista_cadastro_produto:
                 print("lista vazia")
                 return True
 

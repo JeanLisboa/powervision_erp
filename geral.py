@@ -13,7 +13,7 @@ pasta_xml = r"C:\relato\XML\ANTIGOS" # utilizado pelo modulo logistica / entrada
 """
 class CorFonte: edita as cores dos logs no terminal
 class AlertaMsg: edita as mensagens de alerta
-class Formatadores: formata e retorna dados para os modulos, ex. data, cnpj, cep  
+class Formatadores: formata e retorna dados para os modulos, ex. data, cnpj, cep
 class ValidaStatusPedido: classe especifica do modulo entrada de ordem_compra
 class Buscadores: consultas a banco de dados para todos os modulos
 class Validadores: validacoes diversas, cnpj, cpf,  etc
@@ -956,8 +956,8 @@ class Buscadores:
             )
 
             query = """
-            INSERT INTO ESTOQUE 
-            (DATA, TIPO_MOV, ORDEM_COMPRA, NOTA_FISCAL, EAN, CODIGO, DESCRICAO, QUANTIDADE, VALOR, USUARIO) 
+            INSERT INTO ESTOQUE
+            (DATA, TIPO_MOV, ORDEM_COMPRA, NOTA_FISCAL, EAN, CODIGO, DESCRICAO, QUANTIDADE, VALOR, USUARIO)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             valores = (

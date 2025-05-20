@@ -2,14 +2,8 @@
 from datetime import date
 import mysql.connector
 from flask import render_template, redirect, url_for, request, session
-# from flask_wtf.csrf import CSRFProtect
-
 import modulos.admin
 from forms import ModCompras
-
-# geral
-# from geral import Formatadores, AtualizaCodigo, Buscadores, AlertaMsg
-# import geral
 from modulos.utils.formatadores import Formatadores
 from modulos.utils.atualizadores import AtualizaCodigo
 from modulos.utils.buscadores import Buscadores
@@ -488,9 +482,10 @@ def gerar_ordem_compra():
     global lista_ordem_compra
     global total_ordem_compra
     global result_pesq_forn
-
+    # lista_ordem_compra = session.get('list_ordem_compra')
     # 2 - Inicialização das variáveis
     total_ordem_compra = 0
+    preco_medio = 0
     result_pesq_forn = []
     item_ordem_compra = []
     linha_selecionada = []
@@ -504,8 +499,7 @@ def gerar_ordem_compra():
     ean = form_gerar_ordem_compra.ean.data
     quantidade = form_gerar_ordem_compra.quantidade.data
     preco_unitario = form_gerar_ordem_compra.preco_unitario.data
-    preco_historico = form_gerar_ordem_compra.preco_historico.data
-    preco_medio = form_gerar_ordem_compra.preco_medio.data
+    # preco_medio = form_gerar_ordem_compra.preco_medio.data
     ultimo_preco = form_gerar_ordem_compra.ultimo_preco.data
     alert = AlertaMsg.cad_fornecedor_realizado()
 
@@ -513,6 +507,8 @@ def gerar_ordem_compra():
         session["total_ordem_compra"] = 0
     if "preco_medio" not in session:
         session["preco_medio"] = 0
+    else:
+        preco_medio = session["preco_medio"]
     if "ultimo_preco" not in session:
         session["ultimo_preco"] = 0
     if "preco_historico" not in session:
@@ -538,9 +534,8 @@ def gerar_ordem_compra():
         total_item = 0
 
     if preco_medio is None:
-        preco_medio = 0
-    if preco_historico is None:
-        preco_historico = 0
+        preco_medio = 0.00
+
     if ultimo_preco is None:
         ultimo_preco = 0
     resultado = None
@@ -607,7 +602,9 @@ def gerar_ordem_compra():
                 item_selecionado = request.form.getlist("incluir_item")
                 item_selecionado = busca_ean_selecionado(item_selecionado)
                 print(f"ean do item selecionado: {item_selecionado}")
-
+                preco_medio = Buscadores.OrdemCompra.preco_medio(item_selecionado)
+                print(f"preco_medio: {preco_medio}")
+                session["preco_medio"] = preco_medio
                 fornecedor = session.get("fornecedor")
                 # print(f'teste fornecedor após acionamento do botao_selecionar_item {fornecedor}')
 
@@ -627,6 +624,7 @@ def gerar_ordem_compra():
             print(f"linha_selecionada: {linha_selecionada}")
             # print(f'linha_selecionada[0]: {linha_selecionada[0]}')
             print(e)
+
 
         try:
             result_pesq_forn = session.get("result_pesq_forn", [])  # Recupera da sessão
@@ -680,9 +678,7 @@ def gerar_ordem_compra():
                         f"ean: {ean} |\n"
                         f"quantidade: {quantidade} |\n"
                         f"preco_unitario: {preco_unitario} |\n"
-                    
-                        f"total_item: {total_item}"
-                    )
+                        f"total_item: {total_item}")
 
                     total_ordem_compra = 0
                     lista_contador_item_compra.append(contador_item)
@@ -812,7 +808,7 @@ def gerar_ordem_compra():
             print(e)
 
         alert = session.pop("alert", None)
-
+        preco_medio = session.get("preco_medio")
         if result_pesq_forn is None:
             result_pesq_forn = 0
 
@@ -824,7 +820,7 @@ def gerar_ordem_compra():
         total_ordem_compra=total_ordem_compra,
         preco_medio=preco_medio,
         ultimo_preco=ultimo_preco,
-        preco_historico=preco_historico,
+
         contador_item=contador_item,  # informa o proximo item a ser incluido=
         dicionario_ordem_compra=lista_ordem_compra,
         ordens_em_aberto=Buscadores.OrdemCompra.ordem_compra_em_aberto(codigo),
@@ -1232,6 +1228,10 @@ def adicionar_item_ordem_compra():
             item_selecionado = request.form.getlist("incluir_item")
             item_selecionado = busca_ean_selecionado(item_selecionado)
             print(f"ean do item selecionado: {item_selecionado}")
+            preco_medio = Buscadores.OrdemCompra.preco_medio(item_selecionado)
+            preco_medio = round(preco_medio, 2)
+            session["preco_medio"] = preco_medio
+
             linha_selecionada = formata_linha_para_identificar_posicao(
                 item_selecionado, result_pesq_forn
             )
@@ -1370,7 +1370,7 @@ def adicionar_item_ordem_compra():
             # ordem_compra = []
     except Exception as e:
         print(e)
-
+    preco_medio = session.get("preco_medio")
     return render_template(
         "compras/adicionar_item_ordem_compra.html",
         ordem_compra=ordem_compra,

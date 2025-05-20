@@ -267,6 +267,21 @@ class Buscadores:
                 return None
 
     class OrdemCompra:
+
+        @staticmethod
+        def preco_medio_item_ordem_compra(ean):
+            print(
+                CorFonte.fonte_amarela()
+                + "class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra"
+                + CorFonte.reset_cor())
+            query = f"select avg(preco) from ordem_compra where ean = %s "
+            valores = ean
+            mydb.connect()
+            mycursor.execute(query, valores)
+            mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+
         @staticmethod
         def atualizar_estoque(
             data,
@@ -811,6 +826,7 @@ class Buscadores:
         def buscar_fornecedor():
             print(
                 CorFonte.fonte_amarela()
+
                 + f"class Buscadores.OrdemCompra | metodo buscar_fornecedor"
                 + CorFonte.reset_cor()
             )
@@ -1091,4 +1107,30 @@ class Estoque:
             pass
 
         return estoque_processado
+
+
+class Pricing:
+    print(
+        CorFonte.fonte_amarela()
+        + "class Pricing"  + CorFonte.reset_cor())
+
+    @staticmethod
+    def precificacao():
+        print(
+            CorFonte.fonte_amarela()
+            + "class Pricing | metodo precificacao" + CorFonte.reset_cor())
+        try:
+            query = (f"SELECT * FROM PRODUTOS")
+            print(query)
+            mydb.connect()
+            mycursor.execute(query)
+            myresult = mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+            return myresult
+
+        except Exception as e:
+            print(e)
+            # AlertaMsg.cadastro_inexistente()
+            pass
 

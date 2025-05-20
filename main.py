@@ -1,13 +1,9 @@
 # outras bibliotecas
 import mysql.connector
 import webbrowser
-# flask
-# flask
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFProtect
-from forms import Mod_Comercial, Mod_Pricing, Mod_Logistica, ModAdmin, ModCompras
-
-# geral
+from forms import Mod_Comercial, ModPricing, Mod_Logistica, ModAdmin, ModCompras
 from geral import Formatadores
 # modulos
 import modulos.admin
@@ -19,7 +15,11 @@ import modulos.fiscal
 import modulos.logistica
 import modulos.pricing
 import modulos.sobre
+import modulos.precificacao
 
+import os
+
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 
 global alert
@@ -160,10 +160,15 @@ class Pricing:
     @staticmethod
     @app.route('/cadastrar_tabela', methods=['POST', 'GET'])
     def cadastrar_tabela():
-        form_cadastrar_tabela = Mod_Pricing.CadastrarTabela()
+        form_cadastrar_tabela = ModPricing.CadastrarTabela()
         return render_template('pricing/cadastrar_tabela.html', form_cadastrar_tabela=form_cadastrar_tabela,
                                data=Formatadores.formatar_data(Formatadores.os_data()))
 
+    @staticmethod
+    @app.route('/precificacao', methods=['POST', 'GET'])
+    def precificacao():
+        return modulos.precificacao.precificacao()
+        # return render_template('pricing/precificacao.html')
 
 @app.route('/financeiro', methods=['POST', 'GET'])
 def financeiro():

@@ -2,12 +2,17 @@ import datetime
 
 import flash
 from flask import render_template, request, session, redirect
-from tensorflow.python.ops.gen_experimental_dataset_ops import experimental_assert_next_dataset
+# from tensorflow.python.ops.gen_experimental_dataset_ops import experimental_assert_next_dataset
 
 import modulos.admin
 from forms import Mod_Logistica
-from geral import Validadores, Formatadores, Buscadores
-import geral
+from modulos.utils.validadores import Validadores
+from modulos.utils.formatadores import Formatadores
+from  modulos.utils.buscadores import Buscadores, Estoque
+
+
+
+
 
 fonte_vermelha = "\033[31m"
 fonte_verde = "\033[92m"
@@ -481,7 +486,7 @@ def entrada_ordem_compra():
                         pass
                     else:
                         print('Item será atualizado')
-                        geral.Buscadores.OrdemCompra.atualizar_estoque(
+                        Buscadores.OrdemCompra.atualizar_estoque(
                             data,
                             tipo_mov,
                             ordem_compra,
@@ -494,7 +499,7 @@ def entrada_ordem_compra():
                             usuario)
 
                     print('3 - ATUALIZA O SALDO DA ORDEM_COMPRA - OK')
-                    geral.Buscadores.OrdemCompra.atualizar_saldo_ordem_compra(ordem_compra, ean, quantidade, valor)
+                    Buscadores.OrdemCompra.atualizar_saldo_ordem_compra(ordem_compra, ean, quantidade, valor)
 
 
                 def atualiza_status_ordem_compra(lst_diferenca):
@@ -521,7 +526,7 @@ def entrada_ordem_compra():
                 ean_saldo = None
                 preco = None
                 saldo_qtd = None
-                for i in geral.Buscadores.OrdemCompra.busca_saldo_ordem_compra(ordem_compra):
+                for i in Buscadores.OrdemCompra.busca_saldo_ordem_compra(ordem_compra):
                     ean_saldo = i[7]
                     preco = i[9]
                     saldo_qtd = i[12]
@@ -576,7 +581,7 @@ def estoque():
         try:
             if "botao_relatorio_estoque" in request.form:
                 print("botao_relatorio_estoque")
-                estoque_processado = geral.Estoque.relatorio_estoque(data_inicial, data_final, ordem_compra, ean, tipo_mov, nota_fiscal, descricao)
+                estoque_processado = Estoque.relatorio_estoque(data_inicial, data_final, ordem_compra, ean, tipo_mov, nota_fiscal, descricao)
                 print(f'data_inicial = {data_inicial}')
                 print(f'data_final = {data_final}')
                 print(f'ordem_compra = {ordem_compra}')

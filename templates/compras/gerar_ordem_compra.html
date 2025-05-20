@@ -69,7 +69,9 @@ TELA GERAR ORDEM DE COMPRA
                 {{form_gerar_ordem_compra.preco_unitario.label}}
                 {{form_gerar_ordem_compra.preco_unitario(class="form-control", value=linha_selecionada[7], id="preco_unitario")}}
             </div>
-
+            <div class="col form-label btn btn-light">
+                {{preco_medio}}
+            </div>
             <div class="btn">
                 {{form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3")}}
             </div>
@@ -158,11 +160,17 @@ TELA GERAR ORDEM DE COMPRA
                     </tr>
                 </thead>
                 <tbody>
+                    {% if dicionario_ordem_compra %}
 
-                    {% for i in dicionario_ordem_compra %}
-                        {% set contador_item = loop.index0 + 1 %}
+                        {% for i in dicionario_ordem_compra %}
+                            {% set contador_item = loop.index0 + 1 %}
 
-                        {% set total_item = i[7] * i[8] %}
+                            {% if i[7] is number and i[8] is number %}
+                                {% set total_item = i[7] * i[8] %}
+                            {% else %}
+                                {% set total_item = 0 %}
+                            {% endif %}
+
                     <tr class=" width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                         <td>{{i[0]}}</td>
                         <td>{{ordem_compra}}</td>
@@ -180,6 +188,7 @@ TELA GERAR ORDEM DE COMPRA
 
                     </tr>
                     {% endfor %}
+                {% endif %}
                 </tbody>
             </table>
 
