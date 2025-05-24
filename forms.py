@@ -73,7 +73,6 @@ class ModCompras:
         quantidade = IntegerField("Quant")
         val_unitario = FloatField("V.Unit")
         descricao = StringField("Descricao", validators=[ReadOnly()])
-
         botao_adicionar_item = SubmitField("Adicionar Item")
         botao_pesquisar_novo_item = SubmitField("Pesquisar")
         botao_salvar_item_adicionado = SubmitField("Salvar")
@@ -174,18 +173,10 @@ class ModCompras:
         descricao = StringField("Descrição", validators=[ReadOnly()])
         unidade = StringField("Un", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
-        quantidade = IntegerField(
-            "Quantidade", validators=[DataRequired(), NumberRange(min=1)]
-        )
-        preco_unitario = FloatField(
-            "Preço Unitário", validators=[NumberRange(min=1.00)]
-        )
-        preco_historico = FloatField(
-            "Preço Histórico", validators=[DataRequired(), ReadOnly()]
-        )
-        ultimo_preco = FloatField(
-            "Ultimo Preço", validators=[DataRequired(), ReadOnly()]
-        )
+        quantidade = IntegerField("Quantidade", validators=[DataRequired(), NumberRange(min=1)])
+        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00)])
+        preco_historico = FloatField("Preço Histórico", validators=[DataRequired(), ReadOnly()])
+        ultimo_preco = FloatField("Ultimo Preço", validators=[DataRequired(), ReadOnly()])
         preco_medio = FloatField("Preço Médio", validators=[DataRequired(), ReadOnly()])
         botao_consulta = SubmitField("Consulta")
         botao_cancelar = SubmitField("Cancelar")
@@ -271,15 +262,15 @@ class ModPricing:
 
     class Precificacao(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        fornecedor = SelectField("Fornecedor")
+        fornecedor = StringField("Fornecedor")
         ean = StringField("Ean")
         descricao = StringField("Descrição")
         unidade = StringField("Unidade")
         categoria = StringField("Categoria")
-        margem_lucro = FloatField("Margem de Lucro")
+        margem_lucro = FloatField("Margem de Lucro", validators=[NumberRange(min=0.00, max=1.00)])
         custo_total = FloatField("Custo Total")
         preco_final = FloatField("Preço Final", validators=[ReadOnly()])
-        markup = FloatField("Markup")
+        # markup = FloatField("Markup")
         desconto = FloatField("Desconto")
         acrescimo = FloatField("Acrescimo")
         botao_pesquisar = SubmitField("Pesquisar")

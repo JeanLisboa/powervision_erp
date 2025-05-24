@@ -1115,12 +1115,17 @@ class Pricing:
         + "class Pricing"  + CorFonte.reset_cor())
 
     @staticmethod
-    def precificacao():
+    def precificacao(ean, fornecedor, unidade, descricao):
         print(
             CorFonte.fonte_amarela()
             + "class Pricing | metodo precificacao" + CorFonte.reset_cor())
         try:
-            query = (f"SELECT * FROM PRODUTOS")
+            query = (f"SELECT * FROM PRODUTOS WHERE 1=1 and "
+                     f"ean like '%{ean}%' "
+                     f"and fornecedor like '%{fornecedor}%' "
+                     f"and UNIDADE like '%{unidade}%' "
+                     f"and DESCRICAO like '%{descricao}%';")
+
             print(query)
             mydb.connect()
             mycursor.execute(query)

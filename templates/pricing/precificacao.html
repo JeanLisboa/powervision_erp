@@ -62,28 +62,50 @@ TELA PRECIFICACAO
                             <th>EAN</th>
                             <th>UN</th>
                             <th>VALOR</th>
-                            <th>MARGEM</th>
-                            <th>CUSTO TOTAL</th>
-                            <th>MARKUP</th>
-                            <th>ACRESCIMO</th>
-                            <th>DESCONTO</th>
-                            <th>PREÇO FINAL</th>
+                            <th>MARGEM<br> LUCRO</th>
+                            <th>CUSTOS</th>
+
+                            <th>ACRESCIMO<br>(%)</th>
+                            <th>DESCONTO<br>(%)</th>
+                            <th>PREÇO DE<br> VENDA</th>
                         </tr>
                     </thead>
                 <tbody>
                 {% if relatorio_precificacao %}
                     {% for i in relatorio_precificacao %}
                         <tr class=" width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                            <td>{{i[4]}}</td>
-                            <td>{{i[3]}}</td>
-                            <td>{{i[5]}}</td>
-                            <td>{{i[7]}}</td>
-                            <td><input class="form-control tabela_precificacao" type="number" name="margem_{{ loop.index0 }}" step="0.01" /></td>
-                            <td><input class="form-control tabela_precificacao" type="number" name="custo_total_{{ loop.index0 }}" step="0.01" /></td>
-                            <td><input class="form-control tabela_precificacao"  type="number" name="markup_{{ loop.index0 }}" step="0.01" /></td>
-                            <td><input class="form-control tabela_precificacao"  type="number" name="acrescimo_{{ loop.index0 }}" step="0.01" /></td>
-                            <td><input class="form-control tabela_precificacao"  type="number" name="desconto_{{ loop.index0 }}" step="0.01" /></td>
-                            <td></td>
+                            <td>{{ i[4] }}</td>
+                            <td>{{ i[3] }}</td>
+                            <td>{{ i[5] }}</td>
+                            <td>{{ i[7] }}</td>
+                            <td><input class="form-control tabela_precificacao"
+                                       type="number"
+                                       name="margem_{{ loop.index0 }}"
+                                       value="{{ i[9] if i[9] is not none or i[9] != '' else 0.00 }}"
+                                       min="0.00"
+                                       max="100.00"
+                                       step="0.01" /></td>
+                            <td><input class="form-control tabela_precificacao"
+                                       type="number"
+                                       name="custo_total_{{ loop.index0 }}"
+                                       value="{{ i[10] if i[10] is not none or i[10] != '' else 0.00 }}"
+                                       min="0.00"
+                                       step="0.01" /></td>
+                            <td><input class="form-control tabela_precificacao"
+                                       type="number"
+                                       name="acrescimo_{{ loop.index0 }}"
+                                       value="{{ i[11] if i[11] is not none or i[11] != '' else 0.00 }}"
+                                       min="0.00"
+                                       max="100.00"
+                                       step="0.01" /></td>
+                            <td><input class="form-control tabela_precificacao"
+                                       type="number"
+                                       name="desconto_{{ loop.index0 }}"
+                                       value="{{ i[12] if i[12] is not none or i[12] != '' else 0.00 }}"
+                                       min="0.00"
+                                       max="100.00"
+                                       step="0.01" /></td>
+                            <td>{{ i[13] }}</td>
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -94,131 +116,9 @@ TELA PRECIFICACAO
             </tbody>
             </table>
 
-        <div class="container p-3 mb-3 border border-primary div_principal">
-            <div class="col form-label btn btn-light">
-                {{form_precificacao.margem_lucro.label}}
-               {{ form_precificacao.margem_lucro(class="form-control tam_campo_data comentario='Precificação'") }}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_precificacao.custo_total.label}}
-                {{form_precificacao.custo_total (class="form-control tam_campo_data, value=data")}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_precificacao.preco_final.label}}
-                {{form_precificacao.preco_final (class="form-control tam_campo_data, value=data")}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_precificacao.markup.label}}
-                {{form_precificacao.markup (class="form-control tam_campo_data, value=data")}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_precificacao.desconto.label}}
-                {{form_precificacao.desconto (class="form-control tam_campo_data, value=data")}}
-            </div>
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_precificacao.acrescimo.label}}
-                {{form_precificacao.acrescimo (class="form-control tam_campo_data, value=data")}}
-            </div>
-        </div>
+
     </div>
 
-        <pre>
-      🛠️ Fluxo sugerido:
-🔹 Etapa 1: Cadastro da Ordem de Compra
-Fornecedor, EAN, descrição, custo de aquisição (valor), etc.
 
-🔹 Etapa 2: Precificação e análise estratégica
-Este é o momento ideal para tratar:
-
-Item	                Ação
-Margem de lucro	        |Aplicar sobre o custo (ex: markup ou margem líquida desejada)
-Preço de concorrência	|Consultar preços do mercado e definir um teto ou piso
-Valor percebido	Avaliar |o quanto o cliente está disposto a pagar (ver mais abaixo)
-Custos fixos/variáveis	|Distribuir os custos por unidade (rateio, absorção)
-Preço sugerido final	|Gerado automaticamente, podendo ser ajustado manualmente
-
-🧩 Como considerar o valor percebido pelo cliente?
-💡 Valor percebido ≠ valor de aquisição ou de concorrência.
-É o benefício percebido em relação ao preço. Pode ser comparado com:
-
-Benchmark de produtos similares (concorrentes diretos).
-Feedback de clientes (ex: pesquisas ou histórico de vendas).
-Elasticidade de preço histórica (como a venda reage a mudanças de preço).
-
-Exemplo de comparação:
-
-preco_sugerido = custo + margem + rateio_custos
-* rateio_custos sao custos fixos ou variáveis que devem ser dividos pela quantidade vendida
-
-if preco_sugerido > valor_percebido:
-    # Talvez o cliente não veja valor suficiente; reduzir margem ou reestruturar produto
-🔁 Estratégia recomendada para ERP:
-Crie um módulo de precificação que será alimentado:
-
-Após o cadastro de produto pela ordem de compra.
-
-E que calcule:
-
-Custo total (custo + custos rateados)
-Margem ideal vs. margem mínima
-
-Comparação com concorrência
-
-Valor percebido (entrada manual ou predefinido por linha/produto)
-
-E gere o preço final sugerido.
-
-=============================
-custo_total = custo_compra + rateio_custos
-preco_final = custo_total * markup
-
-            📈 O que é markup?
-Markup é um fator multiplicador aplicado sobre o custo total de um produto para formar o preço de venda com lucro embutido e, se necessário, impostos e despesas fixas.
-
-📌 Resumo:
-Preço de Venda = Custo × Markup
-
-🧮 Como calcular o markup?
-Existem duas formas principais:
-
-✅ 1. Markup sobre o custo (mais comum em ERP)
-Markup = Preço de Venda / Custo
-Exemplo:
-
-Custo do produto: R$ 50
-
-Preço de venda: R$ 80
-
-➡️ Markup = 80 / 50 = 1,60
-
-Isso quer dizer que o preço é 60% maior que o custo.
-
-✅ 2. Markup desejado para atingir uma margem
-Quando você quer uma margem de lucro, usa esta fórmula:
-
-Markup = 1 / (1 - Margem)
-Se quiser uma margem de 30%:
-
-Markup = 1 / (1 - 0,30) = 1,4286
-
-Aplicando ao custo de R$ 50:
-Preço de venda = 50 × 1,4286 = R$ 71,43
-
-🧠 Diferença entre markup e margem?
-Conceito	Definição
-Markup	Multiplicador sobre o custo
-Margem	Percentual de lucro sobre o preço de venda
-
-Exemplo com custo R$ 50 e venda R$ 80:
-
-Markup = 80 / 50 = 1,6
-
-Margem = (80 - 50) / 80 = 37,5%
-
-📌 Em um sistema ERP:
-Você pode usar markup para precificar automaticamente com base em regras de produto, categoria ou fornecedor.
-
-        </pre>
-
+    </div>
 {% endblock %}
