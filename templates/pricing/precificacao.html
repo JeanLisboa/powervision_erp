@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 TELA PRECIFICACAO
 <style>
@@ -13,11 +12,9 @@ TELA PRECIFICACAO
 }
 </style>
 <div class="container p-1 border border-1 border-primary p-2 mb-2 div_principal">
-
     <form action="" method="POST">
         {{ form_precificacao.csrf_token }}
-
-    <div>
+        <div>
         <div class="col form-label btn btn-light">
             {{form_precificacao.data.label}}
             {{form_precificacao.data (class="form-control tam_campo_data value=data")}}
@@ -39,7 +36,6 @@ TELA PRECIFICACAO
                 {{form_precificacao.unidade.label}}
                 {{form_precificacao.unidade (class="form-control tam_campo_data value=data")}}
             </div>
-
             <div class="col form-label btn btn-light">
                 {{form_precificacao.botao_pesquisar (class="btn btn-primary mt-4")}}
             </div>
@@ -52,11 +48,10 @@ TELA PRECIFICACAO
             <div class="col form-label btn btn-light">
                 {{ form_precificacao.botao_cancelar(class="btn btn-primary mt-4") }}
             </div>
-
         </div>
         <div  class="borda_simples  container_com_barra_rolagem">
-                <table class="table table-hover table-striped tabela_precificacao" style="position:sticky top: 0" cellpadding="0" cellspacing="0" id="">
-                    <thead>
+            <table class="table table-hover table-striped tabela_precificacao" style="position:sticky top: 0" cellpadding="0" cellspacing="0" id="">
+                <thead>
                         <tr>
                             <th>Descrição</th>
                             <th>EAN</th>
@@ -64,7 +59,6 @@ TELA PRECIFICACAO
                             <th>VALOR</th>
                             <th>MARGEM<br> LUCRO</th>
                             <th>CUSTOS</th>
-
                             <th>ACRESCIMO<br>(%)</th>
                             <th>DESCONTO<br>(%)</th>
                             <th>PREÇO DE<br> VENDA</th>
@@ -115,10 +109,8 @@ TELA PRECIFICACAO
                 {% endif %}
             </tbody>
             </table>
-
-
+        </div>
     </div>
-
-
-    </div>
+    </form>
+</div>
 {% endblock %}
