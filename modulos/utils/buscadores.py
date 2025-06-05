@@ -1,8 +1,20 @@
+import logging
+
 from modulos.utils.console import CorFonte
 import os
 import xml.etree.ElementTree as ET
 from modulos.utils.queries import mydb, mycursor
 from modulos.utils.formatadores import pasta_xml
+from datetime import date
+from modulos.utils.formatadores import Formatadores
+data = Formatadores.os_data()
+data_hoje = date.strftime(data, '%Y-%m-%d')
+
+logging.disable(logging.CRITICAL)  # comente para habilitar
+logging.disable(logging.WARNING)  # comente para habilitar
+logging.disable(logging.INFO)  # comente para habilitar
+logging.disable(logging.DEBUG)  # comente para habilitar
+
 
 
 class Buscadores:
@@ -317,7 +329,7 @@ class Buscadores:
                 quantidade,
                 valor,
                 usuario)
-            # print(f'query: {query}-{valores}')
+
             mydb.connect()
             mycursor.execute(query, valores)
             mycursor.fetchall()
@@ -1115,18 +1127,13 @@ class Pricing:
         + "class Pricing"  + CorFonte.reset_cor())
 
     @staticmethod
-    def precificacao(ean, fornecedor, unidade, descricao):
-        print(
-            CorFonte.fonte_amarela()
-            + "class Pricing | metodo precificacao" + CorFonte.reset_cor())
+    def relato_bd_precificacao(ean):
+        logging.info(CorFonte.fonte_amarela() + "class Pricing | metodo precificacao" + CorFonte.reset_cor())
         try:
-            query = (f"SELECT * FROM PRODUTOS WHERE 1=1 and "
-                     f"ean like '%{ean}%' "
-                     f"and fornecedor like '%{fornecedor}%' "
-                     f"and UNIDADE like '%{unidade}%' "
-                     f"and DESCRICAO like '%{descricao}%';")
+            query = (f"SELECT * FROM PRECIFICACAO WHERE 1=1 and "
+                     f"ean like '%{ean}%'")
 
-            print(query)
+            logging.debug(query)
             mydb.connect()
             mycursor.execute(query)
             myresult = mycursor.fetchall()
@@ -1135,7 +1142,74 @@ class Pricing:
             return myresult
 
         except Exception as e:
-            print(e)
+            logging.error(e)
             # AlertaMsg.cadastro_inexistente()
             pass
 
+
+    @staticmethod
+    def relato_custos(ean, fornecedor, unidade, descricao):
+        logging.info(
+            CorFonte.fonte_amarela()
+            + "class Pricing | metodo custos" + CorFonte.reset_cor())
+        try:
+            query = (f"SELECT * FROM PRODUTOS WHERE 1=1 and "
+                     f"ean like '%{ean}%' "
+                     f"and fornecedor like '%{fornecedor}%' "
+                     f"and UNIDADE like '%{unidade}%' "
+                     f"and DESCRICAO like '%{descricao}%';")
+
+            logging.debug(query)
+            mydb.connect()
+            mycursor.execute(query)
+            myresult = mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+            return myresult
+
+        except Exception as e:
+            logging.error(e)
+            # AlertaMsg.cadastro_inexistente()
+            pass
+
+
+    @staticmethod
+    def salvar_precificacao(relatorio_precificacao,usuario):
+            logging.info('class Pricing, método salvar_precificacao')
+            for i in relatorio_precificacao:
+                data_hoje = date.strftime(data, '%Y-%m-%d')
+                ean = i[3]
+                preco = i[7]
+                margem = i[9]
+                custos = i[10]
+                acrescimo = i[11]
+                desconto = i[12]
+                preco_venda = i[13]
+                usuario = usuario
+
+                # incluir instrução if ean já constar no bd, update
+                try:
+                    logging.info('Dentro do try salvar_precificacao')
+                    query = (f"INSERT INTO PRECIFICACAO(DATA,"
+                             f" EAN, VALOR, MARGEM, CUSTOS, ACRESCIMO, DESCONTO, PRECOVENDA, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);")
+                    query ="""INSERT INTO PRECIFICACAO (DATA, EAN, VALOR, MARGEM, CUSTOS, ACRESCIMO, DESCONTO, PRECOVENDA, USUARIO) VALUES 
+                    (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE 
+                    DATA = VALUES(DATA),
+                    VALOR = VALUES(VALOR),
+                    MARGEM = VALUES(MARGEM),
+                    CUSTOS = VALUES(CUSTOS),
+                    ACRESCIMO = VALUES(ACRESCIMO),
+                    DESCONTO = VALUES(DESCONTO),
+                    PRECOVENDA = VALUES(PRECOVENDA),
+                    USUARIO = VALUES(USUARIO);"""
+                    logging.info(query)
+                    valores = (data_hoje, ean, preco, margem, custos, acrescimo, desconto, preco_venda, usuario)
+                    mydb.connect()
+                    mycursor.execute(query, valores)
+                    mycursor.fetchall()
+                    mydb.commit()
+                    mydb.close()
+
+                except Exception as e:
+                    logging.error(e)
+                    pass
