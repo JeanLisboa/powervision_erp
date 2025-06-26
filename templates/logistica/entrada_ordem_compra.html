@@ -2,16 +2,14 @@
 {% block content %}
 TELA ENTRADA ORDEM DE COMPRA
 
-<div class="container p-3 mb-3 border border-1 border-primary  div_principal">
+<div class="div_secundaria">
 
   <form action="" method="POST"> {{ form_entrada_ordem_compra.csrf_token }}
     <pre>
-      - NF TESTE:2299
-         *** - DEVEM SER RESPEITADOS OS CRITÉRIOS PARA RECEBIMENTO. | 1.SE ACEITA PARCIAL | 2.SE GERA SALDO DE PEDIDO.
-
+      - NF TESTE:2299      *** - DEVEM SER RESPEITADOS OS CRITÉRIOS PARA RECEBIMENTO. | 1.SE ACEITA PARCIAL | 2.SE GERA SALDO DE PEDIDO.
    </pre>
 
-  <div class="mb-3 float-child-tela-pesquisa"> <!-- DIV 1 SUPERIOR (ESQUERDA) -->
+  <div class="entrada_ordem_compra_tela_1"> <!-- DIV 1 SUPERIOR (ESQUERDA) -->
     <div class="col form-label btn btn-light">
       {{ form_entrada_ordem_compra.data.label }}
       {{ form_entrada_ordem_compra.data(class="form-control tam_campo_data", value=data) }}
@@ -21,10 +19,10 @@ TELA ENTRADA ORDEM DE COMPRA
       {{ form_entrada_ordem_compra.nf(class="form-control tam_campo_data", value=nf) }}
     </div>
 
-      {{ form_entrada_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-4") }}
+      {{ form_entrada_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
 
   </div> <!--  FIM DA DIV 1 SUPERIOR -->
-  <div class=" mb-3 float-child-tela-pesquisa"> <!-- DIV 2 SUPERIOR (DIREITA) -->
+  <div class=" mb-3 entrada_ordem_compra_tela_2"> <!-- DIV 2 SUPERIOR (DIREITA) -->
     <table class="table table-striped mt-0" style="position:sticky" cellpadding="2" cellspacing="2">
       <thead>
         <tr class="cab_tabela">
@@ -80,7 +78,7 @@ TELA ENTRADA ORDEM DE COMPRA
           {% endif %}
 
 
-          <div> <!-- DIV 1 INFERIOR (TABELA DA ESQUERDA) -->
+          <div class="entrada_ordem_compra_tela_3"> <!-- DIV 1 INFERIOR (TABELA DA ESQUERDA) -->
             <table class="table table-hover table-striped float-tela-conferencia-esquerda" style="position:sticky" cellpadding="2" cellspacing="2" >
               <thead>
                 <tr class="cab_tabela">
@@ -107,7 +105,7 @@ TELA ENTRADA ORDEM DE COMPRA
             </table>
           </div> <!-- FIM DO DIV 1 INFERIOR -->
 
-          <div> <!-- DIV 2  INFERIOR (TABELA DA DIREITA)-->
+          <div class="entrada_ordem_compra_tela_4"> <!-- DIV 2  INFERIOR (TABELA DA DIREITA)-->
 
             <table class="table table-hover table-striped float-tela-conferencia-direita" style="position:sticky" cellpadding="2" cellspacing="2" >
 

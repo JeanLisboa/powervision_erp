@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<title>{% block title %}Mod Compras | Editar Ordem{% endblock %}</title>
+
 <!-- as duas linhas abaixo pertencem ao modal -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -10,14 +12,14 @@ TELA EDITAR ORDEM DE COMPRA
     EXCLUA O ITEM DA OC, CASO ELE JÁ TENHA SIDO TOTAL, OU PARCIALMENTE RECEBIDO
     DIMINUA A QUANTIDADE DO ITEM DA OC PARA UMA QUANTIDADE MENOR DO QUE JÁ FOI RECEBIDO
 </pre>
-<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
+<div class="div_secundaria">
     <form action="" method="POST">
     {{form_editar_ordem_compra.csrf_token }}
-        <div class="container p-1 mb-2 div_principal" xmlns="http://www.w3.org/1999/html">
+        <div class="container  mb-3" xmlns="http://www.w3.org/1999/html">
             <div class="mb-1 float-esquerda-40pp">
                 <div class="col form-label btn btn-light">
                    {{form_editar_ordem_compra.data.label }}
-                   {{form_editar_ordem_compra.data(class="form-control tam_campo_data", value=data)}}
+                   {{form_editar_ordem_compra.data(class="form-control tam_campo_data",  value=data)}}
                 </div>
                 <div class="col form-label btn btn-light">
                    {{form_editar_ordem_compra.pesquisar_ordem_compra.label}}

@@ -1,9 +1,6 @@
 import datetime
 import logging
 from datetime import date
-
-from pyautogui import printInfo
-
 from modulos.utils.formatadores import Formatadores
 from modulos.utils.buscadores import Buscadores
 from modulos.admin import usuario
@@ -223,6 +220,7 @@ def precificacao():
         "pricing/precificacao.html",
         data=Formatadores.formatar_data(Formatadores.os_data()),
         form_precificacao=form_precificacao,
+
         # relatorio_precificao=relatorio_precificacao,
     )
 

@@ -2,22 +2,22 @@
 
 {% block content %}
 
-TELA CADASTRAR FORNECEDORES
-<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
+<title>{% block title %}Mod Compras | Cad Fornecedor{% endblock %}</title>
+<pre> TELA CADASTRAR FORNECEDORES</pre>
+
+<div class="div_secundaria justify-content-center">
     <form action="" method="POST">
         {{ form_fornecedores.csrf_token }}
-
-        <div class="mb-3">
-
-            <div  class="col form-label mt-4 btn btn-light tam_campo_data">
+        <div>
+            <div  class="col form-label mt-4 btn btn-light">
                 {{ form_fornecedores.data.label }}
-                {{ form_fornecedores.data(class="form-control", value=data) }}
+                {{ form_fornecedores.data(class="form-control tam_campo_data", value=data) }}
             </div>
             <div  class="col form-label mt-4 btn btn-light">
                 {{ form_fornecedores.cod_fornecedor.label }}
                 {{ form_fornecedores.cod_fornecedor(class="form-control", size=6, value=cod_fornecedor) }}
             </div>
-            <div></div>
+            <br>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_fornecedores.nome_fantasia.label }}
                {{ form_fornecedores.nome_fantasia(class="form-control") }}
@@ -38,13 +38,14 @@ TELA CADASTRAR FORNECEDORES
                 {{ form_fornecedores.email.label }}
                 {{ form_fornecedores.email(class="form-control") }}
             </div>
+            <br>
             <div class="col form-label mt-4 btn btn-light">
                 {{ form_fornecedores.telefone.label }}
                 {{ form_fornecedores.telefone(class="form-control") }}
             </div>
             <div class="col form-label mt-4 btn btn-light" >
                 {{ form_fornecedores.cep.label }}
-                {{ form_fornecedores.cep(class="form-control") }}
+                {{ form_fornecedores.cep(class="form-control ") }}
             </div>
             <div class="col form-label mt-4 btn btn-light" >
                 {{ form_fornecedores.endereco.label }}

@@ -1,23 +1,43 @@
-.fonte_pequena{
- font.size: 13px;
+/*
+ Todas as div com tabela devem conter o css borda_simples
 
-
- }
-*{font-family: arial;
-    font.size:10;
-    font.color: rgb(45, 52, 54);
-    }
+ */
 
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f7f7f7;
-}
+    background-color: #f4f6f9;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;}
+
+input, select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;}
+
+.fonte_pequena{font.size: 13px;}
+
+.fonte_pequena{font-family: arial;
+    font.size:10;
+    font.color: rgb(45, 52, 54);}
+
+.borda {
+position: absolute;
+    top: 20px;
+    left: 10px;
+    right: 10px;
+    border-radius: 10px;
+    border: 2px solid rgb(159, 159, 159);
+    background-color: (1,1,1);}
+
 
 #hot {
     width: 80%;
@@ -33,96 +53,46 @@ body {
     background-size: 30px 30px;
     padding-right: 30px; /* Adjust to make room for the arrow */
     border: 1px solid #ccc;
-    border-radius: 4px;
-}
+    border-radius: 4px;}
 
 .custom-select:focus {
     border-color: #007bff;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
-}
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);}
 
-.background-color-formulario {
-    background-color: rgb(255, 242, 201);
-}
+.background-color-formulario {background-color: rgb(255, 242, 201);}
 
-.background-color-input {
-    background-color: rgb(245, 202, 115);
-}
-
+.background-color-input {background-color: rgb(245, 202, 115);}
 
 
 /* CONFIGURAÇÕES DE CAMPOS */
-.tam_campo_codigo {
-    width: 100px;
-}
+.tam_campo_codigo {width: 100px;}
 
-.tam_campo_quantidade {
-    width: 60px;
-}
+.tam_campo_quantidade {width: 60px;}
 
+.tam_campo_quantidade_grande {width: 100px;}
 
-.tam_campo_quantidade_grande {
-    width: 100px;
-}
+.tam_campo_val_unit {width: 70px;}
 
-.tam_campo_val_unit {
-    width: 70px;
-}
+.tam_campo_val_unit_grande {width: 100px;}
 
+.tam_campo_ean {width: 150px;}
 
-.tam_campo_val_unit_grande {
-    width: 100px;
-}
+.tam_campo_abrev {width:50px;}
 
+.tam_campo_data {width: 110px;}
 
-.tam_campo_ean {
-    width: 140px;
-}
+.tam_coluna_quantidade {width: 150px;}
 
-.tam_campo_abrev {
-    width:50px
-}
+.tam_campo_cnpj {width: 180px;}
 
-.tam_campo_data {
-    width: 130px;
-}
+.tam_campo_descricao {width: 300px !important;}
 
-.tam_coluna_quantidade {
-    width: 150px;
-}
+.tam_campo_descricao_grande {width: 400px;}
 
+.tam_campo_descricao_tabela {width: 1000px;}
 
-.tam_campo_cnpj {
-    width: 180px;
-}
+.fundo_campo {color: red;}
 
-.tam_campo_descricao {
-    width: 300px;
-}
-
-.tam_campo_descricao_grande {
-    width: 400px;
-}
-
-
-.tam_campo_descricao_tabela {
-    width: 1000px;
-}
-
-
-
-.fundo_campo {
-color: red;
-}
-
-.borda {
-position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
-    bottom: 50px;
-    border: 2px solid rgb(253, 203, 110);
-    background-color: (1,1,1);
 
 }
 /*
@@ -144,7 +114,7 @@ padding-box
 
 
 .borda_simples {
-    border: 2px solid rgb(223, 230, 233); /* Cor e espessura da borda */
+    border: 3px solid rgb(223, 230, 233); /* Cor e espessura da borda */
     padding: 10px; /* Espaço interno para afastar o conteúdo da borda */
     border-radius: 10px; /* Bordas arredondadas, opcional */
 }
@@ -175,15 +145,13 @@ padding-box
 /* CONFIGURAÇÕES DE TABELA*/
 
 .cab_tabela {
-    font-size:20px;
+    font-size:15px;
     background-color:#e9ecef;
 }
 
 
-th{font-family:calibri, roboto, sans-serif,tahoma;
-    padding:5px 3px 3px 3px;
+th{ padding:5px 3px 3px 3px;
     color:#0B0B3B;
-    font-size:17px;
     font-weight:normal;
     white-space:nowrap;
     border-radius:4px;
@@ -194,11 +162,10 @@ th{font-family:calibri, roboto, sans-serif,tahoma;
 th:not([scope=row]){
     position:-webkit-sticky;
     position:sticky;top:0;}
-td{
-    font-family:calibri, sans-serif,arial,tahoma;
-    color:#2E2E2E;
+
+td{ color:#2E2E2E;
     padding:0px;
-    font-size:15px;
+
     font-weight:normal;
     white-space:nowrap;
     border-radius:4px;
@@ -225,15 +192,51 @@ td{
     margin-top: 0; /* Remover a margem superior para alinhar o botão */
 }
 
+.div_terciaria{
+    position: absolute;
+    background-color: rgb(184, 200, 222);
+    border-radius: 10px;
+    border: 2px solid rgb(95, 132, 181);
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.div_secundaria_no_flex{
+    background-color: rgb(184, 200, 222);
+    border-radius: 10px;
+    border: 2px solid rgb(95, 132, 181);
+
+}
+
+.div_secundaria{
+    justify-content: center; /* centraliza horizontalmente */
+    position: absolute;
+    display: flex;
+    top: 60px;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    background-color: rgb(184, 200, 222);
+    border-radius: 10px;
+    border: 2px solid rgb(95, 132, 181);
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
 
 
 .div_principal {
-    max-width: 1600px;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
     border-width: 100%;
-    background-color: rgb(255, 242, 201);
-    border: 3px solid rgb(223, 230, 233);
-    padding: 50px;
-    margin-bottom: 2px;
+    border-radius:10px;
+    border: 2px solid rgb(95, 132, 181);
                 }
 
 
@@ -253,7 +256,6 @@ td{
         ;
 }
 
-
 .float-tela-conferencia-direita {
     float: right ;
     width: 20%;
@@ -262,19 +264,92 @@ td{
         ;
 }
 
-
-.float-child-tela-pesquisa {
-    width: 45%;
+.float_cad_produtos_tela_1 {
+    width: 40%;
+    align: left;
     float: left;
-    padding: 10px;
-    margin-top:13px;
+    padding: 5px;
+    margin-top:5px;
+    border-radius:10px;
+    border: 2px solid rgb(91, 132, 181);
 }
 
-.float-child-resultado-busca-pedidos {
+.float_cad_produtos_tela_2 {
+    width: 60%;
+    align: right;
+    float: right;
+    padding: 5px;
+    margin-top:5px;
+    border-radius:10px;
+    border: 2px solid rgb(91, 132, 181);
+}
+
+
+.entrada_ordem_compra_tela_1 {
+    width: 30%;
+    align: left;
+    float: left;
+    padding: 5px;
+    margin-top:5px;
+    margin-left:5px;
+    border-radius:10px;
+    border: 2px solid rgb(91, 132, 181);
+}
+
+.entrada_ordem_compra_tela_2 {
+    width: 50%;
+    align: left;
+    float: left;
+    padding: 5px;
+    margin-top:5px;
+    margin-left:5px;
+    border-radius:10px;
+    border: 2px solid rgb(91, 132, 181);
+}
+
+.entrada_ordem_compra_tela_3 {
+    width: 44%;
+    position: center;
+    align: center;
+    float: left;
+    padding: 5px;
+    margin-top:5px;
+    margin-left:5px;
+    border-radius:10px;
+    border: 2px solid rgb(91, 132, 181);
+}
+
+.entrada_ordem_compra_tela_4 {
+    width: 17%;
+    position:center;
+    align: center;
+    float: left;
+    padding: 5px;
+    margin-top:5px;
+    margin-left:5px;
+    border-radius:10px;
+    border: 2px solid rgb(91, 132, 181);
+}
+
+.float-child-tela-pesquisa {
+    width: 50%;
+    align: left;
+    float: left;
+    padding: 5px;
+    border-radius:10px;
+    margin-top:5px;
+    margin-left:10px;
+    border: 2px solid rgb(91, 132, 181);
+
+}
+
+.float_child_resultado_busca_pedidos {
     width: 45%;
     float: right;
     padding: 5px;
     margin-top:13px;
+    border: 2px solid rgb(91, 132, 181);
+    border-radius:10px;
 }
 
 .float-child-resultado-dif-conferencia {
@@ -305,16 +380,24 @@ td{
 .float-child-ordem-compra1 {
     width: 50%;
     float: left;
-    padding: 0px;
-    margin-top:-10px;
+    margin-top:5px;
+    margin-left:5px;
     font-size:14px;
+    border: 2px solid rgb(91, 132, 181);
+    border-radius: 10px;
+    padding: 10px;
 }
 
 
 .float-child-ordem-compra2 {
-    width: 50%;
+    width: 45%;
     float: right;
-    margin-top:-10px;
+    margin-top:5px;
+    margin-right:5px;
+    border: 2px solid rgb(91, 132, 181);
+    border-radius: 10px;
+    padding: 10px;
+}
 
 
 .float-esquerda-40pp {
@@ -332,9 +415,6 @@ td{
     margin-top:-10px;
     font-size:12px;
 }
-
-
-
     ;
 }
 .float-child-analise-ordem-1 {
@@ -366,9 +446,13 @@ td{
             text-indent: -9999px;  /* esconder o texto */
         }
 
-
+.tr{
+    text-align: center;
+    height: 5px;
+    vertical-align: middle;}
 .container_com_barra_rolagem {
-            max-height: 400px; /* Altura máxima do contêiner */
+            font-size: 14px;
+            max-height: 500px; /* Altura máxima do contêiner */
             overflow-y: auto; /* Adiciona rolagem vertical */
         }
 
@@ -380,6 +464,7 @@ td{
         table {
             width: 100%;
             border-collapse: collapse;
+
         }
 
         th, td {
@@ -388,9 +473,6 @@ td{
             padding: 8px;
         }
 
-        th {
-            background-color: #f2f2f2;
-        }
 
         .width-100 {
             width: 100%;
@@ -479,15 +561,15 @@ td{
 
 .navbar a {
   text-align: center;
-  padding: 14px 20px;
+  padding: 8px 15px;
   text-decoration: none;
   position: relative;
 }
 
 /* Estilo dos links quando passam o mouse por cima */
 .navbar a:hover {
-  background-color: #ddd;
-  color: #7096DA;
+  background-color: #CFDAE9;
+  color: #7096dA;
 }
 
 /* Estilo básico dos links do submenu */
@@ -499,7 +581,7 @@ td{
   text-align: left;
 }
 
-/* Submenu container - escondido por padrão */
+/* Submenu con  tainer - escondido por padrão */
 .submenu {
   display: none; /* Esconde submenus inicialmente */
   position: absolute;
@@ -578,5 +660,11 @@ td{
       visibility: visible;
       opacity: 1;
     }
-============================
 
+    .pws_logo {
+      display: block;
+      margin: 0 auto; /* centraliza horizontalmente */
+
+      width: 700px; /* ajusta tamanho */
+      opacity: 0.2; /* controla transparência: 0 (invisível) a 1 (opaco) */
+    }

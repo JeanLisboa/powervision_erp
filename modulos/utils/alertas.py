@@ -1,12 +1,21 @@
 from flask import session, redirect, url_for
 from modulos.utils.console import CorFonte
-
+alert = None
 
 class AlertaMsg:
     def __init__(self):
         self.cnpj_invalido = self.cnpj_invalido
         self.cnpj_ja_existente = self.cnpj_ja_existente
         self.cad_fornecedor_realizado = self.cad_fornecedor_realizado
+
+    @staticmethod
+    def cep_invalido(cep):
+        print("class AlertaMsg: cep_invalido()")
+        session["alert"] = (
+            f'<div id = "alert" class="alert alert-danger", '
+            f'role="alert">CEP INVALIDO: CEP {cep}</div>'
+        )
+        return redirect(url_for("cadastrar_fornecedores"))
 
     @staticmethod
     def produto_ja_cadastrado(ean):

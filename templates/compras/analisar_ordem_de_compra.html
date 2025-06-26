@@ -2,20 +2,20 @@
 
 {% block content %}
 
-TELA ANALISAR ORDEM DE COMPRA
-<div class="container p-3 mb-3 border border-1 border-primary p-2 mb-2 div_principal">
-    <pre>
-        1 -ALTERAR CAMPO ORDEM PARA COMBOBOX E VISUALIZAR APENAS ORDENS EM ABERTO
-        2 - CRIAR OPÇÃO DE ELIMINAR SALDO DE PEDIDOS EM ABERTO
-        3 - ALTERAR VISUALIZAÇÃO PARA SALDO DO PEDIDO, AO INVES DAS QTDES ORIGINAIS
+<title>{% block title %}Mod Compras | Analisar Ordem{% endblock %}</title>
+<pre>
+        1 -ALT CAMPO ORDEM P/ COMBOBOX E VISUALIZAR APENAS ORDENS EM ABERTO | 2 - CRIAR OPÇÃO DE ELIMINAR SALDO DE PEDIDOS EM ABERTO | 3 - ALTERAR VISUALIZAÇÃO PARA SALDO DO PEDIDO, AO INVES DAS QTDES ORIGINAIS
     </pre>
+
+
+<div class="div_secundaria">
     <form action="" method="POST">
         {{ form_analisar_ordem_de_compra.csrf_token }}
         <div class="float-child0"> <!-- tela de pesquisa -->
             <div class="mb-3 float-child-tela-pesquisa">
                 PESQUISA<BR>
                 <div  class="col form-label  btn btn-light">
-                    {{ form_analisar_ordem_de_compra.data.label(class="form-label" ) }}
+                    {{ form_analisar_ordem_de_compra.data.label(class="form-label") }}
                     {{ form_analisar_ordem_de_compra.data(class="form-control tam_campo_data",  value=data) }}
                 </div>
                 <div  class="col form-label  btn btn-light">
@@ -38,7 +38,7 @@ TELA ANALISAR ORDEM DE COMPRA
             </div>
 
             <div class="mb-3 float-child-resultado-busca-pedidos container_com_barra_rolagem"> <!-- resultado da busca -->
-                <p>TELA RESULTADO</p>
+                RESULTADO
                 <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2">
                     <thead>
                         <tr class="cab_tabela">

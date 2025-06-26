@@ -16,8 +16,10 @@ import modulos.logistica
 import modulos.pricing
 import modulos.sobre
 import modulos.precificacao
-
 import os
+import logging
+log = logging.getLogger('werkzeug')
+# log.setLevel(logging.CRITICAL)  # Ou logging.CRITICAL para ocultar tudo
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 

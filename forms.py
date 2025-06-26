@@ -88,9 +88,7 @@ class ModCompras:
         razao_social = StringField("Razão Social", validators=[DataRequired()])
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cnpj = StringField("CNPJ", validators=[DataRequired(), Length(14)])
-        insc_estadual = IntegerField(
-            "Insc. Estadual", validators=[DataRequired(), Length(9)]
-        )
+        insc_estadual = IntegerField("Insc. Estadual", validators=[DataRequired(), Length(9)])
         email = StringField("Email", validators=[DataRequired()])
         cep = IntegerField("CEP", validators=[DataRequired(), Length(8, 8)])
         telefone = IntegerField("Telefone", validators=[DataRequired(), Length(10, 11)])
@@ -100,21 +98,16 @@ class ModCompras:
         botao_submit_cad_fornecedor = SubmitField("Cadastrar")
 
     class CadProduto(FlaskForm):
-        # buscar_fornecedor = modulos.utils.Buscadores.OrdemCompra.buscar_fornecedor()
-        # buscar_fornecedor = modulos.utils.buscadores.OrdemCompra.buscar_fornecedor()
+
         buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         cod_produto = StringField("Código: ", validators=[Disabled()])
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ean = StringField("EAN", validators=[Length(13)])
         descricao = StringField("Descrição")
         fornecedor = SelectField(
-            "Fornecedor",
-            choices=["Selecionar um fornecedor"] + [f[0] for f in buscar_fornecedor],
-            validators=[DataRequired()])
+            "Fornecedor", choices=["Selecionar um fornecedor"] +[] + [f[0] for f in buscar_fornecedor], validators=[DataRequired()])
         unidade = SelectField(
-            coerce=str,
-            choices=["", "KG", "G", "CX", "UN", "L", "M", "CM"],
-            validators=[ReadOnly()])
+            coerce=str, choices=["", "KG", "G", "CX", "UN", "L", "M", "CM"], validators=[ReadOnly()])
 
         valor = FloatField("Valor", validators=[NumberRange(min=0.01)])
         categoria = SelectField(
@@ -155,7 +148,7 @@ class ModCompras:
         botao_pesquisar_item = SubmitField("Pesquisar Código")
         botao_pesquisar_fornecedor = SubmitField("Pesquisar Fornecedor")
         botao_incluir_item = SubmitField("Incluir Item")
-        botao_selecionar_item = SubmitField("Selecionar")
+        botao_selecionar_item = SubmitField("➕")
         botao_submit_compra = SubmitField("Gerar Ordem de Compra")
 
     class AdicionarItemOrdemCompra(FlaskForm):
@@ -261,7 +254,7 @@ class ModPricing:
         botao_submit_cad_fornecedor = SubmitField("Cadastrar")
 
     class Precificacao(FlaskForm):
-        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        data = StringField("Data",  validators=[DataRequired(), ReadOnly()])
         fornecedor = StringField("Fornecedor")
         ean = StringField("Ean")
         descricao = StringField("Descrição")

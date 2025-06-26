@@ -6,46 +6,39 @@ TELA ESTOQUE
      xmlns="http://www.w3.org/1999/html">
   <form action="" method="POST">
     {{ form_estoque.csrf_token }}
-  <div class="row">
-    <div class="col-auto">
-      {{ form_estoque.data_de.label(class="form-label") }}
-      {{ form_estoque.data_de(class="form-control tam_campo_data") }}
+    <div class="row">
+      <div class="col-auto">
+        {{ form_estoque.data_de.label(class="form-label") }}
+        {{ form_estoque.data_de(class="form-control tam_campo_data") }}
+      </div>
+      <div class="col-auto">
+        {{ form_estoque.data_ate.label(class="form-label") }}
+        {{ form_estoque.data_ate(class="form-control tam_campo_data") }}
+      </div>
+      <div class="col-auto">
+        {{ form_estoque.ordem_compra.label(class="form-label") }}
+        {{ form_estoque.ordem_compra(class="form-control tam_campo_data") }}
+      </div>
+      <div class="col-auto">
+        {{ form_estoque.tipo_mov.label(class="form-label") }}
+        {{ form_estoque.tipo_mov(class="form-control tam_campo_data") }}
+      </div>
+      <div class="col-auto">
+        {{ form_estoque.nota_fiscal.label(class="form-label") }}
+        {{ form_estoque.nota_fiscal(class="form-control tam_campo_data") }}
+      </div>
+      <div class="col-auto">
+        {{ form_estoque.ean.label(class="form-label tam_campo_data") }}
+        {{ form_estoque.ean(class="form-control tam_campo_data") }}
+      </div>
+      <div class="col-auto">
+      </div>
     </div>
-    <div class="col-auto">
-      {{ form_estoque.data_ate.label(class="form-label") }}
-      {{ form_estoque.data_ate(class="form-control tam_campo_data") }}
-    </div>
-
-    <div class="col-auto">
-      {{ form_estoque.ordem_compra.label(class="form-label") }}
-      {{ form_estoque.ordem_compra(class="form-control tam_campo_data") }}
-    </div>
-    <div class="col-auto">
-      {{ form_estoque.tipo_mov.label(class="form-label") }}
-      {{ form_estoque.tipo_mov(class="form-control tam_campo_data") }}
-    </div>
-
-
-  <div class="col-auto">
-    {{ form_estoque.nota_fiscal.label(class="form-label") }}
-    {{ form_estoque.nota_fiscal(class="form-control tam_campo_data") }}
-  </div>
-
-  <div class="col-auto">
-    {{ form_estoque.ean.label(class="form-label tam_campo_data") }}
-    {{ form_estoque.ean(class="form-control tam_campo_data") }}
-  </div>
-  <div class="col-auto">
-  </div>
-
-  </div>
-
-
     {{ form_estoque.botao_relatorio_estoque(class="btn btn-primary") }}
   </form>
 
     <div> <!-- DIV 1 INFERIOR (TABELA DA ESQUERDA) -->
-      <table class="table table-hover table-striped float-tela-conferencia-esquerda" style="position:sticky" cellpadding="2" cellspacing="2" >
+      <table class="table table-hover table-striped " style="position:sticky" cellpadding="2" cellspacing="2" >
         <thead>
           <tr class="cab_tabela">
             <th class="tam_campo_codigo">Data</th>
