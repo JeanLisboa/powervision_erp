@@ -1,4 +1,5 @@
 # outras bibliotecas
+import ast
 from datetime import date
 import mysql.connector
 from flask import render_template, redirect, url_for, request, session
@@ -102,6 +103,7 @@ def cadastrar_fornecedores():
 
 
 def cadastrar_produtos():
+    print(CorFonte.fonte_amarela() + "Função cadastrar_produtos" + CorFonte.reset_cor())
     alert = None
     fornecedor = ''
     # recupera a lista, se ela existir, caso nao exista cria uma nova
@@ -244,15 +246,15 @@ def cadastrar_produtos():
                     usuario = i[1][6]
 
                     values = (
-                        f"'{date.strftime(data, '%Y-%m-%d')}',"
-                        f"'{cod_produto}',"
-                        f"'{fornecedor}',"
-                        f"'{ean}',"
-                        f"'{descricao}',"
-                        f"'{unidade}',"
-                        f"'{categoria}',"
-                        f"'{valor}',"
-                        f"'{usuario}'"
+                        date.strftime(data, '%Y-%m-%d'),
+                        cod_produto,
+                        fornecedor,
+                        ean,
+                        descricao,
+                        unidade,
+                        categoria,
+                        valor,
+                        usuario
                     )
                     query = """
                                INSERT INTO PRODUTOS (
@@ -308,20 +310,22 @@ def cadastrar_produtos():
 
     try:
         if "botao_excluir_cad_prod" in request.form:
+            # recupera o valor do produto a ser excluido
             valor_produto = request.form.getlist("valor_produto")
-            for i in valor_produto:
-                if i != "":
-                    valor_produto = i
-                    print(f"valor_produto {i}")
-
-
+        print('lista_cadastro_produto')
         print(lista_cadastro_produto)
-        print(f"Valor produto >>> {valor_produto}")
-        for i in lista_cadastro_produto:
-            if valor_produto == i[1][1]:
+
+        # recupera o ean do produto, atualmente recebido como uma string
+        # e converte o ean_a_excluir para uma lista novamente
+        ean_a_excluir= ast.literal_eval(valor_produto[1])
+
+        # exclui o item da lista
+        for i in lista_cadastro_produto[:]:
+            print(i[1][1], ean_a_excluir[1])
+            if i[1][1] == ean_a_excluir[1]:
                 lista_cadastro_produto.remove(i)
+                session["lista_cadastro_produto"] = lista_cadastro_produto
                 redirect(url_for("cadastrar_produtos"))
-        print("---------fim do teste----------")
     except Exception as e:
         print(e)
 
@@ -338,6 +342,9 @@ def cadastrar_produtos():
         dicionario_cad_produtos=lista_cadastro_produto,  # lista_cadastro_produto_cpp
         cod_produto=AtualizaCodigo.cod_produto(),
         data=Formatadores.formatar_data(Formatadores.os_data()))
+
+# return render_template(return render_template("compras/cadastrar_produtos.html",
+#                                               data=Formatadores.formatar_data(Formatadores.os_data())
 
 
 def analisar_ordem_de_compra():
