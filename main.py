@@ -116,11 +116,12 @@ class Compras:
     def adicionar_item_ordem_compra():
         return modulos.compras.adicionar_item_ordem_compra()
 
+
     @staticmethod
     @app.route('/relatorios_compras', methods=['POST', 'GET'])
     def relatorios_compras():
-        return render_template('compras/relatorios_compras.html',
-                               data=Formatadores.formatar_data(Formatadores.os_data()))
+        return render_template('compras/relatorios_compras.html')
+
 
 
 class Logistica:
