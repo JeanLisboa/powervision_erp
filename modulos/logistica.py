@@ -1,9 +1,6 @@
 import datetime
-
 import flash
 from flask import render_template, request, session, redirect
-# from tensorflow.python.ops.gen_experimental_dataset_ops import experimental_assert_next_dataset
-
 import modulos.admin
 from forms import Mod_Logistica
 from modulos.utils.validadores import Validadores

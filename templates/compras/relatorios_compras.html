@@ -6,44 +6,99 @@
 
 TELA RELATORIOS COMPRAS
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ag-Grid Example</title>
-  <!-- Ag-Grid CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-grid.css">
-  <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-theme-alpine.css">
-</head>
-<body>
-  <h1>Ag-Grid Example</h1>
-  <div id="myGrid" class="ag-theme-alpine" style="height: 500px; width: 600px;"></div>
+<div class="div_secundaria justify-content-center">
 
-  <!-- Ag-Grid JavaScript -->
-  <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
-  <script>
-    // Especificação das colunas
-    const columnDefs = [
-      { headerName: 'Make', field: 'make' },
-      { headerName: 'Model', field: 'model' },
-      { headerName: 'Price', field: 'price' }
-    ];
+<div class="justify-content-center" xmlns="http://www.w3.org/1999/html">
+  <form action="" method="POST">
+    {{ form_relatorio_compras.csrf_token }}
+      <div  class="col form-label mt-4 btn btn-light">
+        {{ form_relatorio_compras.data.label }}
+        {{ form_relatorio_compras.data(class="form-control tam_campo_data", value=data) }}
+      </div>
 
-    // Dados da tabela
-    const rowData = [
-      { make: 'Toyota', model: 'Celica', price: 35000 },
-      { make: 'Ford', model: 'Mondeo', price: 32000 },
-      { make: 'Porsche', model: 'Boxster', price: 72000 }
-    ];
 
-    // Criação do grid
-    const gridOptions = {
-      columnDefs: columnDefs,
-      rowData: rowData
-    };
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_compras.data_de.label }}
+      {{ form_relatorio_compras.data_de(class="form-control") }}
+    </div>
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_compras.data_ate.label }}
+      {{ form_relatorio_compras.data_ate(class="form-control") }}
+    </div>
 
-    // Obtenção do elemento HTML e inicialização do grid
-    const eGridDiv = document.querySelector('#myGrid');
-    new agGrid.Grid(eGridDiv, gridOptions);
-  </script>
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_compras.ordem_compra.label }}
+      {{ form_relatorio_compras.ordem_compra(class="form-control tam_campo_codigo") }}
+    </div>
 
+
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_compras.categoria.label }}
+      {{ form_relatorio_compras.categoria(class="form-control tam_campo_codigo") }}
+    </div>
+
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_compras.ean.label }}
+      {{ form_relatorio_compras.ean(class="form-control tam_campo_codigo") }}
+    </div>
+      <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_compras.descricao.label }}
+      {{ form_relatorio_compras.descricao(class="form-control tam_campo_descricao") }}
+    </div>
+
+
+    <div>
+      {{ form_relatorio_compras.botao_processar(class="btn btn-primary") }}
+    </div>
+
+  </form>
+  <table class="table table-hover table-striped " style="position:sticky" cellpadding="2" cellspacing="2" >
+        <thead>
+          <tr class="cab_tabela">
+            <th class="tam_campo_codigo">Data</th>
+            <th class="tam_campo_codigo">Ordem Compra</th>
+            <th class="tam_coluna_quantidade">Item</th>
+            <th class="tam_coluna_quantidade">Descricao</th>
+            <th class="tam_coluna_quantidade">Un</th>
+            <th class="tam_coluna_quantidade">Categoria</th>
+            <th class="tam_coluna_quantidade">Codigo</th>
+            <th class="tam_coluna_quantidade">Ean</th>
+            <th class="tam_coluna_quantidade">Quantidade</th>
+            <th class="tam_coluna_quantidade">Preço</th>
+            <th class="tam_coluna_quantidade">Total Item</th>
+            <th class="tam_coluna_quantidade">Saldo Qtd</th>
+            <th class="tam_coluna_quantidade">Saldo Valor</th>
+            <th class="tam_coluna_quantidade">Status</th>
+            <th class="tam_coluna_quantidade">Usuario</th>
+
+          </tr>
+        </thead>
+      <tbody>
+        {% if relatorio_compras %}
+          {% for i in relatorio_compras %}
+          <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+            <td>{{i[0]}}</td> <!-- DATA -->
+            <td>{{i[1]}}</td> <!-- ORDEM COMPRA -->
+            <td>{{i[2]}}</td>  <!-- ITEM -->
+            <td>{{i[3]}}</td> <!-- DESCRICAO -->
+            <td>{{i[4]}}</td> <!-- UNIDADE -->
+            <td>{{i[5]}}</td> <!-- CATEGORIA -->
+            <td>{{i[6]}}</td> <!-- CODIGO -->
+            <td>{{i[7]}}</td> <!-- EAN -->
+            <td>{{i[8]}}</td> <!-- QUANTIDADE -->
+            <td>{{i[9]}}</td> <!-- PREÇO -->
+            <td>{{i[10]}}</td> <!-- TOTAL ITEM -->
+            <td>{{i[11]}}</td> <!-- SALDO QUANTIDADE  -->
+            <td>{{i[12]}}</td> <!-- SALDO VALOR -->
+            <td>{{i[13]}}</td> <!-- STATUS PEDIDO  -->
+            <td>{{i[14]}}</td> <!-- USUARIO -->
+
+
+          </tr>
+          {% endfor %}
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+</div>
 {% endblock %}

@@ -3,7 +3,7 @@ import mysql.connector
 import webbrowser
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFProtect
-from forms import Mod_Comercial, ModPricing, Mod_Logistica, ModAdmin, ModCompras
+from forms import ModComercial, ModPricing, Mod_Logistica, ModAdmin, ModCompras
 from geral import Formatadores
 # modulos
 import modulos.admin
@@ -119,8 +119,8 @@ class Compras:
 
     @staticmethod
     @app.route('/relatorios_compras', methods=['POST', 'GET'])
-    def relatorios_compras():
-        return render_template('compras/relatorios_compras.html')
+    def relatorio_compras():
+        return modulos.compras.relatorio_compras()
 
 
 
@@ -145,7 +145,7 @@ class Comercial:
     @staticmethod
     @app.route('/cadastrar_clientes', methods=['POST', 'GET'])
     def cadastrar_clientes():
-        form_cad_clientes = Mod_Comercial.CadastrarCliente()
+        form_cad_clientes = ModComercial.CadastrarCliente()
         return render_template('comercial/cadastrar_clientes.html',
                                form_cad_clientes=form_cad_clientes,
                                data=Formatadores.formatar_data(Formatadores.os_data()))
@@ -153,7 +153,7 @@ class Comercial:
     @staticmethod
     @app.route('/incluir_pedido_venda', methods=['POST', 'GET'])
     def incluir_pedido_venda():
-        form_incluir_pedido_venda = Mod_Comercial.IncluirPedidoVenda()
+        form_incluir_pedido_venda = ModComercial.IncluirPedidoVenda()
         return render_template('comercial/incluir_pedido_venda.html',
                                form_incluir_pedido_venda=form_incluir_pedido_venda,
                                data=Formatadores.formatar_data(Formatadores.os_data()))

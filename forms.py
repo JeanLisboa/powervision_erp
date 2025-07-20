@@ -98,14 +98,13 @@ class ModCompras:
         botao_submit_cad_fornecedor = SubmitField("Cadastrar")
 
     class CadProduto(FlaskForm):
-
         buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         cod_produto = StringField("Código: ", validators=[Disabled()])
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ean = StringField("EAN", validators=[Length(13)])
         descricao = StringField("Descrição")
         fornecedor = SelectField(
-            "Fornecedor", choices=["Selecionar um fornecedor"] +[] + [f[0] for f in buscar_fornecedor], validators=[DataRequired()])
+            "Fornecedor", choices=["Selecionar um fornecedor"] +[]  + [f[0] for f in buscar_fornecedor], validators=[DataRequired()])
         unidade = SelectField(
             coerce=str, choices=["", "KG", "G", "CX", "UN", "L", "M", "CM"], validators=[ReadOnly()])
 
@@ -127,14 +126,12 @@ class ModCompras:
         def no_comma(form, field):
             if ',' in str(field.data):
                 raise ValidationError('Use ponto (.) como separador decimal, não vírgula.')
-
         buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
         codigo = StringField("Código")
         fornecedor = SelectField("Fornecedor",choices=["Selecionar um fornecedor"] + [f[0] for f in buscar_fornecedor],
             validators=[DataRequired()])
-        # fornecedor = StringField("Fornecedor")
         ean = StringField("EAN")
         descricao = StringField("Descrição", validators=[ReadOnly()])
         unidade = StringField("Un", validators=[ReadOnly()])
@@ -192,11 +189,32 @@ class ModCompras:
         botao_pesquisar_item = SubmitField("Pesquisar")
 
     class RelatoriosCompras(FlaskForm):
-        pass
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        codigo = StringField("Código")
+        ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
+        fornecedor = StringField("Fornecedor", validators=[ReadOnly()])
+        ean = StringField("EAN")
+        descricao = StringField("Descrição", validators=[ReadOnly()])
+        unidade = StringField("Unidade", validators=[ReadOnly()])
+        categoria = StringField("Categoria", validators=[ReadOnly()])
+
+    class RelatorioCompras(FlaskForm):
+        data = StringField("Data", validators=[])
+        data_de = DateField("Data Inicial", validators=[])
+        data_ate = DateField("Data Final", validators=[])
+        ordem_compra = StringField('Ordem de Compra')
+        codigo = StringField('Código')
+        fornecedor = StringField('Fornecedor')
+        unidade = StringField('Unidade')
+        categoria = StringField('Categoria')
+        quantidade = IntegerField('Quantidade')
+        preco_unitario = FloatField('Preço Unitário')
+        ean = StringField('Ean')
+        descricao = StringField('Descrição')
+        botao_processar = SubmitField("Pesquisar")
 
 
-class Mod_Comercial:
-
+class ModComercial:
     class CadastrarCliente(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cod_cliente = StringField("Código", validators=[Disabled()])

@@ -81,6 +81,20 @@ class AlertaMsg:
         )
         return redirect(url_for("cadastrar_produtos"))
 
+    def item_disponivel(ean):
+        print(
+            CorFonte.fonte_amarela()
+            + "class AlertaMsg: Item disponivel()"
+            + CorFonte.reset_cor()
+        )
+        session["alert"] = (
+            f'<div id = "alert" class="alert alert-danger", '
+            f'role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>'
+        )
+        return redirect(url_for("cadastrar_produtos"))
+
+
+
     @staticmethod
     def produto_cadastrado_com_sucesso():
         print(

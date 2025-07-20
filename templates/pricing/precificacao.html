@@ -12,12 +12,12 @@ TELA PRECIFICACAO
     font-size: 17px;
 }
 </style>
-<div class="container card p-1 border border-1 border-primary p-2 mb-2 div_principal">
+<div class="div_secundaria">
     <form action="" method="POST">
         {{ form_precificacao.csrf_token }}
         <div>
 
-            <div class="container p-3 mb-3 div_principal">
+            <div>
                 <div class="col form-label btn btn-light">
                 {{form_precificacao.data.label}}
                 {{form_precificacao.data (class="form-control tam_campo_data", value=data)}}
@@ -41,6 +41,7 @@ TELA PRECIFICACAO
                 <div class="col form-label btn btn-light">
                     {{form_precificacao.botao_pesquisar (class="btn btn-primary mt-4")}}
                 </div>
+
                 <div class="col form-label btn btn-light">
                     {{form_precificacao.botao_calcular (class="btn btn-primary mt-4")}}
                 </div>
@@ -51,7 +52,11 @@ TELA PRECIFICACAO
                     {{ form_precificacao.botao_cancelar(class="btn btn-primary mt-4") }}
                 </div>
             </div>
-            <div  class="borda_simples  container_com_barra_rolagem">
+            <br><br>
+            <br><br>
+            <br><br>
+            <br><br>
+            <div  class="container_com_barra_rolagem" style="margin-top: -150px">
             <table class="table table-hover table-striped " style="position:sticky top: 0" cellpadding="0" cellspacing="0" id="">
                 <thead>
                         <tr>
