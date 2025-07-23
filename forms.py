@@ -212,6 +212,7 @@ class ModCompras:
         ean = StringField('Ean')
         descricao = StringField('Descrição')
         botao_processar = SubmitField("Pesquisar")
+        botao_limpar = SubmitField("Limpar")
 
 
 class ModComercial:

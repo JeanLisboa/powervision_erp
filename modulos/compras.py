@@ -1,8 +1,9 @@
 # outras bibliotecas
 import ast
-from datetime import date, timedelta
+import logging
+from datetime import date, timedelta, datetime
 import mysql.connector
-from flask import render_template, redirect, url_for, request, session
+from flask import render_template, redirect, url_for, request, session, flash
 
 import modulos.admin
 from forms import ModCompras
@@ -18,6 +19,8 @@ mydb = mysql.connector.connect(
     host="localhost", user="admin2024", password="204619", database="projeto_erp"
 )
 mycursor = mydb.cursor()
+
+logging.basicConfig(level=logging.INFO)
 
 # inicialização de variáveis
 total_ordem_compra = 0
@@ -1423,9 +1426,9 @@ def adicionar_item_ordem_compra():
 
 
 def relatorio_compras():
-    relatorio_compras = []
+
     form_relatorio_compras = ModCompras.RelatorioCompras()
-    data = Formatadores.os_data()
+
     data_de = form_relatorio_compras.data_de.data
     data_ate = form_relatorio_compras.data_ate.data
     ordem_compra = form_relatorio_compras.ordem_compra.data
@@ -1434,7 +1437,7 @@ def relatorio_compras():
     unidade = form_relatorio_compras.unidade.data
     categoria = form_relatorio_compras.categoria.data
     quantidade = form_relatorio_compras.quantidade.data
-    preco_unitaro = form_relatorio_compras.preco_unitario.data
+    preco_unitario = form_relatorio_compras.preco_unitario.data
     ean = form_relatorio_compras.ean.data
     descricao = form_relatorio_compras.descricao.data
 
@@ -1450,21 +1453,24 @@ def relatorio_compras():
             print(f'unidade: {unidade}')
             print(f'categoria: {categoria}')
             print(f'quantidade: {quantidade}')
-            print(f'preco_unitaro: {preco_unitaro}')
+            print(f'preco_unitaro: {preco_unitario}')
             print(f'ean: {ean}')
             print(f'descricao: {descricao}')
 
+            # o codigo abaixo define o valor de data_de e data_ate caso eles nao sejam preenchidos
             if data_de is None:
-                data_de = date.today()
-                print(f'data_de: {data_de}')
-            if data_ate is None:
-                data_ate = date.today()-timedelta(days=30)
-                print(f'data_ate: {data_ate}')
+                data_de = date.today() - timedelta(days=30)
+                data_de = data_de.strftime('%Y-%m-%d')
+                print(f'data_de atualizado: {data_de}')
 
+            if data_ate is None:
+                data_ate = date.today()
+                data_ate = data_ate.strftime('%Y-%m-%d')
+                print(f'data_ate atualizado: {data_ate}')
+                # data_ate = datetime.strptime(data_ate, "%d/%m/%Y").date()
 
             if ordem_compra is None:
                 ordem_compra = ''
-
 
             if unidade is None:
                 unidade = ''
@@ -1475,8 +1481,8 @@ def relatorio_compras():
             if quantidade is None:
                 quantidade = ''
 
-            if preco_unitaro is None:
-                preco_unitaro = ''
+            if preco_unitario is None:
+                preco_unitario = ''
 
             if ean is None:
                 ean = ''
@@ -1484,31 +1490,26 @@ def relatorio_compras():
             if descricao is None:
                 descricao = ''
 
-            # query = (
-            #     f"SELECT * FROM ORDEM_COMPRA WHERE 1=1 or DATA BETWEEN '{data_de}' AND '{data_ate}' "
-            #     f"or ORDEM_COMPRA LIKE '%{ordem_compra}%'or UNIDADE LIKE '%{unidade}%' or CATEGORIA LIKE '%{categoria}%' "
-            #     f"or QUANTIDADE LIKE '%{quantidade}%' or PRECO LIKE '%{preco_unitaro}%' "
-            #     f"or EAN LIKE '%{ean}%' or DESCRICAO LIKE '%{descricao}%';"
-            # )
+            query = ("SELECT * FROM ORDEM_COMPRA WHERE "
+                     "DATA BETWEEN %s AND %s "
+                     "AND ORDEM_COMPRA LIKE %s "
+                     "AND UNIDADE LIKE %s "
+                     "AND CATEGORIA LIKE %s "
+                     "AND QUANTIDADE LIKE %s "
+                     "AND EAN LIKE %s "
+                     "AND DESCRICAO LIKE %s")
 
-            query = (f"SELECT * FROM ORDEM_COMPRA WHERE "
-                     f"DATA BETWEEN '{data_de}' AND '{data_ate}'"
-                     f"and ORDEM_COMPRA LIKE '%{ordem_compra}%'"
-                     f"and UNIDADE LIKE '%{unidade}%'"
-                     f"and CATEGORIA LIKE '%{categoria}%'"
-                     f"and QUANTIDADE LIKE '%{quantidade}%' "
-                    
-                     f"and EAN LIKE '%{ean}%' "
-                     f"and DESCRICAO LIKE '%{descricao}%';"
+            params = (data_de, data_ate,f"%{ordem_compra}%", f"%{unidade}%", f"%{categoria}%",f"%{quantidade}%", f"%{ean}%", f"%{descricao}%"
             )
 
+            print(params)
             print(query)
 
             mydb.connect()
             mycursor = mydb.cursor()  # <- Faltava isso se você não declarou antes
 
             # Executa a consulta
-            mycursor.execute(query)
+            mycursor.execute(query, params)
             relatorio_compras = mycursor.fetchall()
             session["relatorio_compras"] = relatorio_compras
             print(relatorio_compras)  # Se quiser ver os dados
@@ -1525,7 +1526,22 @@ def relatorio_compras():
             for i in relatorio_compras:
                 print(i)
         except Exception as e:
-            print(e)
+            logging.error("Erro ao gerar relatório de compras", exc_info=True)
+            flash("Erro ao processar relatório. Tente novamente.", "danger")
+
+        try:
+            if "botao_limpar" in request.form:
+                print('botao_limpar acionado')
+                return redirect(url_for('relatorio_compras'))
+        except Exception as e:
+            logging.error("Erro ao gerar relatório de compras", exc_info=True)
+            flash("Erro ao processar relatório. Tente novamente.", "danger")
+
+    # ✅ Limpa resultado anterior ao acessar a tela por GET
+    if request.method == "GET":
+        session.pop("relatorio_compras", None)
+
+    # ✅ Pega o que está na sessão (se houver)
     relatorio_compras = session.get("relatorio_compras", [])
     return render_template("compras/relatorios_compras.html",
                            relatorio_compras=relatorio_compras,
