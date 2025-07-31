@@ -16,10 +16,49 @@ logging.disable(logging.INFO)  # comente para habilitar
 logging.disable(logging.DEBUG)  # comente para habilitar
 
 
+class Comercial:
+    def __init__(self):
+        pass
+
+
+    @staticmethod
+    def cadastrar_cliente(data, cod_cliente, razao_social, cnpj, insc_estadual, email, cep, telefone, endereco, municipio, uf, tabela, usuario):
+
+        print(CorFonte.fonte_amarela()
+            + "class Buscadores | metodo cadastrar_cliente"
+            + CorFonte.reset_cor())
+        query = """INSERT INTO CLIENTES(DATA,CODIGO,RAZAO_SOCIAL,CNPJ,INSCRICAO_ESTADUAL,EMAIL,CEP, TELEFONE,ENDERECO,MUNICIPIO,UF,TABELA,USUARIO) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        valores = (
+            data,
+            cod_cliente,
+            razao_social,
+            cnpj,
+            insc_estadual,
+            email,
+            cep,
+            telefone,
+            endereco,
+            municipio,
+            uf,
+            tabela,
+            usuario)
+        print('-------------------------------------')
+        print(query, valores)
+        print('-------------------------------------')
+        mydb.connect()
+        mycursor.execute(query, valores)
+        # print(mycursor.statement)
+        mycursor.fetchall()
+        mydb.commit()
+        mydb.close()
+
+        pass
 
 class Buscadores:
     def __init__(self):
         pass
+
 
     def buscar_cnpj(cnpj):
         """
@@ -40,6 +79,26 @@ class Buscadores:
             return False
         else:
             return True
+
+    def buscar_cnpj_cliente(cnpj):
+        """
+        :return: cnpj
+        """
+        print(
+            CorFonte.fonte_amarela()
+            + "class Buscadores | metodo buscar_cnpj_fornecedor"
+            + CorFonte.reset_cor()
+        )
+        mydb.connect()
+        query = f"SELECT * FROM clientes WHERE CNPJ = '{cnpj}'"
+        mycursor.execute(query)
+        myresult = mycursor.fetchall()
+
+        if len(myresult) == 0:
+            return False
+        else:
+            return True
+
 
     class Xml:
         chave_nf = ""

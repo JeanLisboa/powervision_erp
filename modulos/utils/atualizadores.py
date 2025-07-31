@@ -3,6 +3,41 @@ from modulos.utils.queries import mydb, mycursor
 
 class AtualizaCodigo:
     @staticmethod
+    def cod_cliente():
+        print(
+            CorFonte.fonte_amarela()
+            + "class AtualizaCodigo | metodo cod_cliente"
+            + CorFonte.reset_cor()
+        )
+        try:
+            query = "SELECT MAX(CODIGO) FROM CLIENTES"
+            mydb.connect()
+            mycursor.execute(query)
+            myresult = mycursor.fetchall()
+            mydb.commit()
+            max_codigo = 0
+            for x in myresult:
+                max_codigo = x[0]
+            max_codigo = int(max_codigo)
+            max_codigo = max_codigo + 1
+            max_codigo = str(max_codigo)
+            if len(max_codigo) == 1:
+                max_codigo = "00000" + max_codigo
+            if len(max_codigo) == 2:
+                max_codigo = "0000" + max_codigo
+            if len(max_codigo) == 3:
+                max_codigo = "000" + max_codigo
+            if len(max_codigo) == 4:
+                max_codigo = "00" + max_codigo
+            if len(max_codigo) == 5:
+                max_codigo = "0" + max_codigo
+            return max_codigo
+        except:
+            max_codigo = "000001"
+            return max_codigo
+
+
+    @staticmethod
     def cod_produto():
         print(
             CorFonte.fonte_amarela()
@@ -121,3 +156,4 @@ class AtualizaCodigo:
             print(e)
             ordem_compra_atual = "000001"
             return
+

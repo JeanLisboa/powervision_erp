@@ -5,60 +5,67 @@
 TELA CADASTRAR CLIENTES
 <div class="div_secundaria">
     <form action="" method="POST">
-        {{ form_cad_clientes.csrf_token }}
+        {{ form_cadastrar_clientes.csrf_token }}
         <div class="mb-3">
+            <div>
+                {% if alert %}
+                    {{ alert | safe }}
+                {% endif %}
+        </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.data.label }}
-                {{ form_cad_clientes.data(class="form-control", value=data) }}
+                {{ form_cadastrar_clientes.data.label }}
+                {{ form_cadastrar_clientes.data(class="form-control", value=data) }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.razao_social.label }}
-                {{ form_cad_clientes.razao_social(class="form-control") }}
+                {{ form_cadastrar_clientes.cod_cliente.label }}
+                {{ form_cadastrar_clientes.cod_cliente(class="form-control", value=codigo) }}
+            </div>
+
+            <div class="col form-label mt-4 btn btn-light">
+                {{ form_cadastrar_clientes.razao_social.label }}
+                {{ form_cadastrar_clientes.razao_social(class="form-control") }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.razao_social.label }}
-                {{ form_cad_clientes.razao_social(class="form-control") }}
+                {{ form_cadastrar_clientes.cnpj.label }}
+                {{ form_cadastrar_clientes.cnpj(class="form-control") }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.cnpj.label }}
-                {{ form_cad_clientes.cnpj(class="form-control") }}
+                {{ form_cadastrar_clientes.insc_estadual.label }}
+                {{ form_cadastrar_clientes.insc_estadual(class="form-control") }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.insc_estadual.label }}
-                {{ form_cad_clientes.insc_estadual(class="form-control") }}
+                {{ form_cadastrar_clientes.email.label }}
+                {{ form_cadastrar_clientes.email(class="form-control") }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.email.label }}
-                {{ form_cad_clientes.email(class="form-control") }}
-            </div>
-            <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.cep.label }}
-                {{ form_cad_clientes.cep(class="form-control") }}
+                {{ form_cadastrar_clientes.cep.label }}
+                {{ form_cadastrar_clientes.cep(class="form-control") }}
                 </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.telefone.label }}
-                {{ form_cad_clientes.telefone(class="form-control") }}
+                {{ form_cadastrar_clientes.telefone.label }}
+                {{ form_cadastrar_clientes.telefone(class="form-control") }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.endereco.label }}
-                {{ form_cad_clientes.endereco(class="form-control") }}
+                {{ form_cadastrar_clientes.endereco.label }}
+                {{ form_cadastrar_clientes.endereco(class="form-control") }}
                 </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.municipio.label }}
-                {{ form_cad_clientes.municipio(class="form-control") }}
+                {{ form_cadastrar_clientes.municipio.label }}
+                {{ form_cadastrar_clientes.municipio(class="form-control") }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.uf.label }}
-                {{ form_cad_clientes.uf(class="form-control") }}
+                {{ form_cadastrar_clientes.uf.label }}
+                {{ form_cadastrar_clientes.uf(class="form-control tam_campo_quantidade") }}
             </div>
             <div class="col form-label mt-4 btn btn-light">
-                {{ form_cad_clientes.tabela.label }}
-                {{ form_cad_clientes.tabela(class="form-control") }}
+                {{ form_cadastrar_clientes.tabela.label }}
+                {{ form_cadastrar_clientes.tabela(class="form-control") }}
             </div>
             <div>
-                {{ form_cad_clientes.botao_submit_cad_fornecedor(class="btn btn-primary") }}
+                {{ form_cadastrar_clientes.botao_submit_cad_cliente(class="btn btn-primary") }}
             </div>
         </div>
+
     </form>
 </div>
 {% endblock %}

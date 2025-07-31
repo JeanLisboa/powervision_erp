@@ -9,6 +9,24 @@ class AlertaMsg:
         self.cad_fornecedor_realizado = self.cad_fornecedor_realizado
 
     @staticmethod
+    def cadastro_cliente_realizado():
+        print("class AlertaMsg: cadastro_cliente_realizado()")
+        session["alert"] = (
+            f'<div id = "alert" class="alert alert-success", '
+            f'role="alert">Cadastro Realizado Com Sucesso!</div>'
+        )
+        return redirect(url_for("cadastrar_fornecedores"))
+
+    @staticmethod
+    def erro_ao_cadastrar_cliente(msg_erro):
+        print("class AlertaMsg: erro_ao_cadastrar_cliente()")
+        session["alert"] = (
+            f'<div id = "alert" class="alert alert-danger", '
+            f'role="alert">Erro ao Cadastrar Cliente: {msg_erro}</div>'
+        )
+        return redirect(url_for("cadastrar_fornecedores"))
+
+    @staticmethod
     def cep_invalido(cep):
         print("class AlertaMsg: cep_invalido()")
         session["alert"] = (
@@ -68,6 +86,7 @@ class AlertaMsg:
             f'role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
+
     @staticmethod
     def ean_ja_digitado(ean):
         print(
@@ -92,7 +111,6 @@ class AlertaMsg:
             f'role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
-
 
 
     @staticmethod

@@ -1426,14 +1426,11 @@ def adicionar_item_ordem_compra():
 
 
 def relatorio_compras():
-
     form_relatorio_compras = ModCompras.RelatorioCompras()
-
     data_de = form_relatorio_compras.data_de.data
     data_ate = form_relatorio_compras.data_ate.data
     ordem_compra = form_relatorio_compras.ordem_compra.data
     codigo = form_relatorio_compras.codigo.data
-
     unidade = form_relatorio_compras.unidade.data
     categoria = form_relatorio_compras.categoria.data
     quantidade = form_relatorio_compras.quantidade.data
