@@ -1579,7 +1579,7 @@ class Buscadores:
         def buscar_cliente():
             print(CorFonte.fonte_amarela() + f"class Buscadores.OrdemVenda | metodo buscar_cliente " + CorFonte.reset_cor())
             try:
-                query = f"select razao_social from clientes order by razao_social"
+                query = f"select codigo, razao_social from clientes order by razao_social"
                 mydb.connect()
                 mycursor.execute(query)
                 myresult = mycursor.fetchall()
@@ -1595,6 +1595,38 @@ class Buscadores:
                 myresult = ""
                 return myresult
 
+    @staticmethod
+    def buscar_lista_produtos(descricao, categoria, ean):
+        print(
+            CorFonte.fonte_amarela()
+            + "classe Buscadores | método buscar_produtos"
+            + CorFonte.reset_cor()
+        )
+        try:
+            query = (
+                f"SELECT * FROM produtos WHERE 1=1 "
+                f"AND descricao LIKE '%{descricao}%' "
+                f"AND categoria LIKE '%{categoria}%'"
+                f"AND ean LIKE '%{ean}%'"
+            )
+
+            mydb.connect()
+            mycursor.execute(query)
+            myresult = mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+            # print(myresult)
+            try:
+                # print(len(myresult))
+
+                if len(myresult) > 0:
+                    return False
+                else:
+                    return True
+            except Exception as e:
+                return len(myresult), e
+        except Exception as e:
+            return e
 
 
 
