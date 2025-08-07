@@ -337,6 +337,11 @@ class Buscadores:
                 print(f"Erro ao analisar o arquivo: {nome_arquivo}")
                 return None
 
+    class OrdemVenda:
+        def buscar_pelo_cliente(cliente):
+
+            pass
+
     class OrdemCompra:
 
         @staticmethod
@@ -502,8 +507,6 @@ class Buscadores:
                 mycursor.fetchall()
                 mydb.commit()
                 mydb.close()
-
-
 
         @staticmethod
         def busca_saldo_ordem_compra(ordem_compra):

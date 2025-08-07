@@ -518,7 +518,6 @@ def gerar_ordem_compra():
     global lista_ordem_compra
     global total_ordem_compra
     global result_pesq_forn
-    # lista_ordem_compra = session.get('list_ordem_compra')
     # 2 - Inicialização das variáveis
     total_ordem_compra = 0
     preco_medio = 0
@@ -590,9 +589,7 @@ def gerar_ordem_compra():
                 fornecedor = form_gerar_ordem_compra.fornecedor.data
                 print(f"Fornecedor: {fornecedor}")
                 session["fornecedor"] = fornecedor
-                result_pesq_forn = Buscadores.OrdemCompra.buscar_pelo_fornecedor(
-                    fornecedor
-                )
+                result_pesq_forn = Buscadores.OrdemCompra.buscar_pelo_fornecedor(fornecedor)
                 # print(f'result_pesq_forn SESSION >>> {result_pesq_forn}')
                 session["result_pesq_forn"] = result_pesq_forn
         except Exception as e:

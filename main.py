@@ -4,6 +4,7 @@ import webbrowser
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFProtect
 from forms import ModComercial, ModPricing, Mod_Logistica, ModAdmin, ModCompras
+from wtforms import (SelectField)
 from geral import Formatadores
 # modulos
 import modulos.admin
@@ -123,7 +124,6 @@ class Compras:
         return modulos.compras.relatorio_compras()
 
 
-
 class Logistica:
     @staticmethod
     @app.route('/realizar_conferencia', methods=['POST', 'GET'])
@@ -140,24 +140,17 @@ class Logistica:
     def entrada_ordem_compra():
         return modulos.logistica.entrada_ordem_compra()
 
-
 class Comercial:
     @staticmethod
     @app.route('/cadastrar_clientes', methods=['POST', 'GET'])
     def cadastrar_clientes():
-        form_cad_clientes = ModComercial.CadastrarCliente()
-        return render_template('comercial/cadastrar_clientes.html',
-                               form_cad_clientes=form_cad_clientes,
-                               data=Formatadores.formatar_data(Formatadores.os_data()))
+       return modulos.comercial.cadastrar_clientes()
 
     @staticmethod
-    @app.route('/incluir_pedido_venda', methods=['POST', 'GET'])
-    def incluir_pedido_venda():
-        form_incluir_pedido_venda = ModComercial.IncluirPedidoVenda()
-        return render_template('comercial/incluir_pedido_venda.html',
-                               form_incluir_pedido_venda=form_incluir_pedido_venda,
-                               data=Formatadores.formatar_data(Formatadores.os_data()))
+    @app.route('/gerar_ordem_venda', methods=['POST', 'GET'])
+    def gerar_ordem_venda():
 
+        return modulos.comercial.gerar_ordem_venda()
 
 class Pricing:
     @staticmethod

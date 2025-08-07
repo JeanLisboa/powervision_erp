@@ -130,8 +130,7 @@ class ModCompras:
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
         codigo = StringField("Código")
-        fornecedor = SelectField("Fornecedor",choices=["Selecionar um fornecedor"] + [f[0] for f in buscar_fornecedor],
-            validators=[DataRequired()])
+        fornecedor = SelectField("Fornecedor",choices=["Selecionar um fornecedor"] + [f[0] for f in buscar_fornecedor], validators=[DataRequired()])
         ean = StringField("EAN")
         descricao = StringField("Descrição", validators=[ReadOnly()])
         unidade = StringField("Un", validators=[ReadOnly()])
@@ -143,7 +142,7 @@ class ModCompras:
         botao_consulta = SubmitField("Consulta")
         botao_limpar_ordem = SubmitField("Limpar Ordem")
         botao_pesquisar_item = SubmitField("Pesquisar Código")
-        botao_pesquisar_fornecedor = SubmitField("Pesquisar Fornecedor")
+        botao_pesquisar_fornecedor = SubmitField("Pesquisar\n Fornecedor")
         botao_incluir_item = SubmitField("Incluir Item")
         botao_selecionar_item = SubmitField("➕")
         botao_submit_compra = SubmitField("Gerar Ordem de Compra")
@@ -216,49 +215,50 @@ class ModCompras:
 
 
 class ModComercial:
-    class CadastrarCliente(FlaskForm):
+
+    class CadastrarClientes(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        cod_cliente = StringField("Código", validators=[Disabled()])
+        cod_cliente = StringField("Código", validators=[DataRequired(),Disabled()])
         razao_social = StringField("Razão Social", validators=[DataRequired()])
-        # razao_social = StringField("Nome Fantasia", validators=[DataRequired()])
-        cnpj = IntegerField(
-            "CNPJ",
-            validators=[DataRequired(), Length(11, 14)],
-            render_kw={"placeholder": "__.___.___/____-__"},
-        )
-        insc_estadual = IntegerField(
-            "Insc. Estadual", validators=[DataRequired(), Length(14)]
-        )
-        email = StringField("Email", validators=[DataRequired(), Email()])
-        cep = IntegerField(
-            "CEP",
-            validators=[DataRequired(), Length(8, 8)],
-            render_kw={"placeholder": "_____-___"},
-        )
-        telefone = IntegerField(
-            "Telefone",
-            validators=[DataRequired(), Length(10, 11)],
-            render_kw={"placeholder": "(__)____-____"},
-        )
+        cnpj = IntegerField("CNPJ",validators=[DataRequired(),Length(11, 14)],render_kw={"placeholder": "__.___.___/____-__"})
+        insc_estadual = StringField("Insc. Estadual", validators=[DataRequired(), Length(9)])
+        email = StringField("Email", validators=[DataRequired()])
+        cep = StringField("CEP",validators=[DataRequired(),Length(8)],render_kw={"placeholder": "_____-___"})
+        telefone = StringField("Telefone", validators=[DataRequired(), Length(10, 11)],render_kw={"placeholder": "(__)____-____"})
         endereco = StringField("Endereço", validators=[DataRequired()])
         municipio = StringField("Municipio", validators=[DataRequired()])
-        uf = StringField("UF", validators=[DataRequired(), Length(2)])
-        tabela = SelectField(
-            "Tabela", choices=[], validators=[DataRequired(), ReadOnly()]
-        )
-        botao_submit_cad_fornecedor = SubmitField("Cadastrar")
+        uf = StringField("UF", validators=[Length(2)])
+        tabela = SelectField("Tabela", choices=[], validators=[ReadOnly()])
+        botao_submit_cad_cliente = SubmitField("Cadastrar")
 
-    class IncluirPedidoVenda(FlaskForm):
+    class GerarOrdemVenda(FlaskForm):
+        buscar_cliente = geral.Buscadores.OrdemVenda.buscar_cliente()
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        cod_pedido = StringField("Código", validators=[Disabled()])
-        cliente = StringField("Cliente", validators=[ReadOnly()])
-        razao_social = StringField("Nome Fantasia", validators=[ReadOnly()])
-        cod_produto = StringField("Código", validators=[])
-        ean = StringField("EAN", validators=[])
-        descricao = StringField("Descrição", validators=[])
-        unidade = StringField("Unidade", validators=[])
+        ordem_venda = StringField("Ordem de Venda", validators=[Disabled()])
+        cliente = SelectField("Cliente",choices=["Selecionar um Cliente"] + [f[0] for f in buscar_cliente], validators=[DataRequired()])
+
+        # cliente = StringField("Nome Fantasia", validators=[ReadOnly()])
+        cod_produto = StringField("Código", validators=[ReadOnly()])
+        ean = StringField("EAN", validators=[ReadOnly()])
+        tabela = StringField("Tabela", validators=[ReadOnly()])
+        descricao = StringField("Descrição", validators=[ReadOnly()])
+        categoria = StringField("Categoria", validators=[ReadOnly()])
+        unidade = StringField("Unidade", validators=[ReadOnly()])
+        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00)])
         quantidade = IntegerField("Quantidade", validators=[DataRequired()])
-        botao_submit_cad_fornecedor = SubmitField("Incluir")
+        pesquisa_descricao = StringField("Descrição")
+        pesquisa_categoria = StringField("Categoria")
+        pesquisa_unidade = StringField("Unidade")
+        pesquisa_ean = StringField("Ean")
+
+        botao_consulta = SubmitField("Consulta")
+        botao_limpar_ordem = SubmitField("Limpar Ordem")
+        botao_pesquisar_item = SubmitField("Pesquisar\nProduto")
+        botao_pesquisar_cliente = SubmitField("Pesquisar\n Cliente")
+        botao_incluir_item = SubmitField("Incluir Item")
+        botao_selecionar_item = SubmitField("➕")
+        botao_submit_ordem_venda = SubmitField("Gerar Ordem de Venda")
+
 
     class RelatorioComercial(FlaskForm):
         pass

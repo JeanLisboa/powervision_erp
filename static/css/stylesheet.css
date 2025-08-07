@@ -65,36 +65,21 @@ position: absolute;
 
 
 /* CONFIGURAÇÕES DE CAMPOS */
-.tam_campo_codigo {width: 100px;}
-
-.tam_campo_quantidade {width: 60px;}
-
-.tam_campo_quantidade_grande {width: 100px;}
-
-.tam_campo_val_unit {width: 70px;}
-
-.tam_campo_val_unit_grande {width: 100px;}
-
-.tam_campo_ean {width: 150px;}
-
-.tam_campo_abrev {width:50px;}
-
-.tam_campo_data {width: 110px;}
-
-.tam_coluna_quantidade {width: 150px;}
-
-.tam_campo_cnpj {width: 180px;}
-
-.tam_campo_descricao {width: 300px !important;}
-
-.tam_campo_descricao_grande {width: 400px;}
-
 .tam_campo_descricao_tabela {width: 1000px;}
-
+.tam_campo_descricao_grande {width: 400px;}
+.tam_campo_descricao {width: 300px !important;}
+.tam_campo_cnpj {width: 180px;}
+.tam_coluna_quantidade {width: 150px;}
+.tam_campo_ean {width: 150px;}
+.tam_campo_data {width: 110px;}
+.tam_campo_codigo {width: 80px;}
+.tam_campo_quantidade_grande {width: 100px;}
+.tam_campo_val_unit_grande {width: 100px;}
+.tam_campo_val_unit {width: 70px;}
+.tam_campo_quantidade {width: 60px;}
+.tam_campo_abrev {width:50px;}
 .fundo_campo {color: red;}
 
-
-}
 /*
 box-sizing:
 inherit
@@ -503,6 +488,21 @@ td{ color:#2E2E2E;
         }
     </style>
 
+/* Estilo para os campos gerar ordem de venda */
+.div_campos {
+    display: flex;
+    gap: 10px; /* Espaçamento entre os elementos */
+    align-items: center; /* Alinha verticalmente */
+    flex-wrap: wrap; /* Quebra linha quando não couber na tela */
+}
+
+.div_campos label {
+    margin-right: 5px;
+}
+
+.div_campos .form-control {
+    min-width: 150px; /* Largura mínima dos campos */
+}
 
 /* The Modal (background) */
 .modal {

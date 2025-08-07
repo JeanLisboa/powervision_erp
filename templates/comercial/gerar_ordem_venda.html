@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+
+<title>{% block title %}Mod Comercial | Gerar Ordem de Venda{% endblock %}</title>
+
+<div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
+    <form action="" method="POST">
+        {{ form_gerar_ordem_venda.csrf_token }}
+        <div class="mb-1 float-child-ordem-compra1">
+            <div class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.data.label }}
+                {{ form_gerar_ordem_venda.data(class="form-control tam_campo_data", value=data ) }}
+            </div>
+            <div class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.ordem_venda.label }}
+                {{ form_gerar_ordem_venda.ordem_venda(class="form-control tam_campo_codigo" ) }}
+            </div>
+            <div class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.cliente.label }}
+                {{ form_gerar_ordem_venda.cliente(class="form-control tam_campo_descricao") }}
+            </div>
+
+            {{ form_gerar_ordem_venda.botao_pesquisar_cliente(class="btn btn-primary") }}
+            <br>
+            <div class="col form-label  btn btn-light">
+                {{ form_gerar_ordem_venda.cod_produto.label }}
+                {{ form_gerar_ordem_venda.cod_produto(class="form-control tam_campo_codigo") }}
+           </div>
+            <div class="col form-label  btn btn-light">
+                {{ form_gerar_ordem_venda.ean.label }}
+                {{ form_gerar_ordem_venda.ean(class="form-control") }}
+            </div>
+            <div class="col form-label  btn btn-light">
+                {{ form_gerar_ordem_venda.descricao.label }}
+                {{ form_gerar_ordem_venda.descricao(class="form-control") }}
+            </div>
+            <div class="col form-label  btn btn-light">
+                {{ form_gerar_ordem_venda.unidade.label }}
+                {{ form_gerar_ordem_venda.unidade(class="form-control tam_campo_abrev") }}
+            </div>
+            <div class="col form-label  btn btn-light">
+                {{ form_gerar_ordem_venda.tabela.label }}
+                {{ form_gerar_ordem_venda.tabela(class="form-control tam_campo_abrev") }}
+            </div>
+            <div class="col form-label  btn btn-light">
+                {{ form_gerar_ordem_venda.quantidade.label }}
+                {{ form_gerar_ordem_venda.quantidade(class="form-control tam_campo_quantidade", value=1 ) }}
+            </div>
+            <div class="col form-label  btn btn-light">
+                {{ form_gerar_ordem_venda.preco_unitario.label }}
+                {{ form_gerar_ordem_venda.preco_unitario(class="form-control tam_campo_codigo", id="preco_unitario") }}
+            </div>
+            {{form_gerar_ordem_venda.botao_incluir_item(class="btn btn-primary mt-3")}}
+            <div>
+                {{ form_gerar_ordem_venda.botao_submit_ordem_venda(class="btn btn-primary") }}
+                {{ form_gerar_ordem_venda.botao_limpar_ordem(class="btn btn-secondary") }}
+            </div>
+        </div>
+    <div class=" mb-1 float-child-ordem-compra2">
+            <div class="container_com_barra_rolagem" style="top: -1px">
+
+                <br>
+                <div class="col form-label btn btn-light">
+                    {{ form_gerar_ordem_venda.pesquisa_descricao.label}}
+                    {{ form_gerar_ordem_venda.pesquisa_descricao (class="form-control tam_campo_descricao") }}
+                </div>
+
+                <div class="col form-label btn btn-light">
+                    {{ form_gerar_ordem_venda.pesquisa_categoria.label}}
+                    {{ form_gerar_ordem_venda.pesquisa_categoria (class="form-control tam_campo_abrev") }}
+                </div>
+                <div class="col form-label btn btn-light">
+                    {{ form_gerar_ordem_venda.pesquisa_ean.label}}
+                    {{ form_gerar_ordem_venda.pesquisa_ean (class="form-control tam_campo_ean") }}
+                </div>
+                <div class="col form-label btn btn-light">
+                    {{ form_gerar_ordem_venda.botao_pesquisar_item(class='btn btn-primary') }}
+                </div>
+                <table class="table table-hover table-striped " style="position:sticky" cellpadding="2" cellspacing="2" >
+                    <thead>
+
+
+                        <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                            <th style="width: 10%;"></th>
+                            <th >Descrição</th>
+                            <th>EAN</th>
+                            <th style="width: 10%;">Un</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                <tbody>
+
+                <tr class="table table-striped table-sm table-layout:fixed ">
+                    <td>
+                        <form method="POST">
+
+                                    <input class="" type="hidden" name="" value="">
+                            {{form_gerar_ordem_venda.botao_selecionar_item(class='btn btn-small')}}
+                        </form>
+                    </td>
+                    <td>---</td>
+                    <td>---</td>
+                    <td>---</td>
+                    <td>---</td>
+                </tr>
+
+                <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                    <td colspan="5">Nenhum fornecedor encontrado</td>
+                </tr>
+
+            </tbody>
+            </table>
+            </div>
+        </div>
+    </form>
+
+
+    <div class="mt-5 float-child-ordem-compra container_com_barra_100%">
+
+            <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+                <thead>
+                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed">
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+                        <th>---</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+
+                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+                        <td>---</td>
+
+
+                    </tr>
+                </tbody>
+            </table>
+
+    </div>
+{% endblock %}
+
+
+
+
+
+</div>

@@ -8,8 +8,7 @@
 
 {% block content %}
 <title>{% block title %}Mod Compras | Gerar Ordem{% endblock %}</title>
-<pre>TELA GERAR ORDEM DE COMPRA | 1 - (B)AJUSTAR CAMPO PARA RECEBER VIRGULA NO LUGAR DE PONTO
-</pre>
+
 <div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
     <form action="" method="POST">
         {{form_gerar_ordem_compra.csrf_token}}
@@ -24,12 +23,15 @@
                 {{form_gerar_ordem_compra.ordem_compra.label}}
                 {{form_gerar_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra)}}
             </div>
-
+            <div class="col form-label btn btn-light">
+                {{form_gerar_ordem_compra.fornecedor.label}}
+                {{form_gerar_ordem_compra.fornecedor(class="form-control tam_campo_descricao", value=linha_selecionada[2])}}
+            </div>
+            {{form_gerar_ordem_compra.botao_pesquisar_fornecedor(class="btn btn-primary mt-4")}}
             <div class="col form-label btn btn-light">
                 {{form_gerar_ordem_compra.codigo.label}}
                 {{form_gerar_ordem_compra.codigo(class="form-control tam_campo_codigo", value=linha_selecionada[1])}}
             </div>
-
             <div class="col form-label btn btn-light">
                 {{form_gerar_ordem_compra.categoria.label}}
                 {{form_gerar_ordem_compra.categoria(class="form-control tam_campo_codigo", value=linha_selecionada[6])}}
@@ -38,33 +40,21 @@
                 {{form_gerar_ordem_compra.unidade.label}}
                 {{form_gerar_ordem_compra.unidade(class="form-control tam_campo_abrev", value=linha_selecionada[5])}}
             </div>
-
-            <div class="col form-label btn btn-light"  >
-                {{form_gerar_ordem_compra.fornecedor.label}}
-                {{form_gerar_ordem_compra.fornecedor(class="form-control", value=linha_selecionada[2])}}
-            </div>
-            {{form_gerar_ordem_compra.botao_pesquisar_fornecedor(class="btn btn-primary mt-4")}}
-
-            <br>
             <div class="col form-label btn btn-light">
                 {{form_gerar_ordem_compra.ean.label}}
-                {{form_gerar_ordem_compra.ean(class="form-control", value=linha_selecionada[3])}}
+                {{form_gerar_ordem_compra.ean(class="form-control tam_campo_ean" ,  value=linha_selecionada[3])}}
             </div>
             <div class="col form-label btn btn-light">
                 {{form_gerar_ordem_compra.descricao.label}}
                 {{form_gerar_ordem_compra.descricao(class="form-control tam_campo_descricao", value=linha_selecionada[4])}}
             </div>
-            <br>
-            <br>
             <div class="col form-label btn btn-light">
                 {{form_gerar_ordem_compra.quantidade.label}}
-               {{form_gerar_ordem_compra.quantidade(class="form-control", value=1)}}
+               {{form_gerar_ordem_compra.quantidade(class="form-control tam_campo_quantidade", value=1)}}
             </div>
-
-
             <div class="col form-label btn btn-light">
                 {{form_gerar_ordem_compra.preco_unitario.label}}
-                {{form_gerar_ordem_compra.preco_unitario(class="form-control", value=linha_selecionada[7], id="preco_unitario")}}
+                {{form_gerar_ordem_compra.preco_unitario(class="form-control tam_campo_codigo", value=linha_selecionada[7], id="preco_unitario")}}
             </div>
 
             <div class="btn">

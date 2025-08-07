@@ -1,6 +1,8 @@
 import logging
 import mysql.connector
 from flask import render_template, redirect, url_for, request, session, flash
+
+import geral
 import modulos.admin
 from forms import ModComercial
 from modulos.utils.formatadores import Formatadores
@@ -21,7 +23,7 @@ def cadastrar_clientes():
     data = Formatadores.os_data()
     usuario = "ADMIN"
 
-    # TODO: RETIRAR O CAMPO TABELA DA TABELA CLIENTE
+
     """
     # TODO: VERIFICAR O MELHOR CAMINHO.
     1 MANTER O CAMPO TABELA NA TABELA CLIENTE
@@ -98,4 +100,50 @@ def cadastrar_clientes():
         data=Formatadores.formatar_data(data),
         form_cadastrar_clientes=form_cadastrar_clientes
     )
+
+def gerar_ordem_venda():
+    print(CorFonte.fonte_amarela() + "Função gera_ordem_venda"+ CorFonte.reset_cor())
+    data = Formatadores.os_data()
+    form_gerar_ordem_venda = ModComercial.GerarOrdemVenda()
+    # TODO: CORRIGIR SELECTFIELD PARA ATUALIZAR SEM PRECISAR REINICIAR O APP
+    if request.method == "POST":
+        try:
+            if "botao_pesquisar_cliente" in request.form:
+                print("botao_pesquisar_cliente ACIONADO")
+                cliente = form_gerar_ordem_venda.cliente.data
+                print(f'cliente: {cliente}')
+                session["cliente"] = cliente
+
+        except:
+            pass
+
+        try:
+            if "botao_pesquisar_item" in request.form:
+                print("botao_pesquisar_item ACIONADO")
+                pesquisa_descricao = form_gerar_ordem_venda.pesquisa_descricao.data
+                pesquisa_categoria = form_gerar_ordem_venda.pesquisa_categoria.data
+                pesquisa_ean = form_gerar_ordem_venda.pesquisa_ean.data
+                print(f'pesquisa_descricao: {pesquisa_descricao}')
+                print(f'pesquisa_categoria: {pesquisa_categoria}')
+                print(f'pesquisa_ean: {pesquisa_ean}')
+
+                # TODO: FUNCAO PARA PESQUISAR PRODUTO E RELACIONAR
+                def pesquisa_item():
+                    pass
+
+
+                # TODO: ATUALIZAR FUNÇÃO AtualizaCodigo/ordem_venda PARA INCREMENTAR A ORDEM DE VENDA
+
+
+                # TODO: CRIAR TABELA ORDEM DE VENDA
+                # TODO: FUNCAO PARA RELACIONAR INFORMAÇÕES
+                # TODO:
+
+        except:
+            pass
+
+    return render_template('comercial/gerar_ordem_venda.html',
+                           form_gerar_ordem_venda=form_gerar_ordem_venda,
+                           codigo_ordem_venda='',
+                           data=data)
 

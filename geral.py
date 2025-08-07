@@ -677,6 +677,58 @@ class AtualizaCodigo:
             ordem_compra_atual = "000001"
             return
 
+    @staticmethod
+    def ordem_venda():
+        print(
+            CorFonte.fonte_amarela()
+            + "class AtualizaCodigo | metodo ordem_venda"
+            + CorFonte.reset_cor()
+        )
+        try:
+            query =f"SELECT MAX(ORDEM_COMPRA) FROM ordem_compra"
+
+            print(f'query: {query}')
+            mydb.connect()
+            mycursor.execute(query)
+            myresult = mycursor.fetchall()
+            print(f'myresult: {myresult[0][0]}')
+            if myresult[0][0] is None:  # se nao houver ordem_compra cadastrada
+                myresult = '000000'
+            mydb.commit()
+            ordem_compra_atual = 0
+            for x in myresult:
+                ordem_compra_atual = x[0]
+            ordem_compra_atual = int(ordem_compra_atual)
+
+            ordem_compra_atual = ordem_compra_atual + 1
+            ordem_compra_atual = str(ordem_compra_atual)
+
+            if len(ordem_compra_atual) == 1:
+                ordem_compra_atual = "00000" + ordem_compra_atual
+
+            if len(ordem_compra_atual) == 2:
+                ordem_compra_atual = "0000" + ordem_compra_atual
+
+            if len(ordem_compra_atual) == 3:
+                ordem_compra_atual = "000" + ordem_compra_atual
+
+
+            if len(ordem_compra_atual) == 4:
+                ordem_compra_atual = "00" + ordem_compra_atual
+
+
+            if len(ordem_compra_atual) == 5:
+                ordem_compra_atual = "0" + ordem_compra_atual
+
+            else:
+                ordem_compra_atual = ordem_compra_atual
+
+            return ordem_compra_atual
+        except Exception as e:
+            print(e)
+            ordem_compra_atual = "000001"
+            return
+
 # utils ok
 class Buscadores:
     def __init__(self):
@@ -1521,6 +1573,30 @@ class Buscadores:
             except:
                 myresult = ""
                 return myresult
+
+    class OrdemVenda:
+        @staticmethod
+        def buscar_cliente():
+            print(CorFonte.fonte_amarela() + f"class Buscadores.OrdemVenda | metodo buscar_cliente " + CorFonte.reset_cor())
+            try:
+                query = f"select razao_social from clientes order by razao_social"
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                lista_clientes = []
+                for i in myresult:
+                    print(i)
+                    lista_clientes.append(i)
+                    lista_clientes = list(lista_clientes)
+                return lista_clientes
+            except:
+                myresult = ""
+                return myresult
+
+
+
 
     def buscar_produto_pelo_ean(ean):
         print(
