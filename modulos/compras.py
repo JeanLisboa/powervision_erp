@@ -613,13 +613,9 @@ def gerar_ordem_compra():
 
             print(f"ean do item selecionado para adicionar à ordem de compra: {item_selecionado}")
             # executado após o acionamento de "botao_selecionar_item"
-            linha_selecionada = formata_linha_para_identificar_posicao(
-                item_selecionado, result_pesq_forn
-            )
+            linha_selecionada = formata_linha_para_identificar_posicao(item_selecionado, result_pesq_forn)
             linha_selecionada = linha_selecionada[0]
-            print(
-                f"linha_selecionada para incluir à ordem de compra: {linha_selecionada}"
-            )
+            print(f"linha_selecionada para incluir à ordem de compra: {linha_selecionada}")
         except Exception as e:
             print("erro no botao_selecionar_item")
             print(f"linha_selecionada: {linha_selecionada}")

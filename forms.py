@@ -235,7 +235,7 @@ class ModComercial:
         buscar_cliente = geral.Buscadores.OrdemVenda.buscar_cliente()
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ordem_venda = StringField("Ordem de Venda", validators=[Disabled()])
-        cliente = SelectField("Cliente",choices=["Selecionar um Cliente"] + [f[0] for f in buscar_cliente], validators=[DataRequired()])
+        cliente = SelectField("Pesquisar Cliente",choices=["Selecionar um Cliente"] + [f[1] for f in buscar_cliente], validators=[DataRequired()])
 
         # cliente = StringField("Nome Fantasia", validators=[ReadOnly()])
         cod_produto = StringField("Código", validators=[ReadOnly()])
@@ -254,7 +254,7 @@ class ModComercial:
         botao_consulta = SubmitField("Consulta")
         botao_limpar_ordem = SubmitField("Limpar Ordem")
         botao_pesquisar_item = SubmitField("Pesquisar\nProduto")
-        botao_pesquisar_cliente = SubmitField("Pesquisar\n Cliente")
+
         botao_incluir_item = SubmitField("Incluir Item")
         botao_selecionar_item = SubmitField("➕")
         botao_submit_ordem_venda = SubmitField("Gerar Ordem de Venda")

@@ -1580,6 +1580,7 @@ class Buscadores:
             print(CorFonte.fonte_amarela() + f"class Buscadores.OrdemVenda | metodo buscar_cliente " + CorFonte.reset_cor())
             try:
                 query = f"select codigo, razao_social from clientes order by razao_social"
+                # TODO: AJUSTAR TABELA PARA CONSIDERAR O PREÇO DE VENDA
                 mydb.connect()
                 mycursor.execute(query)
                 myresult = mycursor.fetchall()
@@ -1595,38 +1596,62 @@ class Buscadores:
                 myresult = ""
                 return myresult
 
-    @staticmethod
-    def buscar_lista_produtos(descricao, categoria, ean):
-        print(
-            CorFonte.fonte_amarela()
-            + "classe Buscadores | método buscar_produtos"
-            + CorFonte.reset_cor()
-        )
-        try:
-            query = (
-                f"SELECT * FROM produtos WHERE 1=1 "
-                f"AND descricao LIKE '%{descricao}%' "
-                f"AND categoria LIKE '%{categoria}%'"
-                f"AND ean LIKE '%{ean}%'"
+        @staticmethod
+        def buscar_lista_produtos(descricao, categoria, ean):
+            print(
+                CorFonte.fonte_amarela()
+                + "classe Buscadores | método buscar_produtos"
+                + CorFonte.reset_cor()
             )
-
-            mydb.connect()
-            mycursor.execute(query)
-            myresult = mycursor.fetchall()
-            mydb.commit()
-            mydb.close()
-            # print(myresult)
             try:
-                # print(len(myresult))
+                """
+                    SELECT 
+                        produtos.DATA,
+                        produtos.CODIGO,
+                        produtos.FORNECEDOR,
+                        produtos.EAN,
+                        produtos.DESCRICAO,
+                        produtos.CATEGORIA,
+                        produtos.UNIDADE,
+                        produtos.CATEGORIA,
+                        precificacao.PRECOVENDA  -- ou outras colunas úteis
+                    FROM 
+                        produtos
+                    INNER JOIN 
+                        precificacao
+                        ON produtos.EAN = precificacao.EAN
+                        where categoria="outros";
+                """
+                query = (f"SELECT produtos.DATA, "
+                         f"produtos.CODIGO, "
+                         f"produtos.FORNECEDOR, "
+                         f"produtos.EAN, "
+                         f"produtos.DESCRICAO, "
+                         f"produtos.UNIDADE, "
+                         f"produtos.CATEGORIA, "
+                         f"precificacao.PRECOVENDA FROM "
+                         f"produtos INNER JOIN precificacao ON "
+                         f"produtos.EAN = precificacao.EAN "
+                         f"where 1=1 and produtos.categoria like '%{categoria}%' and produtos.descricao like '%{descricao}%' and precificacao.ean like '%{ean}%';")
 
-                if len(myresult) > 0:
-                    return False
-                else:
-                    return True
+                mydb.connect()
+                mycursor.execute(query)
+                myresult = mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+                for i in myresult:
+                    print(i)
+                # print(myresult)
+                try:
+                    if len(myresult) == 0:
+                        return 'Não há Resultados para Exibir'
+                    else:
+                        return myresult
+                except Exception as e:
+                    return len(myresult), e
             except Exception as e:
-                return len(myresult), e
-        except Exception as e:
-            return e
+                return e
+
 
 
 

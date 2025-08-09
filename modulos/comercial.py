@@ -27,7 +27,7 @@ def cadastrar_clientes():
     """
     # TODO: VERIFICAR O MELHOR CAMINHO.
     1 MANTER O CAMPO TABELA NA TABELA CLIENTE
-    2 CRIAR A TABELA TABELA
+    2 CRIAR A TABELA 
     3  SELECIONAR A TABELA NO MOMENTO DE CADASTRAR CLIENTE
 
     1 RETIRAR O CAMPO TABELA DA TABELA CLIENTE
@@ -114,8 +114,8 @@ def gerar_ordem_venda():
                 print(f'cliente: {cliente}')
                 session["cliente"] = cliente
 
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
         try:
             if "botao_pesquisar_item" in request.form:
@@ -123,27 +123,67 @@ def gerar_ordem_venda():
                 pesquisa_descricao = form_gerar_ordem_venda.pesquisa_descricao.data
                 pesquisa_categoria = form_gerar_ordem_venda.pesquisa_categoria.data
                 pesquisa_ean = form_gerar_ordem_venda.pesquisa_ean.data
-                print(f'pesquisa_descricao: {pesquisa_descricao}')
-                print(f'pesquisa_categoria: {pesquisa_categoria}')
-                print(f'pesquisa_ean: {pesquisa_ean}')
+                print(f'pesq_descricao: {pesquisa_descricao} | pesquisa_categoria: {pesquisa_categoria} | pesquisa_ean: {pesquisa_ean}')
 
-                # TODO: FUNCAO PARA PESQUISAR PRODUTO E RELACIONAR
-                def pesquisa_item():
-                    pass
-
-
+                lista_produtos = geral.Buscadores.OrdemVenda.buscar_lista_produtos(pesquisa_descricao, pesquisa_categoria, pesquisa_ean)
+                session['lista_produtos'] = lista_produtos
                 # TODO: ATUALIZAR FUNÇÃO AtualizaCodigo/ordem_venda PARA INCREMENTAR A ORDEM DE VENDA
-
-
                 # TODO: CRIAR TABELA ORDEM DE VENDA
                 # TODO: FUNCAO PARA RELACIONAR INFORMAÇÕES
-                # TODO:
+        except Exception as e:
+            print(e)
 
-        except:
-            pass
+        try:
+            if 'botao_selecionar_item' in request.form:
+                # detectar numero da linha seleciionada
+                """
+                    para obter o numero da linha selecionada, 
+                    basta pegar o id do botão no html:
+                    <input class="" type="hidden" name="incluir_item" value="{{i[3]}}">
+                """
 
+                lista_produtos = session.get('lista_produtos')
+                print('botao_selecionar_item ACIONADO')
+                # print(f'lista_produtos: {lista_produtos}')
+                item_selecionado = request.form.getlist('incluir_item')
+                print(f'item_selecionado: {item_selecionado}')
+                session['item_selecionado'] = item_selecionado  # recupera o item selecionado do html
+
+                # identificar a posição do ean selecionado
+
+                for i in lista_produtos:
+                    print(f'loop for i: {i[3]}-{item_selecionado[0]}')
+                    if i[3] == item_selecionado[0]:
+                        print('item localizado')
+                        linha_selecionada = i
+                        print(f'linha_selecionada: {linha_selecionada}')
+                        session['linha_selecionada'] = linha_selecionada
+                        break
+
+                linha_selecionada = session.get('linha_selecionada')
+                codigo = linha_selecionada[1]
+                ean = linha_selecionada[3]
+                descricao = linha_selecionada[4]
+                unidade = linha_selecionada[5]
+                tabela = '001'
+                preco_unitario = linha_selecionada[7]
+                tupla_linha_selecionada = (codigo, ean, descricao, unidade, tabela, preco_unitario)
+                print(f'tupla_linha_selecionada>>.: {tupla_linha_selecionada}')
+                session['tupla_linha_selecionada'] = tupla_linha_selecionada
+
+
+        except Exception as e:
+            print(e)
+
+    tupla_linha_selecionada  = session.get('tupla_linha_selecionada')
+    # print(f'tupla_linha_selecionada: {tupla_linha_selecionada}')
+    lista_produtos = session.get('lista_produtos')
+    # print(f'lista_produtos: {lista_produtos}')
+    linha_selecionada = session.get('linha_selecionada')
     return render_template('comercial/gerar_ordem_venda.html',
                            form_gerar_ordem_venda=form_gerar_ordem_venda,
+                           tupla_linha_selecionada=tupla_linha_selecionada,
                            codigo_ordem_venda='',
+                           lista_produtos=lista_produtos,
                            data=data)
 
