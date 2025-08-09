@@ -235,9 +235,12 @@ class ModComercial:
         buscar_cliente = geral.Buscadores.OrdemVenda.buscar_cliente()
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ordem_venda = StringField("Ordem de Venda", validators=[Disabled()])
-        cliente = SelectField("Pesquisar Cliente",choices=["Selecionar um Cliente"] + [f[1] for f in buscar_cliente], validators=[DataRequired()])
+        cliente = SelectField(
+            "Pesquisar Cliente",
+            choices=[("", "Selecionar um Cliente")] + [(f[0], f"{f[0]} | {f[1]}") for f in buscar_cliente],
+            validators=[DataRequired()] # RENDERIZA CODIGO E NOME FANTASIA, MAS MANTEM APENAS O CODIGO NO BACKEND
+        )
 
-        # cliente = StringField("Nome Fantasia", validators=[ReadOnly()])
         cod_produto = StringField("Código", validators=[ReadOnly()])
         ean = StringField("EAN", validators=[ReadOnly()])
         tabela = StringField("Tabela", validators=[ReadOnly()])
