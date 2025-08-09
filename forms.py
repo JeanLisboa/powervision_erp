@@ -237,9 +237,21 @@ class ModComercial:
         ordem_venda = StringField("Ordem de Venda", validators=[Disabled()])
         cliente = SelectField(
             "Pesquisar Cliente",
-            choices=[("", "Selecionar um Cliente")] + [(f[0], f"{f[0]} | {f[1]}") for f in buscar_cliente],
-            validators=[DataRequired()] # RENDERIZA CODIGO E NOME FANTASIA, MAS MANTEM APENAS O CODIGO NO BACKEND
+            choices=[("", "Selecionar um Cliente")] +
+                    [((f[0], f[1]), f"{f[0]} | {f[1]}") for f in buscar_cliente],
+            validators=[DataRequired()],
+            coerce=lambda x: tuple(x) if isinstance(x, (list, tuple)) else tuple(
+                x.strip("()").replace("'", "").replace("|", "").split(", "))
         )
+        """
+        o parâmetro coerce no SelectField do Flask-WTF é justamente o que define como o valor que
+         vem do HTML será convertido antes de ser armazenado no campo .data.
+
+        Por padrão, o SelectField recebe tudo como string, porque no HTML <option value="..."> 
+        sempre é texto.Se você quer que o valor seja um número, uma tupla, um UUID, etc., 
+        precisa dizer ao SelectField como transformar essa string no tipo desejado.
+            
+        """
 
         cod_produto = StringField("Código", validators=[ReadOnly()])
         ean = StringField("EAN", validators=[ReadOnly()])
