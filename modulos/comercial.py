@@ -114,27 +114,15 @@ def gerar_ordem_venda():
     # TODO: CORRIGIR SELECTFIELD PARA ATUALIZAR SEM PRECISAR REINICIAR O APP
     if request.method == "POST":
         session['cliente'] = form_gerar_ordem_venda.cliente.data
-        # try:
-        #     if "botao_pesquisar_cliente" in request.form:
-        #         print("botao_pesquisar_cliente ACIONADO")
-        #         # cliente = form_gerar_ordem_venda.cliente.data
-        #         # print(f'cliente: {cliente}')
-        #         # session["cliente"] = cliente
-        #
-        # except Exception as e:
-        #     print('Erro ao processar pesquisa de clientes')
-        #     print(e)
 
         try:
             if "botao_pesquisar_item" in request.form:
                 cliente = session.get('cliente')
                 print("botao_pesquisar_item ACIONADO")
-
                 pesquisa_descricao = form_gerar_ordem_venda.pesquisa_descricao.data
                 pesquisa_categoria = form_gerar_ordem_venda.pesquisa_categoria.data
                 pesquisa_ean = form_gerar_ordem_venda.pesquisa_ean.data
                 print(f'pesq_descricao: {pesquisa_descricao} | pesquisa_categoria: {pesquisa_categoria} | pesquisa_ean: {pesquisa_ean}')
-
                 lista_produtos = geral.Buscadores.OrdemVenda.buscar_lista_produtos(pesquisa_descricao, pesquisa_categoria, pesquisa_ean)
                 fornecedor = lista_produtos[0][2]
                 print(f'fornecedor: {fornecedor}')
@@ -146,21 +134,30 @@ def gerar_ordem_venda():
             print(e)
 
         try:
+            print('teste dentro do try do botao_limpar_ordem')
+            if 'botao_limpar_ordem' in request.form:
+                print('botao_limpar_ordem ACIONADO')
+                # return redirect(url_for('gerar_ordem_venda'))
+
+        except Exception as e:
+            print(e)
+
+
+        try:
             if 'botao_incluir_item' in request.form:
                 lista_ordem_venda = session.get('lista_ordem_venda', [])
+                cliente = form_gerar_ordem_venda.cliente.validators = ['Disabled()']
+                session['cliente'] = cliente
                 tupla_linha_selecionada = session.get('tupla_linha_selecionada')
                 fornecedor = session.get('fornecedor')
                 print('botao_incluir_item ACIONADO')
                 cliente = session.get('cliente')
                 print(f'cliente: {cliente}')
-
                 lista_linha_selecionada = list(tupla_linha_selecionada)
                 session['lista_linha_selecionada'] = lista_linha_selecionada
-
                 quantidade = form_gerar_ordem_venda.quantidade.data
                 preco_unitario = form_gerar_ordem_venda.preco_unitario.data
                 total_item = quantidade * preco_unitario
-
                 lista_linha_selecionada.append(fornecedor)
                 lista_linha_selecionada.append(quantidade)
                 lista_linha_selecionada.append(total_item)
@@ -171,9 +168,10 @@ def gerar_ordem_venda():
                     lista_ordem_venda.append(lista_linha_selecionada[:])
                     print(f'lista_ordem_venda: {lista_ordem_venda}')
                     session['lista_ordem_venda'] = lista_ordem_venda
-
+                    cliente = session.get('cliente')
                 else:
                     print('lista indisponivel')
+                    print(f'lista_linha_selecionada: {lista_linha_selecionada}')
 
         except Exception as e:
             print('Exceção no botao_incluir_item')
@@ -184,7 +182,6 @@ def gerar_ordem_venda():
                 print('botao_selecionar_item ACIONADO')
                 cliente = session.get('cliente')
                 # TODO: ATUALIZAR FUNÇÃO AtualizaCodigo/ordem_venda PARA INCREMENTAR A ORDEM DE VENDA
-                #
                 # TODO: PERSISTIR CAMPO FORNECEDOR AO CLCAR EM REMOVER LNHA
                 # TODO: DESABiLiTAR CAMPO PESQUSAR CLiENTE APÓS PRMERA LNHA CADASTRADA
                 # FIXME: LIMPAR CAMPOS APÓS INCLUIR SELECIONAR O PRODUTO
@@ -222,13 +219,20 @@ def gerar_ordem_venda():
                 tabela = '001'
                 preco_unitario = linha_selecionada[7]
                 print(f'cliente recuperado: {cliente}')
-                fornecedor = linha_selecionada[2]
+                # fornecedor = linha_selecionada[2]
                 tupla_linha_selecionada = (codigo_produto, ean, descricao, unidade , tabela, preco_unitario)
                 tupla_linha_selecionada = (tupla_linha_selecionada + (ordem_venda,))
                 print(f'5 - tupla_linha_selecionada>>.: {tupla_linha_selecionada}')
                 session['tupla_linha_selecionada'] = tupla_linha_selecionada
                 session['cliente'] = cliente
+            ean=''
 
+            form_gerar_ordem_venda.cliente.validators = ['Disabled()']
+            return render_template('comercial/gerar_ordem_venda.html',
+                                   form_gerar_ordem_venda=form_gerar_ordem_venda,
+
+                                   ean='',
+                                   data=data)
 
         except Exception as e:
             print('Erro no botao_selecionar_item')
@@ -257,19 +261,13 @@ def gerar_ordem_venda():
             # session['cliente'] = cliente
         except Exception as e:
             print(f"Erro ao processar remoção: {e}")
-
-
     ordem_venda = session.get('ordem_venda')
     tupla_linha_selecionada  = session.get('tupla_linha_selecionada')
-    # print(f'tupla_linha_selecionada: {tupla_linha_selecionada}')
     lista_produtos = session.get('lista_produtos')
-    # print(f'lista_produtos: {lista_produtos}')
-    linha_selecionada = session.get('linha_selecionada')
     lista_ordem_venda = session.get('lista_ordem_venda')
-    cliente = session.get('cliente')
+
     return render_template('comercial/gerar_ordem_venda.html',
                            ordem_venda=ordem_venda,
-                           cliente=cliente,
                            form_gerar_ordem_venda=form_gerar_ordem_venda,
                            tupla_linha_selecionada=tupla_linha_selecionada,
                            codigo_ordem_venda='',
