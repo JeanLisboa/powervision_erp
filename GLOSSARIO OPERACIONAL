@@ -1,0 +1,13 @@
+
+Tag	        | Significado	                                    | Quando usar
+_______________________________________________________________________________________________________
+TODO	    | Tarefa pendente a ser implementada	            | Algo que precisa ser feito depois
+FIXME	    | Algo que está errado e precisa de correção	    | Código funcionando errado ou com bug
+BUG	        | Marca um problema conhecido	                    | Para registrar um defeito no código
+HACK	    | Solução temporária, geralmente não ideal	        | Quando você fez um "gambiarra"
+NOTE	    | Uma observação importante	                        | Avisos gerais no código
+OPTIMIZE    | Trecho que pode ser otimizado	                    | Para lembrar de melhorar performance
+REVIEW	    | Código que precisa ser revisado	                | Para revisão de lógica ou segurança
+DEPRECATED	| Código que será removido no futuro	            | Quando algo não deve mais ser usado
+IDEA	    | Sugestão de melhoria ou funcionalidade futura	    | Para brainstorms rápidos dentro do códdigo
+WARNING     | Alerta de segurança ou comportamento inesperado	| Algo que pode quebrar em certas situações

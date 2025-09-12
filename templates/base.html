@@ -16,19 +16,8 @@
 <body>
 <div class="div_principal" >
 {% include "navbar.html" %}
-
-<!--<script>-->
-<!--  document.addEventListener("DOMContentLoaded", function () {-->
-<!--    const originalTitle = "Este é um título de aba muito longo e será animado!";-->
-<!--    let i = 0;-->
-
-<!--    setInterval(function () {-->
-<!--      document.title = originalTitle.slice(i) + " | " + originalTitle.slice(0, i);-->
-<!--      i = (i + 1) % originalTitle.length;-->
-<!--    }, 300); // ajuste a velocidade aqui (ms)-->
-<!--  });-->
-<!--</script>-->
-
+     <!-- Div reservada para alertas -->
+  <div id="alert-box"><hr><br></div>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     var submenus = document.querySelectorAll('.has-submenu .submenu');

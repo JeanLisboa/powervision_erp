@@ -338,6 +338,7 @@ class Buscadores:
                 return None
 
     class OrdemVenda:
+        @staticmethod
         def buscar_pelo_cliente(cliente):
 
             pass

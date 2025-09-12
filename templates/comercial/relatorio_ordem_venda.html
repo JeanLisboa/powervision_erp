@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<title>{% block title %}Mod Comercial | Relatórios {% endblock %}</title>
+TELA RELATORIO COMERCIAL
+
+<div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
+
+  <form action="" method="POST">
+
+    {{ form_relatorio_ordem_venda.csrf_token }}
+
+
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_ordem_venda.data_de.label }}
+      {{ form_relatorio_ordem_venda.data_de(class="form-control") }}
+    </div>
+
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_ordem_venda.data_ate.label }}
+      {{ form_relatorio_ordem_venda.data_ate(class="form-control") }}
+    </div>
+
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_ordem_venda.ordem_venda.label }}
+      {{ form_relatorio_ordem_venda.ordem_venda(class="form-control tam_campo_codigo") }}
+    </div>
+    <div  class="col form-label mt-4 btn btn-light">
+      {{ form_relatorio_ordem_venda.cliente.label }}
+      {{ form_relatorio_ordem_venda.cliente(class="form-control tam_campo_codigo") }}
+    </div>
+
+    <div>
+      {{ form_relatorio_ordem_venda.botao_consulta(class="btn btn-primary") }}
+    </div>
+
+  </form>
+  <div class="justify-content-center" xmlns="http://www.w3.org/1999/html">
+    <table class="table table-hover table-striped " style="position:sticky" cellpadding="2" cellspacing="2" >
+      <thead>
+        <tr class="cab_tabela">
+          <th class="tam_campo_codigo">Data</th>
+          <th class="tam_campo_codigo">Ordem</th>
+          <th class="tam_coluna_quantidade">Item</th>
+          <th class="tam_coluna_quantidade">Descricao</th>
+          <th class="tam_coluna_quantidade">Un</th>
+          <th class="tam_coluna_quantidade">Categoria</th>
+          <th class="tam_coluna_quantidade">Codigo</th>
+          <th class="tam_coluna_quantidade">Ean</th>
+          <th class="tam_coluna_quantidade">Qtde</th>
+          <th class="tam_coluna_quantidade">Preço</th>
+          <th class="tam_coluna_quantidade">Total Item</th>
+          <th class="tam_coluna_quantidade">Saldo Qtd</th>
+          <th class="tam_coluna_quantidade">Saldo Valor</th>
+          <th class="tam_coluna_quantidade">Status</th>
+          <th class="tam_coluna_quantidade">Usuario</th>
+        </tr>
+      </thead>
+        <tbody>
+         {%  if resultado_relatorio_ordem_venda %}
+         {% for i in resultado_relatorio_ordem_venda %}
+
+          <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+            <td>{{i[0]}}</td> <!-- DATA -->
+            <td>{{i[1]}}</td> <!-- ORDEM -->
+            <td>{{i[2]}}</td> <!-- iTEM -->
+            <td>{{i[3]}}</td> <!-- CODIGO -->
+            <td>{{i[4]}}</td> <!-- FORNECEDOR -->
+            <td>{{i[5]}}</td> <!-- DESCRCAO -->
+            <td>{{i[6]}}</td> <!-- EAN -->
+            <td>{{i[7]}}</td> <!-- UN -->
+            <td>{{i[8]}}</td> <!--  ???? -->
+            <td>{{i[9]}}</td> <!-- DATA -->
+            <td>{{i[10]}}</td> <!-- DATA -->
+            <td>{{i[11]}}</td> <!-- DATA -->
+            <td>{{i[12]}}</td> <!-- DATA -->
+            <td>{{i[13]}}</td> <!-- DATA -->
+            <td>{{i[14]}}</td> <!-- DATA -->
+
+          </tr>
+         {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6">Nenhum produto encontrado</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+
+      </table>
+  </div>
+</div>
+</div>
+{% endblock %}

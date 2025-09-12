@@ -81,6 +81,11 @@ class Sobre:
         return modulos.sobre.fluxograma()
 
     @staticmethod
+    @app.route('/cronograma', methods=['POST', 'GET'])
+    def cronograma():
+        return modulos.sobre.cronograma()
+
+    @staticmethod
     @app.route('/backlog', methods=['POST', 'GET'])
     def backlog():
         return modulos.sobre.backlog()
@@ -149,8 +154,13 @@ class Comercial:
     @staticmethod
     @app.route('/gerar_ordem_venda', methods=['POST', 'GET'])
     def gerar_ordem_venda():
-
         return modulos.comercial.gerar_ordem_venda()
+
+    @staticmethod
+    @app.route('/relatorio_ordem_venda', methods=['POST', 'GET'])
+    def relatorio_ordem_venda():
+        return modulos.comercial.relatorio_ordem_venda()
+
 
 class Pricing:
     @staticmethod
@@ -188,3 +198,6 @@ def teste():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',  debug=True, port=5000)
+
+    # FIXME: AJUSTAR DIV DE TODAS AS JANELAS PARA QUE APAREÇA A ÁREA RESERVADA PARA ALERTS A EXEMPLO DA TELA GERAR ORDEM DE VENDA
+    #

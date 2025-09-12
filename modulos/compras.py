@@ -630,7 +630,9 @@ def gerar_ordem_compra():
                 print("botao_incluir_item ACIONADO")
 
                 fornecedor = session.get("fornecedor")
+                # fornecedor = form_gerar_ordem_compra.fornecedor
                 ean_ja_digitado = any(i[6] == ean for i in lista_ordem_compra)
+                # quanto usar o any? :The any() function returns True if any item in an iterable are true, otherwise it returns False. https://www.w3schools.com/python/ref_func_any.asp
 
                 if ean_ja_digitado:
                     print(CorFonte.fonte_vermelha() + f"EAN {ean} já digitado na ordem de compra" + CorFonte.reset_cor())
@@ -646,7 +648,6 @@ def gerar_ordem_compra():
                         contador_item = 0
                     contador_item += 1
                     print(f"Item {contador_item} incluído")
-
                     total_ordem_compra = atualizar_lista_ordem_compra()
 
         except Exception as e:
@@ -669,7 +670,7 @@ def gerar_ordem_compra():
                 print("botao_submit_compra ACIONADO")
                 cont_temp = 1
                 print(f"lista_ordem_compra {lista_ordem_compra}")
-                # print(f"len de lista_ordem_compra >>>> {len(lista_ordem_compra)}")
+
                 while cont_temp <= len(lista_ordem_compra):
                     for i in lista_ordem_compra:
                         print(f"i linha {cont_temp} >>>> {i}")
@@ -688,8 +689,7 @@ def gerar_ordem_compra():
                             f"'{i[7]}',"
                             f"'{(int(i[7]) * int(i[8]))}',"  # saldo total_item
                             f"'{'ABERTO'}',"
-                            f"'{modulos.admin.usuario}'"
-                        )
+                            f"'{modulos.admin.usuario}'"                        )
                         print(f"values >>>> {values}")
                         query = (
                             f"INSERT INTO ORDEM_COMPRA"

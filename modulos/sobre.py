@@ -23,3 +23,39 @@ def backlog():
 
 def fluxograma():
     return render_template('sobre/fluxograma.html')
+
+
+from flask import render_template
+import pandas as pd
+import plotly.express as px
+
+def cronograma():
+    # Criando dados de exemplo
+    dados = [
+        dict(Tarefa="Planejamento", Início="2024-05-01", Fim="2024-05-20", Responsável="Jean"),
+        dict(Tarefa="Desenvolvimento", Início="2024-05-21", Fim="2026-03-31", Responsável="Jean"),
+        dict(Tarefa="Testes", Início="2026-05-01", Fim="2026-05-30", Responsável="Jean"),
+        dict(Tarefa="Implantação", Início="2026-06-01", Fim="2026-06-15", Responsável="Jean"),
+        dict(Tarefa="Refatoração", Início="2026-07-01", Fim="2026-12-31", Responsável="Jean")
+    ]
+
+    df = pd.DataFrame(dados)
+
+    # Criando o gráfico de Gantt
+    fig = px.timeline(
+        df,
+        x_start="Início",
+        x_end="Fim",
+        y="Tarefa",
+        color="Responsável",
+        title="Gráfico de Gantt - Projeto",
+        text="Responsável"
+    )
+
+    fig.update_yaxes(autorange="reversed")
+
+    # Exporta o gráfico para HTML
+    grafico_html = fig.to_html(full_html=False)
+
+    # Passa o gráfico como variável para o template
+    return render_template('sobre/cronograma.html', grafico=grafico_html)

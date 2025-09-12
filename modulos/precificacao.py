@@ -99,6 +99,7 @@ def precificacao():
 
         try:
             if 'botao_calcular' in request.form:
+                # FIXME: CORRIGIR BOTAO CALCULAR. A TABELA SOME DA TELA, AO CLICAR NO BOTAO CALCULAR PELA SEGUNDA VEZ
                 relatorio_precificacao = session.get('relatorio_precificacao')
                 relatorio_temp = session.get('relatorio_temp')
 

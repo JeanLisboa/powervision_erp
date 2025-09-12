@@ -1,165 +1,194 @@
 {% extends "base.html" %}
 {% block content %}
-
 <title>{% block title %}Mod Comercial | Gerar Ordem de Venda{% endblock %}</title>
 
+
 <div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
-    <form action="" method="POST">
-        {{ form_gerar_ordem_venda.csrf_token }}
-        <div class="mb-1 float-child-ordem-compra1">
-            <div class="col form-label btn btn-light">
+    <div>
+        <h2></h2>
+    </div>
+    <form method="POST">
+
+        {{ form_gerar_ordem_venda.hidden_tag() }}
+        <div class="mb-1 float-child-ordem-compra1-60">
+            {{ form_gerar_ordem_venda.botao_submit_ordem_venda(class="btn btn-primary mt-3") }}
+            {{ form_gerar_ordem_venda.botao_limpar_ordem(class="btn btn-secondary mt-3") }}
+            <h5><small class="text-body-secondary">Dados da Ordem</small></h5>
+            <div  class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.data.label }}
-                {{ form_gerar_ordem_venda.data(class="form-control tam_campo_data", value=data ) }}
+                {{ form_gerar_ordem_venda.data(class="form-control tam_campo_data", value=data) }}
             </div>
-            <div class="col form-label btn btn-light">
+            <div  class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.ordem_venda.label }}
-                {{ form_gerar_ordem_venda.ordem_venda(class="form-control tam_campo_codigo" ) }}
+                {{ form_gerar_ordem_venda.ordem_venda(class="form-control", value=ordem_venda) }}
+            </div>
+            <div  class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.cliente.label }}
+
+                {{ form_gerar_ordem_venda.cliente(class="form-control", value=cliente, disabled=True if lista_ordem_venda else False ) }}
+            </div>
+
+            <h5><small class="text-body-secondary">Produto Selecionado</small></h5>
+            <div  class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.cod_produto.label }}
+                {{ form_gerar_ordem_venda.cod_produto(class="form-control tam_campo_100", value=tupla_linha_selecionada[0]) }}
+            </div>
+            <div  class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.ean.label }}
+                {{ form_gerar_ordem_venda.ean(class="form-control tam_campo_150", value=tupla_linha_selecionada[1]) }}
             </div>
             <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_venda.cliente.label }}
-                {{ form_gerar_ordem_venda.cliente(class="form-control tam_campo_descricao") }}
-            </div>
-
-            <br>
-            <div class="col form-label  btn btn-light">
-                {{ form_gerar_ordem_venda.cod_produto.label }}
-                {{ form_gerar_ordem_venda.cod_produto(class="form-control tam_campo_codigo", value=tupla_linha_selecionada[0]) }}
-           </div>
-            <div class="col form-label  btn btn-light">
-                {{ form_gerar_ordem_venda.ean.label }}
-                {{ form_gerar_ordem_venda.ean(class="form-control", value=tupla_linha_selecionada[1]) }}
-            </div>
-            <div class="col form-label  btn btn-light">
                 {{ form_gerar_ordem_venda.descricao.label }}
-                {{ form_gerar_ordem_venda.descricao(class="form-control", value=tupla_linha_selecionada[2]) }}
+                {{ form_gerar_ordem_venda.descricao(class="form-control tam_campo_300", value=tupla_linha_selecionada[2]) }}
             </div>
-            <div class="col form-label  btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.unidade.label }}
-                {{ form_gerar_ordem_venda.unidade(class="form-control tam_campo_abrev", value=tupla_linha_selecionada[3] ) }}
+                {{ form_gerar_ordem_venda.unidade(class="form-control tam_campo_50",  value=tupla_linha_selecionada[3]) }}
             </div>
-            <div class="col form-label  btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.tabela.label }}
-                {{ form_gerar_ordem_venda.tabela(class="form-control tam_campo_abrev", value=tupla_linha_selecionada[4]) }}
+                {{ form_gerar_ordem_venda.tabela(class="form-control tam_campo_50", value=tupla_linha_selecionada[4]) }}
             </div>
-            <div class="col form-label  btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.quantidade.label }}
-                {{ form_gerar_ordem_venda.quantidade(class="form-control tam_campo_quantidade", value=1) }}
+                {{ form_gerar_ordem_venda.quantidade(class="form-control tam_campo_100", value=1) }}
             </div>
-            <div class="col form-label  btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.preco_unitario.label }}
-                {{ form_gerar_ordem_venda.preco_unitario(class="form-control tam_campo_codigo", id="preco_unitario", value=tupla_linha_selecionada[5]) }}
+                {{ form_gerar_ordem_venda.preco_unitario(class="form-control tam_campo_100", value=tupla_linha_selecionada[5]) }}
             </div>
-            {{form_gerar_ordem_venda.botao_incluir_item(class="btn btn-primary mt-3")}}
-            <div>
-                {{ form_gerar_ordem_venda.botao_submit_ordem_venda(class="btn btn-primary") }}
-                {{ form_gerar_ordem_venda.botao_limpar_ordem(class="btn btn-secondary") }}
+              <button type="submit" name="botao_incluir_item" class="btn btn-success mt-3" id="botao_incluir_item">Incluir Item</button>
+            <div class="jumbotron jumbotron-fluid">
+                <h4>Total Pedido: R$ {{ total_pedido }}</h4>
             </div>
+
+
         </div>
-    <div class=" mb-1 float-child-ordem-compra2">
-            <div class="container_com_barra_rolagem" style="top: -1px">
 
-                <br>
-                <div class="col form-label btn btn-light">
-                    {{ form_gerar_ordem_venda.pesquisa_descricao.label}}
-                    {{ form_gerar_ordem_venda.pesquisa_descricao (class="form-control tam_campo_descricao") }}
-                </div>
+        <div class="float-child-ordem-compra2">
+            <div>
+                <h5><small class="text-body-secondary">Pesquisar Produto</small></h5>
 
                 <div class="col form-label btn btn-light">
-                    {{ form_gerar_ordem_venda.pesquisa_categoria.label}}
-                    {{ form_gerar_ordem_venda.pesquisa_categoria (class="form-control tam_campo_abrev") }}
+                    {{ form_gerar_ordem_venda.pesquisa_descricao.label }}
+                    {{ form_gerar_ordem_venda.pesquisa_descricao(class="form-control") }}
                 </div>
                 <div class="col form-label btn btn-light">
-                    {{ form_gerar_ordem_venda.pesquisa_ean.label}}
-                    {{ form_gerar_ordem_venda.pesquisa_ean (class="form-control tam_campo_ean") }}
+                    {{ form_gerar_ordem_venda.pesquisa_categoria.label }}
+                    {{ form_gerar_ordem_venda.pesquisa_categoria(class="form-control") }}
                 </div>
                 <div class="col form-label btn btn-light">
-                    {{ form_gerar_ordem_venda.botao_pesquisar_item(class='btn btn-primary') }}
+                    {{ form_gerar_ordem_venda.pesquisa_ean.label }}
+                    {{ form_gerar_ordem_venda.pesquisa_ean(class="form-control") }}
                 </div>
-                <table class="table table-hover table-striped " style="position:sticky" cellpadding="2" cellspacing="2" >
-                    <thead>
-                        <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                            <th style="width: 10%;"></th>
-                            <th>Descrição</th>
-                            <th>Fornecedor</th>
-                            <th>EAN</th>
-                            <th style="width: 10%;">Un</th>
-                            <th>Valor</th>
-                        </tr>
-                    </thead>
+
+                <button type="submit" name="botao_pesquisar_item" class="btn btn-primary">Pesquisar</button>
+                <!-- Coluna Direita: Lista de Produtos -->
+                <h5><small class="text-body-secondary">Lista de Produtos</small></h5>
+                <div  class="container_com_barra_rolagem" style="top: -1px">
+                    <table class="table table-hover table-striped">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Descrição</th>
+                    <th>Fornecedor</th>
+                    <th>EAN</th>
+                    <th>Un</th>
+                    <th>Valor</th>
+                </tr>
+                </thead>
                 <tbody>
-
                 {% if lista_produtos %}
-                    {% for i in lista_produtos %}
-
-                <tr class="table table-striped table-sm table-layout:fixed ">
+                {% for i in lista_produtos %}
+                <tr>
                     <td>
-                        <form method="POST">
-                            {{ form_gerar_ordem_venda.hidden_tag() }}
-                            <input class="" type="hidden" name="incluir_item" value="{{i[3]}}">
-                            {{form_gerar_ordem_venda.botao_selecionar_item(class='btn btn-small')}}
-                        </form>
+                        <button type="submit" name="botao_selecionar_item" value="{{ i[3] }}" class="btn btn-sm btn-outline-primary">+</button>
                     </td>
                     <td>{{ i[4] }}</td>
                     <td>{{ i[2] }}</td>
                     <td>{{ i[3] }}</td>
                     <td>{{ i[5] }}</td>
                     <td>{{ i[7] }}</td>
-
                 </tr>
                 {% endfor %}
                 {% else %}
-                <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                    <td colspan="5">Nenhum fornecedor encontrado</td>
-                </tr>
+                    <tr>
+                        <td colspan="6">Nenhum produto encontrado</td>
+                    </tr>
                 {% endif %}
-
-            </tbody>
+                </tbody>
             </table>
+                </div>
             </div>
         </div>
     </form>
 
-
-    <div class="mt-5 float-child-ordem-compra container_com_barra_100%">
-
-            <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
-                <thead>
-                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed">
-                        <th>Data</th>
-                        <th>Ordem Venda</th>
-                        <th>Código Produto</th>
-                        <th>Fornecedor</th>
-                        <th>Descrição</th>
-                        <th>EAN</th>
-                        <th>Un</th>
-                        <th>Categoria</th>
-                        <th>Preço</th>
-                        <th>Usuário</th>
-                    </tr>
-                </thead>
-                <tbody>
+    <br>
+    <!-- Linha abaixo: Itens da Ordem -->
+    <div class="container_com_barra_100%">
 
 
-                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                        <td>---</td>
-                        <td>---</td>
-                        <td>---</td>
-                        <td>---</td>
-                        <td>---</td>
-                        <td>---</td>
-                        <td>---</td>
-                        <td>---</td>
-                        <td>---</td>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
 
-                    </tr>
-                </tbody>
-            </table>
+                    <th>Data</th>
+                    <th>Ordem Venda</th>
+                    <th>Item</th>
+                    <th>Código Produto</th>
+                    <th>Fornecedor</th>
+                    <th>Descrição</th>
+                    <th>EAN</th>
+                    <th>Un</th>
+                    <th>Tabela</th>
+                    <th>Pr. Lista</th>
+                    <th>Pr. Venda</th>
+                    <th>Quant</th>
+                  <th>Acres/Desc</th>
+                    <th>Total Pedido</th>
+                    <th>Usuário</th>
+                  <th>Ação</th>
+                </tr>
+            </thead>
+        <tbody>
+            {% if lista_ordem_venda %}
+              {% for i in lista_ordem_venda %}
+            <tr>
+                <td>{{ data }}</td>  <!-- Data -->
+                <td>{{i[6]}}</td>
+                <td>{{loop.index}}</td>
+                <td>{{i[0]}}</td>
+                <td>{{i[7]}}</td>
+                <td>{{i[2]}}</td>
+                <td>{{i[1]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[4]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[11]}}</td>
+                <td>{{i[8]}}</td>
+                <td>{{i[12]}}</td>
+                <td>{{i[9]}}</td>
+                <td>{{i[10]}}</td>
 
+
+                <td>
+                    <form method="POST" style="display:inline;">
+                        {{ form_gerar_ordem_venda.hidden_tag() }}
+                        <button class="btn btn-sm btn-outline-danger" name="botao_remover_item" value="{{ i[1] }}">x</button>
+<!--                        {{ form_gerar_ordem_venda.botao_remover_item(class="btn btn-sm btn-outline-danger", value=i[1]) }}-->
+                    </form>
+                </td>
+
+            </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                  <td colspan="16   ">Nenhum item incluído</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
     </div>
-{% endblock %}
-
-
-
-
-
 </div>
+
+{% endblock %}

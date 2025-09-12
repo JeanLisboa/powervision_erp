@@ -80,6 +80,16 @@ position: absolute;
 .tam_campo_abrev {width:50px;}
 .fundo_campo {color: red;}
 
+.tam_campo_50 {width: 50px;}
+.tam_campo_60 {width: 60px;}
+.tam_campo_70 {width: 70px;}
+.tam_campo_80 {width: 80px;}
+.tam_campo_90 {width: 90px;}
+.tam_campo_100 {width: 100px;}
+.tam_campo_150 {width: 150px;}
+.tam_campo_200 {width: 200px;}
+.tam_campo_300 {width: 300px;}
+
 /*
 box-sizing:
 inherit
@@ -362,6 +372,18 @@ td{ color:#2E2E2E;
 }
 
 
+.float-child-ordem-compra1-60 {
+    width: 54%;
+    float: left;
+    margin-top:5px;
+    margin-left:1px;
+    font-size:10px;
+    border: 2px solid rgb(91, 132, 181);
+    border-radius: 10px;
+    padding: 1px;
+}
+
+
 .float-child-ordem-compra1 {
     width: 50%;
     float: left;
@@ -435,14 +457,16 @@ td{ color:#2E2E2E;
     text-align: center;
     height: 5px;
     vertical-align: middle;}
+
 .container_com_barra_rolagem {
-            font-size: 14px;
-            max-height: 500px; /* Altura máxima do contêiner */
+            font-size: 12px;
+            max-height: 300px; /* Altura máxima do contêiner */
             overflow-y: auto; /* Adiciona rolagem vertical */
         }
 
 .container_com_barra_100% {
-            max-height: 10px
+            font-size: 12px;
+            max-height: 100px;
             overflow-y: auto; /* Adiciona rolagem vertical */
         }
 
@@ -545,15 +569,34 @@ td{ color:#2E2E2E;
 
 /*  -======== CONFIGURAÇÃO DA NAVBAR =============== */
 
-
-/* configuração da NAVBAR */
 .navbar {
   display: flex;
 
   /* Degradê vertical: de cima (#1e3c72) para baixo (#2a5298) */
   /*background: linear-gradient(to bottom, #1e3c72, #7096DA); */
-  justify-content: space-between;
-  font-size: 14px;
+  /*
+    1️⃣ space-between Distribui os itens com espaço igual entre eles, sem espaço nas bordas.
+    justify-content: space-between;
+
+    2️⃣ space-around Distribui os itens com espaço igual em volta de cada item (metade do espaço nas bordas).
+    justify-content: space-around;
+    3️⃣ space-evenly Distribui os itens com espaço exatamente igual entre eles e nas bordas.
+    justify-content: space-evenly;
+    4️⃣ flex-start (padrão) Alinha todos os itens no início do container.
+    justify-content: flex-start;
+    5️⃣ flex-end Alinha todos os itens no final do container.
+    justify-content: flex-end;
+    6️⃣ center Centraliza todos os itens no meio do container.
+    justify-content: center;
+    7️⃣ start e end (dependem da direção de escrita)
+    Versão lógica de flex-start e flex-end, que consideram a direção do texto (ltr ou rtl).
+    justify-content: start;
+    justify-content: end;
+    🔹 Exemplo: Útil em projetos multilíngues onde o texto pode ser da direita para a esquerda.
+  */
+
+  justify-content: space-evenly;
+  font-size: 16px;
   font-color: #7096DA;
 
   /*overflow: hidden;*/

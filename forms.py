@@ -13,7 +13,6 @@ from wtforms import (
     ValidationError)
 from wtforms.validators import (
     DataRequired,
-    Email,
     Disabled,
     Length,
     ReadOnly,
@@ -45,7 +44,6 @@ class ModAdmin:
         botao_salvar = SubmitField("Salvar Alterações")
         botao_editar = SubmitField("Editar")
 
-from modulos.utils import buscadores
 class ModCompras:
     class AnalisarOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
@@ -214,8 +212,8 @@ class ModCompras:
         botao_limpar = SubmitField("Limpar")
 
 
-class ModComercial:
 
+class ModComercial:
     class CadastrarClientes(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cod_cliente = StringField("Código", validators=[DataRequired(),Disabled()])
@@ -240,6 +238,7 @@ class ModComercial:
             choices=[("", "Selecionar um Cliente")] +
                     [((f[0], f[1]), f"{f[0]} | {f[1]}") for f in buscar_cliente],
             validators=[DataRequired()],
+
             coerce=lambda x: tuple(x) if isinstance(x, (list, tuple)) else tuple(
                 x.strip("()").replace("'", "").replace("|", "").split(", "))
         )
@@ -257,8 +256,8 @@ class ModComercial:
         ean = StringField("EAN", validators=[ReadOnly()])
         tabela = StringField("Tabela", validators=[ReadOnly()])
         descricao = StringField("Descrição", validators=[ReadOnly()])
-        categoria = StringField("Categoria", validators=[ReadOnly()])
         unidade = StringField("Unidade", validators=[ReadOnly()])
+        categoria = StringField("Categoria", validators=[ReadOnly()])
         preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00)])
         quantidade = IntegerField("Quantidade", validators=[DataRequired()])
         pesquisa_descricao = StringField("Descrição")
@@ -271,17 +270,22 @@ class ModComercial:
         botao_pesquisar_item = SubmitField("Pesquisar\nProduto")
 
         botao_incluir_item = SubmitField("Incluir Item")
-        botao_selecionar_item = SubmitField("➕")
+        botao_remover_item = SubmitField("x")
+
+        botao_selecionar_item = SubmitField("+")
         botao_submit_ordem_venda = SubmitField("Gerar Ordem de Venda")
 
-
-    class RelatorioComercial(FlaskForm):
-        pass
+    class RelatorioOrdemVenda(FlaskForm):
+        data_de = DateField("Data Inicial", validators=[])
+        data_ate = DateField("Data Final", validators=[])
+        ordem_venda = StringField("Ordem de Venda", validators=[])
+        cliente = StringField("Cliente", validators=[])
+        botao_consulta = SubmitField("Consulta")
 
 
 class ModPricing:
     class CadastrarTabela(FlaskForm):
-        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        data = StringField("Data", validators=[DataRequired(), ])
         cod_tabela = StringField("Código", validators=[ReadOnly()])
         nome_tabela = StringField("Nome da Tabela", validators=[DataRequired()])
         botao_incluir_tabela = SubmitField("Incluir Tabela")

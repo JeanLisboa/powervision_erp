@@ -1639,8 +1639,8 @@ class Buscadores:
                 myresult = mycursor.fetchall()
                 mydb.commit()
                 mydb.close()
-                for i in myresult:
-                    print(i)
+                # for i in myresult:
+                #     print(i)
                 # print(myresult)
                 try:
                     if len(myresult) == 0:
@@ -1651,7 +1651,6 @@ class Buscadores:
                     return len(myresult), e
             except Exception as e:
                 return e
-
 
 
 
