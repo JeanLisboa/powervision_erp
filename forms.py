@@ -184,16 +184,16 @@ class ModCompras:
         unidade = StringField("Unidade", validators=[ReadOnly()])
         categoria = StringField("Categoria", validators=[ReadOnly()])
         botao_pesquisar_item = SubmitField("Pesquisar")
-
-    class RelatoriosCompras(FlaskForm):
-        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        codigo = StringField("Código")
-        ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
-        fornecedor = StringField("Fornecedor", validators=[ReadOnly()])
-        ean = StringField("EAN")
-        descricao = StringField("Descrição", validators=[ReadOnly()])
-        unidade = StringField("Unidade", validators=[ReadOnly()])
-        categoria = StringField("Categoria", validators=[ReadOnly()])
+    #
+    # class RelatoriosCompras(FlaskForm):
+    #     data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+    #     codigo = StringField("Código")
+    #     ordem_compra = StringField("Ordem de Compra", validators=[ReadOnly()])
+    #     fornecedor = StringField("Fornecedor", validators=[ReadOnly()])
+    #     ean = StringField("EAN")
+    #     descricao = StringField("Descrição", validators=[ReadOnly()])
+    #     unidade = StringField("Unidade", validators=[ReadOnly()])
+    #     categoria = StringField("Categoria", validators=[ReadOnly()])
 
     class RelatorioCompras(FlaskForm):
         data = StringField("Data", validators=[])
@@ -214,6 +214,34 @@ class ModCompras:
 
 
 class ModComercial:
+    class GestaoCarteira(FlaskForm):
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        # todo: desenvolver
+
+    class EditarOrdemVenda(FlaskForm):
+        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
+        # ordem_venda = StringField("Ordem", validators=[DataRequired()])
+        pesquisar_nf = StringField("Nota Fiscal")
+        pesquisar_ordem_venda = StringField("Ordem", validators=[DataRequired()])
+        botao_excluir_ordem_venda = SubmitField("Excluir Ordem")
+        botao_pesquisar_ordem_venda = SubmitField("Pesquisar")
+        botao_excluir_item = SubmitField("Excluir Item")
+        botao_editar_item = SubmitField("Editar Item")
+        botao_salvar_alteracoes = SubmitField("Salvar")
+        botao_descartar_alteracoes = SubmitField("Descartar ")
+        ean = StringField("Ean")
+        quantidade = IntegerField("Quant")
+        val_unitario = FloatField("V.Unit")
+        descricao = StringField("Descricao", validators=[ReadOnly()])
+        botao_adicionar_item = SubmitField("Adicionar Item")
+        botao_pesquisar_novo_item = SubmitField("Pesquisar")
+        botao_salvar_item_adicionado = SubmitField("Salvar")
+        botao_descartar_item_adicionado = SubmitField("Descartar")
+        pesquisar_ean = StringField("EAN")
+        pesquisar_descricao = StringField("Descrição")
+        adicionar_quantidade = IntegerField("Quantidade")
+        adicionar_preco_unitario = FloatField("Preço Unitário")
+
     class CadastrarClientes(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         cod_cliente = StringField("Código", validators=[DataRequired(),Disabled()])
@@ -335,6 +363,7 @@ class Mod_Logistica:
         tipo_mov = SelectField(coerce=str, label='Tipo de Movimento', choices=['Todos','Entrada', 'Saída'])
         descricao = StringField('Descrição')
         botao_relatorio_estoque = SubmitField("Pesquisar")
+
 
     class Realizar_conferencia(FlaskForm):
         ordem_compra = StringField("Ordem de Compra")

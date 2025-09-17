@@ -106,7 +106,48 @@ def cadastrar_clientes():
         form_cadastrar_clientes=form_cadastrar_clientes
     )
 
+
+def editar_ordem_venda():
+    print(CorFonte.fonte_amarela() + "Função editar_ordem_venda"+ CorFonte.reset_cor())
+    form_editar_ordem_venda = ModComercial.EditarOrdemVenda()
+    ordem_venda = form_editar_ordem_venda.pesquisar_ordem_venda.data
+    session["ordem_venda"] = ordem_venda
+    if request.method == "POST":
+        try:
+            if "botao_pesquisar_ordem_venda" in request.form:
+                ordem_venda = session.get("ordem_venda")
+                print("botao_pesquisar_ordem_venda ACIONADO")
+                print(f'ordem_venda: {ordem_venda}')
+                # pesquisar ordem de venda
+                def pesquisar_ordem_venda(ordem_venda):
+                    query = f"SELECT * FROM ordem_venda where ordem_venda like '%{ordem_venda}%';"
+                    print(f'query: {query}')
+                    mydb.connect()
+                    mycursor.execute(query)
+                    resultado_pesquisa = mycursor.fetchall()
+                    return resultado_pesquisa
+
+                resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
+                print(f'resultado_pesquisa: {resultado_pesquisa}')
+
+        except Exception as e:
+            logging.exception(e)
+
+    return render_template('comercial/editar_ordem_venda.html',
+                           data=Formatadores.os_data(),
+                           ordem_venda='00001',
+                           form_editar_ordem_venda=form_editar_ordem_venda)
+
+
+
+
+def gestao_carteira():
+    pass
+
+
+
 def gerar_ordem_venda():
+
     print(CorFonte.fonte_amarela() + "Função gera_ordem_venda"+ CorFonte.reset_cor())
     data = Formatadores.os_data()
     form_gerar_ordem_venda = ModComercial.GerarOrdemVenda()
@@ -245,9 +286,10 @@ def gerar_ordem_venda():
                         session['linha_selecionada'] = linha_selecionada
                         break
                     cont += 1
-                # todo: salvar as informações no banco de dados
                 linha_selecionada = session.get('linha_selecionada')  # recupera a linha selecionada do loop
                 print(f'4 - linha_selecionada Recuperada: {linha_selecionada}')
+                # todo: BAXAR O N DE ORDEM DO BANCO DE DADOD
+
                 ordem_venda = '000001'
                 session['ordem_venda'] = ordem_venda
                 codigo_produto = linha_selecionada[1]

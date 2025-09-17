@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<title>{% block title %}Mod Comercial | Editar Ordem de Venda{% endblock %}</title>
+
+TELA EDITAR ORDEM DE VENDA
+<div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
+    <form action="" method="POST">
+        {{ form_editar_ordem_venda.csrf_token }}
+        <div class="container  mb-3" xmlns="http://www.w3.org/1999/html">
+            <div class="">
+                <div class="col form-label btn btn-light">
+                   {{form_editar_ordem_venda.data.label }}
+                   {{form_editar_ordem_venda.data(class="form-control tam_campo_data",  value=data)}}
+                </div>
+                <div class="col form-label btn btn-light">
+                   {{form_editar_ordem_venda.pesquisar_ordem_venda.label}}
+                   {{form_editar_ordem_venda.pesquisar_ordem_venda}}
+                </div>
+                <div class="col form-label btn btn-light">
+                   {{form_editar_ordem_venda.botao_pesquisar_ordem_venda(class="btn btn-primary mt-3")}}
+                   {{form_editar_ordem_venda.botao_excluir_ordem_venda(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
+                </div>
+                <script src="static/js/pesquisa_produto.js" defer></script>
+            </div>
+
+            </div>
+    <div>
+        <h2></h2>
+        </div>
+    </div>
+
+
+    </form>
+</div>
+
+
+{% endblock %}

@@ -157,10 +157,19 @@ class Comercial:
         return modulos.comercial.gerar_ordem_venda()
 
     @staticmethod
+    @app.route('/gestao_carteira', methods=['POST', 'GET'])
+    def gestao_carteira():
+        return modulos.comercial.gestao_carteira()
+
+    @staticmethod
     @app.route('/relatorio_ordem_venda', methods=['POST', 'GET'])
     def relatorio_ordem_venda():
         return modulos.comercial.relatorio_ordem_venda()
 
+    @staticmethod
+    @app.route('/editar_ordem_venda', methods=['POST', 'GET'])
+    def editar_ordem_venda():
+        return modulos.comercial.editar_ordem_venda()
 
 class Pricing:
     @staticmethod
