@@ -27,11 +27,56 @@ TELA EDITAR ORDEM DE VENDA
     <div>
         <h2></h2>
         </div>
-    </div>
+        <div class="mt-2 float-child-ordem-compra">
+            <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+                <thead>
+                    <tr class="cab_tabela">
+                        <th>DATA</th>
+                        <th>ORDEM VENDA</th>
+                        <th>ITEM</th>
+                        <th>CODIGO</th>
+                        <th>FORNECEDOR</th>
+                        <th>DESCRICAO</th>
+                        <th>EAN</th>
+                        <th>UN</th>
+                        <th>TABELA</th>
+                        <th>PRECO LISTA</th>
+                        <th>PRECO VENDA</th>
+                        <th>QTDE</th>
+                        <th>ACRES/DESC</th>
+                        <th>TOTAL</th>
+                        <th>USUARIO</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in resultado_pesquisa %}
 
-
+                    <tr>
+                        <td>{{i[0]}}</td>
+                        <td>{{i[1]}}</td>
+                        <td>{{i[2]}}</td>
+                        <td>{{i[3]}}</td>
+                        <td>{{i[4]}}</td>
+                        <td>{{i[5]}}</td>
+                        <td>{{i[6]}}</td>
+                        <td>{{i[7]}}</td>
+                        <td>{{i[8]}}</td>
+                        <td>{{i[9]}}</td>
+                        <td>{{i[10]}}</td>
+                        <td>{{i[11]}}</td>
+                        <td>{{i[12]}}</td>
+                        <td>{{i[13]}}</td>
+                        <td>{{i[14]}}</td>
+                        <td>{{i[15]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </form>
-</div>
+
 
 
 {% endblock %}
+</div>

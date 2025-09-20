@@ -128,15 +128,17 @@ def editar_ordem_venda():
                     return resultado_pesquisa
 
                 resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
+                session["resultado_pesquisa"] = resultado_pesquisa
                 print(f'resultado_pesquisa: {resultado_pesquisa}')
 
         except Exception as e:
             logging.exception(e)
-
+    resultado_pesquisa = session.get("resultado_pesquisa", None)
     return render_template('comercial/editar_ordem_venda.html',
                            data=Formatadores.os_data(),
-                           ordem_venda='00001',
+                           resultado_pesquisa=resultado_pesquisa,
                            form_editar_ordem_venda=form_editar_ordem_venda)
+
 
 
 
