@@ -1416,8 +1416,6 @@ def adicionar_item_ordem_compra():
         ordem_pesquisada=ordem_pesquisada,
     )
 
-
-
 def relatorio_compras():
     form_relatorio_compras = ModCompras.RelatorioCompras()
     data_de = form_relatorio_compras.data_de.data
