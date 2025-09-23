@@ -50,6 +50,7 @@ TELA EDITAR ORDEM DE VENDA
                     </tr>
                 </thead>
                 <tbody>
+                    {% if resultado_pesquisa is not none %}
                     {% for i in resultado_pesquisa %}
 
                     <tr>
@@ -69,8 +70,24 @@ TELA EDITAR ORDEM DE VENDA
                         <td>{{i[13]}}</td>
                         <td>{{i[14]}}</td>
                         <td>{{i[15]}}</td>
+                        <td>
+                            <form method="POST">
+                                {{ form_editar_ordem_venda.hidden_tag() }}
+                                    <input type="hidden" id='myBtn' name="editar__item" value="{{ i[6] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
+                                {{ form_editar_ordem_venda.botao_editar_item(class='btn btn-sm btn-outline-primary') }}
+
+                            </form>
+                        </td>
+                        <td>
+                            <form method="POST">
+                                {{form_editar_ordem_venda.hidden_tag() }}
+                                    <input type="hidden" name="excluir__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
+                                {{form_editar_ordem_venda.botao_excluir_item(class='btn btn-sm btn-outline-primary' , onclick="return confirm('Tem certeza de que deseja excluir este item ?')") }}
+                            </form>
+                        </td>
                     </tr>
                     {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
