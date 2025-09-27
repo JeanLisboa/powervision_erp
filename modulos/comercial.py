@@ -108,108 +108,85 @@ def cadastrar_clientes():
 
 
 def editar_ordem_venda():
+
     print(CorFonte.fonte_amarela() + "Função editar_ordem_venda"+ CorFonte.reset_cor())
     form_editar_ordem_venda = ModComercial.EditarOrdemVenda()
     ordem_venda = form_editar_ordem_venda.pesquisar_ordem_venda.data
     session["ordem_venda"] = ordem_venda
     resultado_pesquisa = session.get("resultado_pesquisa", None)
     if request.method == "POST":
-        try:
-            if "botao_pesquisar_ordem_venda" in request.form:
-                ordem_venda = session.get("ordem_venda")
-                logging.info("botao_pesquisar_ordem_venda ACIONADO")
-                logging.info(f'ordem_venda: {ordem_venda}')
-                session["ordem_venda_pesquisada"] = ordem_venda
-                # pesquisar ordem de venda
-                def pesquisar_ordem_venda(ordem_venda):
+        if ordem_venda :
+            try:
+                if "botao_pesquisar_ordem_venda" in request.form:
+                    ordem_venda = session.get("ordem_venda")
+                    logging.info("botao_pesquisar_ordem_venda ACIONADO")
+                    logging.info(f'ordem_venda: {ordem_venda}')
+                    session["ordem_venda_pesquisada"] = ordem_venda
+                    # pesquisar ordem de venda
 
-                    query = f"SELECT * FROM ordem_venda where ordem_venda like '%{ordem_venda}%';"
-                    logging.info(f'query: {query}')
-                    mydb.connect()
-                    mycursor.execute(query)
-                    resultado_pesquisa = mycursor.fetchall()
-                    return resultado_pesquisa
+                    def pesquisar_ordem_venda(ordem_venda):
+                        query = f"SELECT * FROM ordem_venda where ordem_venda like '%{ordem_venda}%';"
+                        logging.info(f'query: {query}')
+                        mydb.connect()
+                        mycursor.execute(query)
+                        resultado_pesquisa = mycursor.fetchall()
+                        return resultado_pesquisa
 
-                resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
-                session["resultado_pesquisa"] = resultado_pesquisa
-                logging.info(f'resultado_pesquisa: {resultado_pesquisa}')
+                    resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
+                    session["resultado_pesquisa"] = resultado_pesquisa
+                    logging.info(f'resultado_pesquisa: {resultado_pesquisa}')
+                    return render_template('comercial/editar_ordem_venda.html',
+                                           data=Formatadores.os_data(),
+                                           resultado_pesquisa=resultado_pesquisa,
+                                           form_editar_ordem_venda=form_editar_ordem_venda)
+
+            except Exception as e:
+                logging.exception(e)
+                resultado_pesquisa = session.get("resultado_pesquisa")
                 return render_template('comercial/editar_ordem_venda.html',
-                                       data=Formatadores.os_data(),
-                                       resultado_pesquisa=resultado_pesquisa,
-                                       form_editar_ordem_venda=form_editar_ordem_venda)
+                                       form_editar_ordem_venda=form_editar_ordem_venda,
+                                       resultado_pesquisa=resultado_pesquisa)
 
-        except Exception as e:
-            logging.exception(e)
-            resultado_pesquisa = session.get("resultado_pesquisa")
-            return render_template('comercial/editar_ordem_venda.html',
-                                   form_editar_ordem_venda=form_editar_ordem_venda,
-                                   resultado_pesquisa=resultado_pesquisa)
+        else:
+            print(CorFonte.fonte_amarela() + "Nenhuma ordem de venda pesquisada" + CorFonte.reset_cor())
 
         try:
             if "botao_editar_item" in request.form:
+
                 ordem_venda_pesquisada = session.get("ordem_venda_pesquisada")
+                resultado_pesquisa = session.get("resultado_pesquisa")
+                print(f'resultado_pesquisa: {resultado_pesquisa}')
+                print(f'ordem_venda_pesquisada: {ordem_venda_pesquisada} {type(ordem_venda_pesquisada)}')
                 logging.info("botao_editar_item acionado")
-                logging.info(f'ordem_venda_pesquisada: {ordem_venda_pesquisada}')
-
                 item_selecionado = request.form.getlist("editar__item")[0]
-                logging.info(f'item_selecionado: {item_selecionado}')
+                print(f'item_selecionado: {item_selecionado}')
 
-                linha_para_editar = [i for i in ordem_venda_pesquisada if str(i[7]) == str(item_selecionado)]
-
+                linha_para_editar = [i for i in resultado_pesquisa if str(i[6]) == str(item_selecionado)]
+                print(f'linha_para_editar: {linha_para_editar[0]}')
                 if linha_para_editar:
                     session["linha_para_editar"] = linha_para_editar
                     logging.info(f'linha_para_editar: {linha_para_editar}')
                 else:
                     logging.warning("Nenhuma linha encontrada para o item selecionado.")
+                ordem_venda = session.get("ordem_venda_pesquisada")
 
                 return render_template('comercial/editar_ordem_venda.html',
+                                       ordem_venda=ordem_venda,
                                        form_editar_ordem_venda=form_editar_ordem_venda,
                                        data=Formatadores.os_data(),
+                                       resultado_pesquisa=resultado_pesquisa,
                                        linha_para_editar=linha_para_editar)
-
-                # if linha_para_editar:
-                #     ean = linha_para_editar[0][7]  #
-                #     form_editar_ordem_venda.ean.data = (
-                #         ean  # Define o valor no campo 'ean' do formulário
-                #     )
-                #     session["ean"] = ean
-                #     quantidade = linha_para_editar[0][8]
-                #     form_editar_ordem_venda.quantidade.data = quantidade
-                #     session["quantidade"] = quantidade
-                #
-                #     val_unitario = linha_para_editar[0][9]
-                #     form_editar_ordem_venda.val_unitario.data = val_unitario
-                #     session["valor_unitario"] = val_unitario
-                #
-                #     ordem_compra = linha_para_editar[0][1]
-                #     session["ordem_compra"] = ordem_compra
-                #     form_editar_ordem_venda.descricao.data = linha_para_editar[0][3]
-                #
-                # logging.info(f"linha_para_editar {linha_para_editar}")
-                # logging.info(f"ordem_pesquisada: {ordem_venda_pesquisada}")
-                # session["ordem_pesquisada"] = ordem_venda_pesquisada
-                # session["ordem_compra"] = ordem_compra
-                # # logging.info(f'item_selecionado: {item_selecionado}')
-                # return render_template(
-                #     "compras/editar_ordem_compra.html",
-                #     ordem_compra=ordem_compra,
-                #     quantidade=quantidade,
-                #     val_unitario=val_unitario,
-                #     linha_para_editar=linha_para_editar,
-                #     ordem_pesquisada=ordem_venda_pesquisada,
-                #     form_editar_ordem_venda=form_editar_ordem_venda,
-                #     data=Formatadores.formatar_data(Formatadores.os_data()),
-                # )
 
             pass
 
         except Exception as e:
+            print('ver erro')
             logging.exception(e)
 
     resultado_pesquisa = session.get("resultado_pesquisa", None)
     return render_template('comercial/editar_ordem_venda.html',
                            data=Formatadores.os_data(),
-                           resultado_pesquisa=resultado_pesquisa,
+
                            form_editar_ordem_venda=form_editar_ordem_venda)
 
 
