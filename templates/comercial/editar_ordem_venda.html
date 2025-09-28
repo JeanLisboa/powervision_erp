@@ -1,61 +1,89 @@
 {% extends "base.html" %}
 {% block content %}
 <title>{% block title %}Mod Comercial | Editar Ordem de Venda{% endblock %}</title>
+<p>TELA EDITAR ORDEM DE VENDA</p>
 
-TELA EDITAR ORDEM DE VENDA
-<div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
+
+
+<body>
     <form action="" method="POST">
-        {{ form_editar_ordem_venda.csrf_token }}
-        <div class="container  mb-3" xmlns="http://www.w3.org/1999/html">
-            <div class="">
-                <div class="col form-label btn btn-light">
-                   {{form_editar_ordem_venda.data.label }}
-                   {{form_editar_ordem_venda.data(class="form-control tam_campo_data",  value=data)}}
-                </div>
-                <div class="col form-label btn btn-light">
-                   {{form_editar_ordem_venda.pesquisar_ordem_venda.label}}
-                   {{form_editar_ordem_venda.pesquisar_ordem_venda}}
-                </div>
-                <div class="col form-label btn btn-light">
-                   {{form_editar_ordem_venda.botao_pesquisar_ordem_venda(class="btn btn-primary mt-3")}}
-                   {{form_editar_ordem_venda.botao_excluir_ordem_venda(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
-                </div>
-                <script src="static/js/pesquisa_produto.js" defer></script>
-            </div>
+    {{ form_editar_ordem_venda.csrf_token }}
 
+    <div class="page">
+        <section class="box top-left">
+            <div class="col form-label btn btn-light">
+               {{form_editar_ordem_venda.data.label }}
+               {{form_editar_ordem_venda.data(class="form-control tam_campo_data",  value=data)}}
             </div>
-    <div>
-        <h2></h2>
-        </div>
-        <div class="mt-2 float-child-ordem-compra">
-            <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
-                <thead>
-                    <tr class="cab_tabela">
-                        <th>DATA</th>
-                        <th>ORDEM VENDA</th>
-                        <th>ITEM</th>
-                        <th>CODIGO</th>
-                        <th>FORNECEDOR</th>
-                        <th>DESCRICAO</th>
-                        <th>EAN</th>
-                        <th>UN</th>
-                        <th>TABELA</th>
-                        <th>PRECO LISTA</th>
-                        <th>PRECO VENDA</th>
-                        <th>QTDE</th>
-                        <th>ACRES/DESC</th>
-                        <th>TOTAL</th>
-                        <th>USUARIO</th>
-                        <th>STATUS</th>
-                    </tr>
-                </thead>
+            <div class="col form-label btn btn-light">
+               {{form_editar_ordem_venda.pesquisar_ordem_venda.label}}
+               {{form_editar_ordem_venda.pesquisar_ordem_venda}}
+            </div>
+            <div class="col form-label btn btn-light">
+               {{form_editar_ordem_venda.botao_pesquisar_ordem_venda(class="btn btn-primary mt-3")}}
+               {{form_editar_ordem_venda.botao_excluir_ordem_venda(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
+            </div>
+            <script src="static/js/pesquisa_produto.js" defer></script>
+
+    </section>
+
+    <section class="box top-right">
+        <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+            <thead>
+                <tr class="cab_tabela">
+                    <th>DESCRIÇÃO</th>
+                    <th>QTD. TOTAL</th>
+                    <th>PRECO</th>
+                    <th>VAL. TOTAL</th>
+                    <th>SALDO QTD</th>
+                    <th>SALDO VAL</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
                 <tbody>
-                    {% if resultado_pesquisa is not none %}
-                    {% for i in resultado_pesquisa %}
+                    <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+    </section>
 
+    <section class="box bottom">
+        <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+            <thead>
+                <tr class="cab_tabela">
+                    <th>DATA</th>
+                    <th>ORDEM VENDA</th>
+                    <th>CLIENTE</th>
+                    <th>ITEM</th>
+                    <th>CODIGO</th>
+                    <th>FORNECEDOR</th>
+                    <th>DESCRICAO</th>
+                    <th>EAN</th>
+                    <th>UN</th>
+                    <th>TABELA</th>
+                    <th>PRECO LISTA</th>
+                    <th>PRECO VENDA</th>
+                    <th>QTDE</th>
+                    <th>ACRES/DESC</th>
+                    <th>TOTAL</th>
+                    <th>USUARIO</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if resultado_pesquisa is not none %}
+                {% for i in resultado_pesquisa %}
                     <tr>
                         <td>{{i[0]}}</td>
                         <td>{{i[1]}}</td>
+                        <td></td>
                         <td>{{i[2]}}</td>
                         <td>{{i[3]}}</td>
                         <td>{{i[4]}}</td>
@@ -90,10 +118,8 @@ TELA EDITAR ORDEM DE VENDA
                     {% endif %}
                 </tbody>
             </table>
-        </div>
-    </form>
-
-
-
-{% endblock %}
+    </section>
 </div>
+  </form>
+</body>
+{% endblock %}
