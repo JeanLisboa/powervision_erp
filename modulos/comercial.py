@@ -1,9 +1,7 @@
 import logging
 import mysql.connector
 from flask import render_template, redirect, url_for, request, session, flash
-from oauthlib.uri_validate import query
-from openpyxl.styles.builtins import total
-from sqlalchemy.dialects.mysql import insert
+from tensorflow.compiler.mlir.quantization.tensorflow.python.quantize_model import quantize
 
 import geral
 import modulos.admin
@@ -60,6 +58,7 @@ def cadastrar_clientes():
         municipio = form_cadastrar_clientes.municipio.data
         uf = form_cadastrar_clientes.uf.data
         tabela = form_cadastrar_clientes.tabela.data
+        cliente = form_cadastrar_clientes.cliente.data
         tabela = '001'
 
         try:
@@ -108,7 +107,6 @@ def cadastrar_clientes():
 
 
 def editar_ordem_venda():
-
     print(CorFonte.fonte_amarela() + "Função editar_ordem_venda"+ CorFonte.reset_cor())
     form_editar_ordem_venda = ModComercial.EditarOrdemVenda()
     ordem_venda = form_editar_ordem_venda.pesquisar_ordem_venda.data
@@ -132,8 +130,16 @@ def editar_ordem_venda():
                         mycursor.execute(query)
                         resultado_pesquisa = mycursor.fetchall()
                         return resultado_pesquisa
-
+                    cliente = session.get('cliente')
                     resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
+                    temp = []  # lista temporaria para armazenar os resultados
+                    print(f'----------------------------------------------')
+                    for i in resultado_pesquisa:
+                        i = i + cliente
+                        temp.append(i)
+                        print(temp)
+                    print(f'----------------------------------------------')
+                    resultado_pesquisa = temp
                     session["resultado_pesquisa"] = resultado_pesquisa
                     logging.info(f'resultado_pesquisa: {resultado_pesquisa}')
                     return render_template('comercial/editar_ordem_venda.html',
@@ -153,32 +159,61 @@ def editar_ordem_venda():
         # todo: ajustar frontend da tabela para nao passar por detras do titulo
         try:
             if "botao_editar_item" in request.form:
-
+                print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_editar_item" + CorFonte.reset_cor())
                 ordem_venda_pesquisada = session.get("ordem_venda_pesquisada")
                 resultado_pesquisa = session.get("resultado_pesquisa")
                 print(f'resultado_pesquisa: {resultado_pesquisa}')
-                print(f'ordem_venda_pesquisada: {ordem_venda_pesquisada} {type(ordem_venda_pesquisada)}')
+                print(f'ordem_venda_pesquisada: {ordem_venda_pesquisada} ')
                 logging.info("botao_editar_item acionado")
                 item_selecionado = request.form.getlist("editar__item")[0]
                 print(f'item_selecionado: {item_selecionado}')
 
                 linha_para_editar = [i for i in resultado_pesquisa if str(i[6]) == str(item_selecionado)]
+
                 print(f'linha_para_editar: {linha_para_editar[0]}')
+                # configuração do formulario para editar ytem da ordem de venda
                 if linha_para_editar:
                     session["linha_para_editar"] = linha_para_editar
+
+                    ean = ''
+                    form_editar_ordem_venda.ean.data = ean
+                    session["ean"] = ean
+
+                    quantidade = linha_para_editar[0][11]  # validar posicao
+                    form_editar_ordem_venda.quantidade.data = quantidade
+                    session["quantidade"] = quantidade
+
+                    descricao = linha_para_editar[0][5]
+                    form_editar_ordem_venda.descricao.data = descricao
+                    session["descricao"] = descricao
+
+                    val_unitario = linha_para_editar[0][10]
+                    form_editar_ordem_venda.val_unitario = val_unitario
+                    session["val_unitario"] = val_unitario
+
                     logging.info(f'linha_para_editar: {linha_para_editar}')
                 else:
                     logging.warning("Nenhuma linha encontrada para o item selecionado.")
                 ordem_venda = session.get("ordem_venda_pesquisada")
+                quantidade= session.get('quantidade')
+                descricao= session.get('descricao')
+                val_unitario= session.get('val_unitario')
+                ean= session.get('ean')
+                cliente= session.get('cliente')
+
 
                 return render_template('comercial/editar_ordem_venda.html',
                                        ordem_venda=ordem_venda,
                                        form_editar_ordem_venda=form_editar_ordem_venda,
+                                       ean=ean,
+                                       cliente=cliente,
+                                       quantidade=quantidade,
+                                       descricao=descricao,
+                                       val_unitario=val_unitario,
                                        data=Formatadores.os_data(),
                                        resultado_pesquisa=resultado_pesquisa,
                                        linha_para_editar=linha_para_editar)
 
-            pass
 
         except Exception as e:
             print('ver erro')
@@ -313,10 +348,7 @@ def gerar_ordem_venda():
                 usuario = 'ADMIN'
                 logging.info('botao_incluir_item ACIONADO')
                 lista_ordem_venda = session.get('lista_ordem_venda', [])
-                print('------------------------------------------')
-                for i in lista_ordem_venda:
-                    print(i)
-                print('------------------------------------------')
+
                 tupla_linha_selecionada = session.get('tupla_linha_selecionada')
                 cliente = form_gerar_ordem_venda.cliente.data or session.get('cliente')
                 fornecedor = session.get('fornecedor')

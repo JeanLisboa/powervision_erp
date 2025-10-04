@@ -24,35 +24,32 @@
                {{form_editar_ordem_venda.botao_excluir_ordem_venda(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
             </div>
             <script src="static/js/pesquisa_produto.js" defer></script>
+        </section>
 
-    </section>
+        <section class="box top-right">
+            <br>
+                {% if linha_para_editar is not none %}
 
-    <section class="box top-right">
-        <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
-            <thead>
-                <tr class="cab_tabela">
-                    <th>DESCRIÇÃO</th>
-                    <th>QTD. TOTAL</th>
-                    <th>PRECO</th>
-                    <th>VAL. TOTAL</th>
-                    <th>SALDO QTD</th>
-                    <th>SALDO VAL</th>
-                    <th>STATUS</th>
-                </tr>
-            </thead>
-                <tbody>
-                    <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-    </section>
+
+                    <div class="form-label btn btn-light">
+                        {{form_editar_ordem_venda.pesquisar_descricao.label(class="form-label" )  }}
+                        {{form_editar_ordem_venda.pesquisar_descricao(class="form-control tam_campo_descricao", value=descricao, id="pesquisar_descricao") }}
+                    </div>
+                    <div class="form-label btn btn-light">
+                        {{form_editar_ordem_venda.adicionar_quantidade.label(class="form-label" )  }}
+                        {{form_editar_ordem_venda.adicionar_quantidade(class="form-control tam_campo_quantidade_grande", value=quantidade, id="adicionar_quantidade") }}
+                    </div>
+                    <div class="form-label btn btn-light">
+                        {{form_editar_ordem_venda.adicionar_preco_unitario.label(class="form-label" )  }}
+                        {{form_editar_ordem_venda.adicionar_preco_unitario(class="form-control tam_campo_quantidade_grande", value=val_unitario, id="adicionar_preco_unitario") }}
+                    </div>
+
+                {% endif %}
+                <footer class="w3-container w3-teal">
+                    {{form_editar_ordem_venda.botao_salvar_item_adicionado(class='form-label class = btn btn-primary')}}
+                    {{form_editar_ordem_venda.botao_descartar_item_adicionado(class='form-label class = btn btn-secondary')}}
+                </footer>
+        </section>
 
     <section class="box bottom">
         <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
@@ -76,14 +73,16 @@
                     <th>USUARIO</th>
                     <th>STATUS</th>
                 </tr>
+
+
             </thead>
             <tbody>
                 {% if resultado_pesquisa is not none %}
-                {% for i in resultado_pesquisa %}
+                   {% for i in resultado_pesquisa %}
                     <tr>
                         <td>{{i[0]}}</td>
                         <td>{{i[1]}}</td>
-                        <td></td>
+                        <td>{{i[17]}}</td>
                         <td>{{i[2]}}</td>
                         <td>{{i[3]}}</td>
                         <td>{{i[4]}}</td>
@@ -115,7 +114,11 @@
                         </td>
                     </tr>
                     {% endfor %}
-                    {% endif %}
+                {% else %}
+                    <tr>
+                        <td colspan="17   ">Nenhum item incluído</td>
+                    </tr>
+                {% endif %}
                 </tbody>
             </table>
     </section>
