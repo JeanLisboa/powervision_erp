@@ -1,7 +1,6 @@
 import logging
 import mysql.connector
 from flask import render_template, redirect, url_for, request, session, flash
-from tensorflow.compiler.mlir.quantization.tensorflow.python.quantize_model import quantize
 
 import geral
 import modulos.admin
@@ -122,18 +121,29 @@ def editar_ordem_venda():
                     session["ordem_venda_pesquisada"] = ordem_venda
                     # pesquisar ordem de venda
 
-                    def pesquisar_ordem_venda(ordem_venda):
+                    def pesquisar_ordem_venda(ordem_venda: str):
+                        print(CorFonte.fonte_amarela() + 'função editar_ordem_venda | pesquisar_ordem_venda' + CorFonte.reset_cor())
 
-                        query = f"SELECT * FROM ordem_venda where ordem_venda like '%{ordem_venda}%';"
-                        logging.info(f'query: {query}')
-                        mydb.connect()
-                        mycursor.execute(query)
-                        resultado_pesquisa = mycursor.fetchall()
-                        return resultado_pesquisa
+                        query = "SELECT * FROM ordem_venda WHERE ordem_venda LIKE %s;"
+                        logging.info(f'query (parametrizada): {query}, valor: %{ordem_venda}%')
+                        try:
+                            mydb.connect()
+                            mycursor = mydb.cursor()
+                            # executa query de forma segura
+                            mycursor.execute(query, (f"%{ordem_venda}%",))
+                            resultado_pesquisa = mycursor.fetchall()
+                            return resultado_pesquisa
+
+                        except Exception as e:
+                            logging.error(f"Erro ao pesquisar ordem_venda: {e}")
+                            return []
+
+                        finally:
+                            mydb.close()
+
                     cliente = session.get('cliente')
                     resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
                     temp = []  # lista temporaria para armazenar os resultados
-                    print(f'----------------------------------------------')
                     for i in resultado_pesquisa:
                         i = i + cliente
                         temp.append(i)
@@ -142,8 +152,11 @@ def editar_ordem_venda():
                     resultado_pesquisa = temp
                     session["resultado_pesquisa"] = resultado_pesquisa
                     logging.info(f'resultado_pesquisa: {resultado_pesquisa}')
+                    ordem_venda = session.get("ordem_venda")
+                    print(f'teste ordem venda na pesquisa: {ordem_venda}')
                     return render_template('comercial/editar_ordem_venda.html',
                                            data=Formatadores.os_data(),
+                                           ordem_venda=ordem_venda,
                                            resultado_pesquisa=resultado_pesquisa,
                                            form_editar_ordem_venda=form_editar_ordem_venda)
 
@@ -151,6 +164,7 @@ def editar_ordem_venda():
                 logging.exception(e)
                 resultado_pesquisa = session.get("resultado_pesquisa")
                 return render_template('comercial/editar_ordem_venda.html',
+
                                        form_editar_ordem_venda=form_editar_ordem_venda,
                                        resultado_pesquisa=resultado_pesquisa)
 
@@ -194,7 +208,9 @@ def editar_ordem_venda():
                     logging.info(f'linha_para_editar: {linha_para_editar}')
                 else:
                     logging.warning("Nenhuma linha encontrada para o item selecionado.")
+
                 ordem_venda = session.get("ordem_venda_pesquisada")
+                print(f'teste ordem_venda {ordem_venda}')
                 quantidade= session.get('quantidade')
                 descricao= session.get('descricao')
                 val_unitario= session.get('val_unitario')
@@ -218,6 +234,60 @@ def editar_ordem_venda():
         except Exception as e:
             print('ver erro')
             logging.exception(e)
+
+
+        try:
+            if "botao_salvar_item_adicionado" in request.form:
+                print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_salvar_item_adicionado" + CorFonte.reset_cor())
+                linha_para_editar = session.get("linha_para_editar")
+                resultado_pesquisa = session.get('resultado_pesquisa')
+                # recuperar informação dos campos do formulario
+                nova_quantidade = form_editar_ordem_venda.adicionar_quantidade.data
+                novo_preco_unitario = form_editar_ordem_venda.adicionar_preco_unitario.data
+                print(f'nova_quantidade: {nova_quantidade}')
+                print(f'novo_preco_unitario: {novo_preco_unitario}')
+                print(f'linha_para_editar: {linha_para_editar}')
+                def alterar_item(nova_quantidade, novo_preco_unitario, linha_para_editar):
+                    preco_lista = linha_para_editar[0][9]
+                    preco_venda = novo_preco_unitario
+                    acres_desc = (preco_venda * nova_quantidade) - (preco_lista * nova_quantidade)
+                    print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_salvar_item_adicionado | função alterar_item" + CorFonte.reset_cor())
+                    query = (
+                        f"UPDATE ORDEM_VENDA\n"
+                        f"SET\n "
+                        f"QUANTIDADE = '{nova_quantidade}',\n"
+                        f"PRECO_VENDA = '{novo_preco_unitario}',\n"
+                        f"ACRESC_DESC = '{acres_desc}',\n"
+                        f"TOTAL_PEDIDO = '{nova_quantidade*novo_preco_unitario}',\n"
+                        
+                        f"WHERE EAN = '{linha_para_editar[0][6]}'\n "
+                        f"and ORDEM_COMPRA = '{linha_para_editar[0][1]}';"
+                    )
+                    print(f"query {query}")
+                    #
+                    # mydb.connect()
+                    # mycursor.execute(query)
+                    # mycursor.fetchall()
+                    # mydb.commit()
+                    # mydb.close()
+
+                alterar_item(nova_quantidade, novo_preco_unitario, linha_para_editar)
+
+                # se as informações forem iguais, alert nada a alterar
+                return render_template('comercial/editar_ordem_venda.html',
+                                       data=Formatadores.os_data(),
+                                       resultado_pesquisa=resultado_pesquisa,
+                                       form_editar_ordem_venda=form_editar_ordem_venda)
+
+
+
+
+        except Exception as e:
+            logging.exception(e)
+
+
+
+
 
     resultado_pesquisa = session.get("resultado_pesquisa", None)
     return render_template('comercial/editar_ordem_venda.html',
@@ -348,7 +418,6 @@ def gerar_ordem_venda():
                 usuario = 'ADMIN'
                 logging.info('botao_incluir_item ACIONADO')
                 lista_ordem_venda = session.get('lista_ordem_venda', [])
-
                 tupla_linha_selecionada = session.get('tupla_linha_selecionada')
                 cliente = form_gerar_ordem_venda.cliente.data or session.get('cliente')
                 fornecedor = session.get('fornecedor')
@@ -374,7 +443,8 @@ def gerar_ordem_venda():
                 lista_linha_selecionada.append(usuario)
                 lista_linha_selecionada.append(preco_venda)
                 lista_linha_selecionada.append(desconto_acrescimo)
-                lista_linha_selecionada.append(cliente)
+                lista_linha_selecionada.append(cliente[0]) # COD CLIENTE
+                lista_linha_selecionada.append(cliente[1]) # NOME FANTASIA
                 session['cliente'] = cliente
                 total_pedido = total_pedido + total_item
                 session['total_pedido'] = total_pedido
@@ -498,14 +568,15 @@ def gerar_ordem_venda():
         try:
             if "botao_submit_ordem_venda" in request.form:
                 usuario = session.get('usuario')
+                cliente = session.get('cliente')
                 logging.info("botao_gerar_ordem Venda ACIONADO")
                 cont_temp = 1
                 lista_ordem_venda = session.get('lista_ordem_venda')
-                # logging.info(f'lista_ordem_venda: {lista_ordem_venda}')
+                logging.info(f'lista_ordem_venda: {lista_ordem_venda}')
                 while cont_temp <= len(lista_ordem_venda):
                     # logging.info(f'lista_ordem_venda: {lista_ordem_venda}')
                     for i in lista_ordem_venda:
-                        values_ordem_venda = (data.strftime('%Y-%m-%d'), i[6], cont_temp, i[0], i[7], i[2],i[1], i[3],i[4],i[5],i[11],i[8],i[12],i[9], 'ADMIN', 'ABERTO')
+                        values_ordem_venda = (data.strftime('%Y-%m-%d'), i[6], cont_temp, i[0], i[7], i[2],i[1], i[3],i[4],i[5],i[11],i[8],i[12],i[9], 'ADMIN', 'ABERTO', i[13], i[14])
                         cont_temp += 1
                         mydb.connect()
                         query = (
@@ -524,9 +595,13 @@ def gerar_ordem_venda():
                                 f"QUANTIDADE, "
                                 f"ACRESC_DESC, "
                                 f"TOTAL_PEDIDO, "
-                                f"USUARIO, STATUS_PEDIDO)"
+                                f"USUARIO, "
+                                f"STATUS_PEDIDO, "
+                                f"COD_CLIENTE,"
+                                f"CLIENTE)"
                                 f" VALUES {values_ordem_venda};")
                         logging.info(values_ordem_venda)
+                        # input('>>>>>>>>>>>>>>>>>>>>>>>>>>>> VALIDE A QUERY')
                         logging.info(f"Query {cont_temp} >>>> {query}")
                         mycursor.execute(query)
                         mycursor.fetchall()
@@ -593,7 +668,6 @@ def relatorio_ordem_venda():
                 logging.info(f'data_ate: {data_ate}')
                 logging.info(f'ordem_venda: {ordem_venda}')
                 logging.info(f'cliente: {cliente}')
-
                 query = "SELECT * FROM ordem_venda where 1=1;"
 
                 if data_de:
@@ -610,10 +684,6 @@ def relatorio_ordem_venda():
                 resultado_relatorio = mycursor.fetchall()  # pega os dados só aqui
                 session['resultado_relatorio'] = resultado_relatorio
                 mydb.close()  # fecha conexão
-
-                logging.info('-----------------------------------------------')
-                logging.info(f'query: {query}')
-
                 for i in resultado_relatorio:
                     logging.info(f'i : {i}')
 
