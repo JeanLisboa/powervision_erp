@@ -106,11 +106,30 @@ def cadastrar_clientes():
 
 
 def editar_ordem_venda():
+    def pesquisar_ordem_venda(ordem_venda_: str):
+        print(CorFonte.fonte_amarela() + 'função editar_ordem_venda | pesquisar_ordem_venda' + CorFonte.reset_cor())
+
+        query = "SELECT * FROM ordem_venda WHERE ordem_venda LIKE %s;"
+        logging.info(f'query (parametrizada): {query}, valor: %{ordem_venda_}%')
+        try:
+            mydb.connect()
+            mycursor = mydb.cursor()
+            # executa query de forma segura
+            mycursor.execute(query, (f"%{ordem_venda}%",))
+            resultado_pesquisa = mycursor.fetchall()
+            return resultado_pesquisa
+
+        except Exception as e:
+            logging.error(f"Erro ao pesquisar ordem_venda: {e}")
+            return []
+
+        finally:
+            mydb.close()
     print(CorFonte.fonte_amarela() + "Função editar_ordem_venda"+ CorFonte.reset_cor())
     form_editar_ordem_venda = ModComercial.EditarOrdemVenda()
     ordem_venda = form_editar_ordem_venda.pesquisar_ordem_venda.data
     session["ordem_venda"] = ordem_venda
-    resultado_pesquisa = session.get("resultado_pesquisa", None)
+    # resultado_pesquisa = session.get("resultado_pesquisa", None)
     if request.method == "POST":
         if ordem_venda :
             try:
@@ -121,25 +140,6 @@ def editar_ordem_venda():
                     session["ordem_venda_pesquisada"] = ordem_venda
                     # pesquisar ordem de venda
 
-                    def pesquisar_ordem_venda(ordem_venda: str):
-                        print(CorFonte.fonte_amarela() + 'função editar_ordem_venda | pesquisar_ordem_venda' + CorFonte.reset_cor())
-
-                        query = "SELECT * FROM ordem_venda WHERE ordem_venda LIKE %s;"
-                        logging.info(f'query (parametrizada): {query}, valor: %{ordem_venda}%')
-                        try:
-                            mydb.connect()
-                            mycursor = mydb.cursor()
-                            # executa query de forma segura
-                            mycursor.execute(query, (f"%{ordem_venda}%",))
-                            resultado_pesquisa = mycursor.fetchall()
-                            return resultado_pesquisa
-
-                        except Exception as e:
-                            logging.error(f"Erro ao pesquisar ordem_venda: {e}")
-                            return []
-
-                        finally:
-                            mydb.close()
 
                     cliente = session.get('cliente')
                     resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
@@ -247,45 +247,62 @@ def editar_ordem_venda():
                 print(f'nova_quantidade: {nova_quantidade}')
                 print(f'novo_preco_unitario: {novo_preco_unitario}')
                 print(f'linha_para_editar: {linha_para_editar}')
+
                 def alterar_item(nova_quantidade, novo_preco_unitario, linha_para_editar):
                     preco_lista = linha_para_editar[0][9]
                     preco_venda = novo_preco_unitario
                     acres_desc = (preco_venda * nova_quantidade) - (preco_lista * nova_quantidade)
-                    print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_salvar_item_adicionado | função alterar_item" + CorFonte.reset_cor())
-                    query = (
-                        f"UPDATE ORDEM_VENDA\n"
-                        f"SET\n "
-                        f"QUANTIDADE = '{nova_quantidade}',\n"
-                        f"PRECO_VENDA = '{novo_preco_unitario}',\n"
-                        f"ACRESC_DESC = '{acres_desc}',\n"
-                        f"TOTAL_PEDIDO = '{nova_quantidade*novo_preco_unitario}',\n"
-                        
-                        f"WHERE EAN = '{linha_para_editar[0][6]}'\n "
-                        f"and ORDEM_COMPRA = '{linha_para_editar[0][1]}';"
+                    total_pedido = nova_quantidade * novo_preco_unitario
+
+                    print(CorFonte.fonte_amarela() +
+                          "Função editar_ordem_venda | botao_salvar_item_adicionado | função alterar_item" +
+                          CorFonte.reset_cor())
+
+                    query = """
+                        UPDATE ORDEM_VENDA
+                        SET QUANTIDADE = %s,
+                            PRECO_VENDA = %s,
+                            ACRESC_DESC = %s,
+                            TOTAL_PEDIDO = %s
+                        WHERE EAN = %s
+                          AND ORDEM_VENDA = %s;
+                    """
+
+                    valores = (
+                        nova_quantidade,
+                        novo_preco_unitario,
+                        acres_desc,
+                        total_pedido,
+                        linha_para_editar[0][6],  # EAN
+                        linha_para_editar[0][1]  # ORDEM_COMPRA
                     )
-                    print(f"query {query}")
-                    #
-                    # mydb.connect()
-                    # mycursor.execute(query)
-                    # mycursor.fetchall()
-                    # mydb.commit()
-                    # mydb.close()
+
+                    try:
+                        print("Conectando ao banco de dados...")
+                        mydb.connect()
+                        mycursor.execute(query, valores)
+                        mycursor.fetchall()
+                        mydb.commit()
+                        mydb.close()
+                        print("Item atualizado com sucesso!")
+
+                    except Exception as e:
+                        print(f"Erro ao atualizar item: {e}")
+
+                    finally:
+                        mydb.close()
 
                 alterar_item(nova_quantidade, novo_preco_unitario, linha_para_editar)
-
                 # se as informações forem iguais, alert nada a alterar
+                resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
                 return render_template('comercial/editar_ordem_venda.html',
                                        data=Formatadores.os_data(),
+                                       ordem_venda=ordem_venda,
                                        resultado_pesquisa=resultado_pesquisa,
                                        form_editar_ordem_venda=form_editar_ordem_venda)
 
-
-
-
         except Exception as e:
             logging.exception(e)
-
-
 
 
 
