@@ -388,6 +388,9 @@ def cadastrar_produtos():
         data=Formatadores.formatar_data(Formatadores.os_data()))
 
 def gerar_ordem_compra():
+    # fixme: ajustar frontend de gerar_ordem_compra.html e incluir barra de rolagem na tabela superior direita
+    #  para melhor visualização. Deverá ser criado um novo css conforme a tela gerar pedido de venda
+
     print(CorFonte.fonte_amarela() + "Função gerar_ordem_compra" + CorFonte.reset_cor())
     """
     1. USUÁRIO DEFINE O FORNECEDOR E CLICA EM PESQUISAR FORNECEDOR
@@ -938,7 +941,8 @@ def editar_ordem_compra():
                     session["linha_para_editar"] = linha_para_editar
 
             if linha_para_editar:
-                ean = linha_para_editar[0][7]  #
+                ean = linha_para_editar[0][7]
+
                 form_editar_ordem_compra.ean.data = (
                     ean  # Define o valor no campo 'ean' do formulário
                 )
@@ -1011,7 +1015,7 @@ def editar_ordem_compra():
                 ordem_compra = session.get("ordem_compra")
                 print(f"ordem_compra recuperado no session {ordem_compra}")
                 ordem_pesquisada = session.get("result_ordem_pesquisada")
-                # linha_para_editar = list(linha_para_editar)
+
                 linha_para_editar = linha_para_editar.clear()
                 print(f"linha_para_editar antes do redirect {linha_para_editar}")
                 form_editar_ordem_compra.ean.data = ""
