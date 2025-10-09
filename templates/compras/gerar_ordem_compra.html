@@ -7,117 +7,107 @@
 
 {% block content %}
 <title>{% block title %}Mod Compras | Gerar Ordem{% endblock %}</title>
+<body>
+    <form action="" method="POST">{{form_gerar_ordem_compra.csrf_token}}
 
-<div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
-    <form action="" method="POST">
-        {{form_gerar_ordem_compra.csrf_token}}
-        <!-- div1 -->
-        <div class="mb-1 float-child-ordem-compra1">
-            <div class="col form-label btn btn-light">
+<div class="page">
+
+    <section class="box top-left">
+      <div class="col form-label btn btn-light">
                 {{form_gerar_ordem_compra.data.label}}
                 {{form_gerar_ordem_compra.data(class="form-control tam_campo_data",  value=data)}}
             </div>
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.ordem_compra.label}}
-                {{form_gerar_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra)}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.fornecedor.label}}
-                {{form_gerar_ordem_compra.fornecedor(class="form-control tam_campo_descricao", value=linha_selecionada[2])}}
-            </div>
-            {{form_gerar_ordem_compra.botao_pesquisar_fornecedor(class="btn btn-primary mt-4")}}
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.codigo.label}}
-                {{form_gerar_ordem_compra.codigo(class="form-control tam_campo_codigo", value=linha_selecionada[1])}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.categoria.label}}
-                {{form_gerar_ordem_compra.categoria(class="form-control tam_campo_codigo", value=linha_selecionada[6])}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.unidade.label}}
-                {{form_gerar_ordem_compra.unidade(class="form-control tam_campo_abrev", value=linha_selecionada[5])}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.ean.label}}
-                {{form_gerar_ordem_compra.ean(class="form-control tam_campo_ean" ,  value=linha_selecionada[3])}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.descricao.label}}
-                {{form_gerar_ordem_compra.descricao(class="form-control tam_campo_descricao", value=linha_selecionada[4])}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.quantidade.label}}
-               {{form_gerar_ordem_compra.quantidade(class="form-control tam_campo_quantidade", value=1)}}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{form_gerar_ordem_compra.preco_unitario.label}}
-                {{form_gerar_ordem_compra.preco_unitario(class="form-control tam_campo_codigo", value=linha_selecionada[7], id="preco_unitario")}}
-            </div>
-            <div class="btn">
-                {{form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3")}}
-            </div>
-            <div>
-                {{ form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3")}}
-                {{form_gerar_ordem_compra.botao_limpar_ordem(class="btn btn-secondary mt-3")}}
-            </div>
-            <script src="static/js/pesquisa_produto.js" defer></script>
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.ordem_compra.label}}
+            {{form_gerar_ordem_compra.ordem_compra(class="form-control tam_campo_codigo", value=ordem_compra)}}
         </div>
-            <!-- div2 -->
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.fornecedor.label}}
+            {{form_gerar_ordem_compra.fornecedor(class="form-control tam_campo_descricao", value=linha_selecionada[2])}}
+        </div>
+        {{form_gerar_ordem_compra.botao_pesquisar_fornecedor(class="btn btn-primary mt-4")}}
+        <br>
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.codigo.label}}
+            {{form_gerar_ordem_compra.codigo(class="form-control tam_campo_codigo", value=linha_selecionada[1])}}
+        </div>
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.categoria.label}}
+            {{form_gerar_ordem_compra.categoria(class="form-control tam_campo_codigo", value=linha_selecionada[6])}}
+        </div>
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.unidade.label}}
+            {{form_gerar_ordem_compra.unidade(class="form-control tam_campo_abrev", value=linha_selecionada[5])}}
+        </div>
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.ean.label}}
+            {{form_gerar_ordem_compra.ean(class="form-control tam_campo_ean" ,  value=linha_selecionada[3])}}
+        </div>
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.descricao.label}}
+            {{form_gerar_ordem_compra.descricao(class="form-control tam_campo_descricao", value=linha_selecionada[4])}}
+        </div>
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.quantidade.label}}
+           {{form_gerar_ordem_compra.quantidade(class="form-control tam_campo_quantidade", value=1)}}
+        </div>
+        <div class="col form-label btn btn-light">
+            {{form_gerar_ordem_compra.preco_unitario.label}}
+            {{form_gerar_ordem_compra.preco_unitario(class="form-control tam_campo_codigo", value=linha_selecionada[7], id="preco_unitario")}}
+        </div>
+        <div class="btn">
+            {{form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3")}}
+        </div>
+        <div>
+            {{ form_gerar_ordem_compra.botao_submit_compra(class="btn btn-primary mt-3")}}
+            {{form_gerar_ordem_compra.botao_limpar_ordem(class="btn btn-secondary mt-3")}}
+        </div>
+        <script src="static/js/pesquisa_produto.js" defer></script>
+    </section>
 
-    <div class="float-child-ordem-compra2">
-            <div  class="container_com_barra_rolagem" style="top: -1px">
-                <table class="table table-hover table-striped " style="position:sticky" cellpadding="2" cellspacing="2" >
-                    <thead>
-                        <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                            <th style="width: 10%;"></th>
-                            <th >Descrição</th>
-                            <th>EAN</th>
-                            <th style="width: 10%;">Un</th>
-                            <th>Valor</th>
-                        </tr>
-                    </thead>
-                <tbody>
-                 {% if result_pesq_forn %}
-                   {% for i in result_pesq_forn %}
-                <tr class="table table-striped table-sm table-layout:fixed ">
-                    <td>
-                        <form method="POST">
-                            {{form_gerar_ordem_compra.hidden_tag()}}
-                            <input class="" type="hidden" name="incluir_item" value="{{i[3]}}">
-                            {{form_gerar_ordem_compra.botao_selecionar_item(class='btn btn-sm btn-outline-primary')}}
-                        </form>
-                    </td>
-                    <td>{{i[4]}}</td>
-                    <td>{{i[3]}}</td>
-                    <td>{{i[5]}}</td>
-                    <td>{{i[7]}}</td>
+    <section class="box top-right">
+        <div style="max-height: 320px; overflow-y: auto; overflow-x: auto;">
+            <table class="table table-hover table-striped table-bordered" >
+            <thead style="position: sticky; top: 0; background: white; z-index: 2;">
+                <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                    <th style="width: 10%;"></th>
+                    <th >Descrição</th>
+                    <th>EAN</th>
+                    <th style="width: 10%;">Un</th>
+                    <th>Valor</th>
                 </tr>
-                {% endfor %}
-                {% else %}
-                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                        <td colspan="5">Nenhum fornecedor encontrado</td>
-                    </tr>
-                {% endif %}
-            </tbody>
-            </table>
-
-<!--                <div class="col form-label  btn btn-alt">-->
-<!--                    <button type="button" class="btn btn-success mt-3 btn-lg botao_borda_customizada"> ÚLTIMO PREÇO: R$ {{ultimo_preco}}</button>-->
-<!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> PREÇO MEDIO: R$ {{preco_medio}}</button>-->
-<!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> EM ABERTO: {{ordens_em_aberto[0]}} R${{ordens_em_aberto[1]}}</button>-->
-<!--                    <button type="button" class="btn btn-info mt-3 btn-lg botao_valor_total"> TOTAL DO PEDIDO: R$ {{total_ordem_compra}}</button>-->
-<!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE LIVRE:    </button>-->
-<!--                    <button type="button" class="btn btn-warning mt-3 btn-lg botao_borda_customizada"> ESTOQUE EMPENHADO: </button>-->
-<!--                </div>-->
-            </div>
-    </div>
-
-    </form>
-
-    <div class="mt-5 float-child-ordem-compra container_com_barra_100%">
-            <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
-                <thead>
+            </thead>
+            <tbody>
+             {% if result_pesq_forn %}
+               {% for i in result_pesq_forn %}
+                <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                <td>
+                    <form method="POST">
+                        {{form_gerar_ordem_compra.hidden_tag()}}
+                        <input class="" type="hidden" name="incluir_item" value="{{i[3]}}">
+                        {{form_gerar_ordem_compra.botao_selecionar_item(class='btn btn-sm btn-outline-primary')}}
+                    </form>
+                </td>
+                <td>{{i[4]}}</td>
+                <td>{{i[3]}}</td>
+                <td>{{i[5]}}</td>
+                <td>{{i[7]}}</td>
+            </tr>
+            {% endfor %}
+            {% else %}
+                <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                    <td colspan="5">Nenhum item cadastrado</td>
+                </tr>
+            {% endif %}
+        </tbody>
+        </table>
+        </div>
+    </section>
+    <section class="box bottom">
+      <h2>Parte inferior</h2>
+        <div style="max-height: 320px; overflow-y: auto; overflow-x: auto;">
+            <table class="table table-hover table-striped table-bordered" id="tabela-itens">
+                <thead style="position: sticky; top: 0; background: white; z-index: 2;">
                     <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed">
                         <th>Data</th>
                         <th>Ordem de Compra</th>
@@ -160,10 +150,10 @@
                 {% endif %}
                 </tbody>
             </table>
+        </div>
+    </section>
+  </div>
+    </form>
+</body>
+{% endblock %}
 
-    </div>
-    {% endblock %}
-
-
-
-</div>

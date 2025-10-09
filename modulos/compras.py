@@ -388,8 +388,6 @@ def cadastrar_produtos():
         data=Formatadores.formatar_data(Formatadores.os_data()))
 
 def gerar_ordem_compra():
-    # fixme: ajustar frontend de gerar_ordem_compra.html e incluir barra de rolagem na tabela superior direita
-    #  para melhor visualização. Deverá ser criado um novo css conforme a tela gerar pedido de venda
 
     print(CorFonte.fonte_amarela() + "Função gerar_ordem_compra" + CorFonte.reset_cor())
     """
@@ -639,6 +637,9 @@ def gerar_ordem_compra():
 
                 if ean_ja_digitado:
                     print(CorFonte.fonte_vermelha() + f"EAN {ean} já digitado na ordem de compra" + CorFonte.reset_cor())
+
+                elif ean is None or ean == "":
+                    print(CorFonte.fonte_vermelha() + f"Selecione um Produto" + CorFonte.reset_cor())
 
                 else:
                     print(CorFonte.fonte_verde() +  "Item ainda não digitado na ordem de compra" + CorFonte.reset_cor())
@@ -1001,7 +1002,7 @@ def editar_ordem_compra():
                     f"WHERE EAN = '{linha_para_editar[0][7]}'\n "
                     f"and ORDEM_COMPRA = '{linha_para_editar[0][1]}';"
                 )
-                # print(f"query {query}")
+
 
                 mydb.connect()
                 mycursor.execute(query)
