@@ -106,6 +106,8 @@ def cadastrar_clientes():
 
 
 def editar_ordem_venda():
+
+
     def pesquisar_ordem_venda(ordem_venda_: str):
         print(CorFonte.fonte_amarela() + 'função editar_ordem_venda | pesquisar_ordem_venda' + CorFonte.reset_cor())
 
@@ -129,7 +131,7 @@ def editar_ordem_venda():
     form_editar_ordem_venda = ModComercial.EditarOrdemVenda()
     ordem_venda = form_editar_ordem_venda.pesquisar_ordem_venda.data
     session["ordem_venda"] = ordem_venda
-    # resultado_pesquisa = session.get("resultado_pesquisa", None)
+
     if request.method == "POST":
         if ordem_venda :
             try:
@@ -142,6 +144,7 @@ def editar_ordem_venda():
 
 
                     cliente = session.get('cliente')
+                    # fixme: alterar para chamar a função do utils/buscadores
                     resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
                     temp = []  # lista temporaria para armazenar os resultados
                     for i in resultado_pesquisa:
@@ -340,9 +343,26 @@ def editar_ordem_venda():
 def adicionar_item_ordem_venda():
     form_adicionar_item_ordem_venda = ModComercial.AdicionarItemOrdemVenda()
     # QUADRO 1
+    # PUXAR SESSION ordem_venda
+    if request.method == "POST":
+        try:
+            if "botao_pesquisar_ordem_venda" in request.form:
+                logging.info("botao_pesquisar_ordem_venda ACIONADO")
+                ordem_venda = form_adicionar_item_ordem_venda.ordem_venda.data
+                session['ordem_venda'] = ordem_venda
+                print(f'ordem_venda: {ordem_venda}')
+                resultado_pesquisa = modulos.utils.buscadores.Buscadores.OrdemVenda.pesquisar_ordem_venda(ordem_venda)
+                print(f'resultado_pesquisa: {resultado_pesquisa}')
+                session['resultado_pesquisa'] = resultado_pesquisa
 
-    # PUXAR SESSION DE data, ordem_venda, ean,  descrição, QUANTIDADE, PREÇO UNITARIO
+
+
+        except Exception as e:
+            logging.exception(e)
+
     # BOTAO INCLUIR ITEM, - INCLUI O IITEM NA TABELA DE ITENS DE ORDEM DE COMPRA
+
+
     # BOTAO ATUALIZAR ORDEM DE COMPRA - SALVA A ORDEM DE COMPRA
     # BOTAO CANCELAR - LIMPA TODOS OS CAMPOS E VOLTA PARA A TELA GERAR ORDEM
 
@@ -353,8 +373,10 @@ def adicionar_item_ordem_venda():
 
     # QUADRO 3
     # TABELA COM OS ITENS JA SALVOS
-    teste = 'teste inicial'
-    return render_template('comercial/adicionar_item_ordem_venda.html', form_adicionar_item_ordem_venda=form_adicionar_item_ordem_venda, teste=teste)
+    resultado_pesquisa = session.get("resultado_pesquisa", None)
+
+    return render_template('comercial/adicionar_item_ordem_venda.html', form_adicionar_item_ordem_venda=form_adicionar_item_ordem_venda,
+                           data=Formatadores.os_data(),resultado_pesquisa=resultado_pesquisa)
 
 
 def gestao_carteira():
