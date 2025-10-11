@@ -171,6 +171,33 @@ def editar_ordem_venda():
         else:
             print(CorFonte.fonte_amarela() + "Nenhuma ordem de venda pesquisada" + CorFonte.reset_cor())
         # todo: ajustar frontend da tabela para nao passar por detras do titulo
+
+
+        try:
+            if "botao_excluir_item" in request.form:
+                print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_excluir_item_ordem_venda" + CorFonte.reset_cor())
+
+        except Exception as e:
+            logging.exception(e)
+
+        try:
+            if "botao_adicionar_item" in request.form and ordem_venda is not None:
+                print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_adicionar_item_ordem_venda" + CorFonte.reset_cor())
+                session["ordem_venda"] = ordem_venda
+                resultado_pesquisa = session.get("resultado_pesquisa")
+                return redirect(url_for("adicionar_item_ordem_venda"))
+                # if ordem_venda:
+                #     return redirect(url_for("adicionar_item_ordem_venda"))
+
+                # return render_template('comercial/editar_ordem_venda.html',
+                #                        data=Formatadores.os_data(),
+                #                        ordem_venda=ordem_venda,
+                #                        resultado_pesquisa=resultado_pesquisa,
+                #                        form_editar_ordem_venda=form_editar_ordem_venda)
+
+        except Exception as e:
+            logging.exception(e)
+
         try:
             if "botao_editar_item" in request.form:
                 print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_editar_item" + CorFonte.reset_cor())
@@ -230,11 +257,9 @@ def editar_ordem_venda():
                                        resultado_pesquisa=resultado_pesquisa,
                                        linha_para_editar=linha_para_editar)
 
-
         except Exception as e:
             print('ver erro')
             logging.exception(e)
-
 
         try:
             if "botao_salvar_item_adicionado" in request.form:
@@ -301,6 +326,7 @@ def editar_ordem_venda():
                                        resultado_pesquisa=resultado_pesquisa,
                                        form_editar_ordem_venda=form_editar_ordem_venda)
 
+
         except Exception as e:
             logging.exception(e)
 
@@ -310,6 +336,25 @@ def editar_ordem_venda():
     return render_template('comercial/editar_ordem_venda.html',
                            data=Formatadores.os_data(),
                            form_editar_ordem_venda=form_editar_ordem_venda)
+
+def adicionar_item_ordem_venda():
+    form_adicionar_item_ordem_venda = ModComercial.AdicionarItemOrdemVenda()
+    # QUADRO 1
+
+    # PUXAR SESSION DE data, ordem_venda, ean,  descrição, QUANTIDADE, PREÇO UNITARIO
+    # BOTAO INCLUIR ITEM, - INCLUI O IITEM NA TABELA DE ITENS DE ORDEM DE COMPRA
+    # BOTAO ATUALIZAR ORDEM DE COMPRA - SALVA A ORDEM DE COMPRA
+    # BOTAO CANCELAR - LIMPA TODOS OS CAMPOS E VOLTA PARA A TELA GERAR ORDEM
+
+    # QUADRO 2
+    # CAMPO PESQUISA DESCRICAO, CATEGORIA E EAN
+
+    # TABELA DE PRODUTOS
+
+    # QUADRO 3
+    # TABELA COM OS ITENS JA SALVOS
+    teste = 'teste inicial'
+    return render_template('comercial/adicionar_item_ordem_venda.html', form_adicionar_item_ordem_venda=form_adicionar_item_ordem_venda, teste=teste)
 
 
 def gestao_carteira():
@@ -447,13 +492,7 @@ def gerar_ordem_venda():
                 preco_lista =  lista_linha_selecionada[5]
                 total_item = quantidade * preco
                 preco_venda = total_item/quantidade
-                total_preco_lsta_teste = preco_lista * quantidade
-                total_preco_venda_teste = preco_venda * quantidade
-                # logging.info(f'total_preco_lsta_teste: {total_preco_lsta_teste}')
-                # logging.info(f'total_preco_venda_teste: {total_preco_venda_teste}')
                 desconto_acrescimo = (preco_venda * quantidade) - (preco_lista * quantidade)
-                # logging.info(f'desconto_acrescimo: {desconto_acrescimo}')
-
                 lista_linha_selecionada.append(fornecedor)
                 lista_linha_selecionada.append(quantidade)
                 lista_linha_selecionada.append(total_item)
@@ -559,10 +598,11 @@ def gerar_ordem_venda():
 
         try:
             if "botao_remover_item" in request.form:
+                total_pedido = session.get('total_pedido', 0)
+                print(f'total_pedido_recuperado: {total_pedido}')
                 logging.info("botao_remover_item ACIONADO")
                 busca_ean_excluir = request.form.get('botao_remover_item')
                 logging.info(f'item a excluir: {busca_ean_excluir} -  {type(busca_ean_excluir)}')
-                cliente = session.get('cliente')
                 cliente = form_gerar_ordem_venda.cliente.data
                 logging.info(f'cliente: {cliente}')
                 lista_ordem_venda = session.get('lista_ordem_venda', [])  #
@@ -573,6 +613,9 @@ def gerar_ordem_venda():
                     logging.info(f'posicao {contador}:{busca_ean_excluir} - {type(busca_ean_excluir)} | {i[1]} - {type(i[1])}')
                     if i[1] == busca_ean_excluir:
                         logging.info(f'Ean {busca_ean_excluir} localizado na posicao {contador}')
+                        # FIXME: CORRIGIR CONTADOR DO VALOR TOTAL DO PEDIDO QUANDO O ITEM É REMOVIDO
+                        total_pedido -= i[9]
+                        print(f'linha a excluir: {lista_ordem_venda[contador]}')
                         del lista_ordem_venda[contador]
                         logging.info(f'Nova lsta:\n {lista_ordem_venda}')
                     contador += 1
@@ -656,7 +699,7 @@ def gerar_ordem_venda():
     lista_produtos = session.get('lista_produtos')
     lista_ordem_venda = session.get('lista_ordem_venda')
 
-
+    # FIXME: AJUSTAR LISTA DE CLIENTES DA TELA GERAR_ORDEM_VENDA, POIS SÓ APARECE O PRIMEIRO CLIENTE DA LISTA
     return render_template('comercial/gerar_ordem_venda.html',
                            ordem_venda=busca_n_ordem_venda(),
 
@@ -685,7 +728,7 @@ def relatorio_ordem_venda():
                 logging.info(f'data_ate: {data_ate}')
                 logging.info(f'ordem_venda: {ordem_venda}')
                 logging.info(f'cliente: {cliente}')
-                query = "SELECT * FROM ordem_venda where 1=1;"
+                query = "SELECT * FROM ordem_venda where 1=1"
 
                 if data_de:
                     query += f" and data >= '{data_de}'"
@@ -694,8 +737,9 @@ def relatorio_ordem_venda():
                 if ordem_venda:
                     query += f" and ordem_venda = '{ordem_venda}'"
                 if cliente:
-                    query += f" and codigo_cliente = '{cliente}'"
+                    query += f" and codigo_cliente = '{cliente}';"
 
+                print(f'query: {query}')
                 mydb.connect()
                 mycursor.execute(query)
                 resultado_relatorio = mycursor.fetchall()  # pega os dados só aqui
@@ -704,9 +748,10 @@ def relatorio_ordem_venda():
                 for i in resultado_relatorio:
                     logging.info(f'i : {i}')
 
-
         except Exception as e:
             logging.info(f"Erro ao gerar ordem: {e}")
+
+
     resultado_relatorio = session.get('resultado_relatorio')
     return render_template('comercial/relatorio_ordem_venda.html',
                            form_relatorio_ordem_venda=form_relatorio_vendas,

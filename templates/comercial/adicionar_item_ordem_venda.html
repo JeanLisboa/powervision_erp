@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+
+<title>{% block title %}Mod Comercial | Adicionar Item{% endblock %}</title>
+<body>
+<form action="" method="POST">
+  {{form_adicionar_item_ordem_venda.csrf_token}}
+
+  <div class="page">
+    <section class="box top-left">
+      <h2>Parte superior 1</h2>
+      <section class="box top-left">
+        <div class="col form-label btn btn-light">
+          {{form_adicionar_item_ordem_venda.data.label}}
+          {{form_adicionar_item_ordem_venda.data(class="form-control tam_campo_data", value=data)}}
+        </div>
+        <div class="col form-label btn btn-light">
+          {{form_adicionar_item_ordem_venda.ordem_venda.label}}
+          {{form_adicionar_item_ordem_venda.ordem_venda(class="form-control")}}
+        </div>
+      </section>
+      <h2>Parte superior 2</h2>
+      <p>Ao clicar no item da tabela no section direito, o item é adicionado ao section esquerdo.</p>
+
+      <div class="col form-label btn btn-light">
+        {{form_adicionar_item_ordem_venda.codigo.label}}
+        {{form_adicionar_item_ordem_venda.codigo(class="form-control")}}
+      </div>
+      <div class="col form-label btn btn-light">
+        {{form_adicionar_item_ordem_venda.ean.label}}
+        {{form_adicionar_item_ordem_venda.ean(class="form-control")}}
+      </div>
+      <div class="col form-label btn btn-light">
+        {{form_adicionar_item_ordem_venda.descricao.label}}
+        {{form_adicionar_item_ordem_venda.descricao(class="form-control")}}
+      </div>
+      <div class="col form-label btn btn-light">
+        {{form_adicionar_item_ordem_venda.preco_unitario.label}}
+        {{form_adicionar_item_ordem_venda.preco_unitario(class="form-control")}}
+      </div>
+      <div class="col form-label btn btn-light">
+        {{form_adicionar_item_ordem_venda.quantidade.label}}
+        {{form_adicionar_item_ordem_venda.quantidade(class="form-control")}}
+      </div>
+        {{ form_adicionar_item_ordem_venda.botao_incluir_item(class="btn btn-primary mt-3") }}
+        <br>
+      {{ form_adicionar_item_ordem_venda.botao_atualizar_ordem_venda(class="btn btn-primary mt-3") }}
+        {{ form_adicionar_item_ordem_venda.botao_cancelar(class="btn btn-primary mt-3") }}
+
+
+    </section>
+
+    <section class="box top-right">
+      <h2>Parte superior 2</h2>
+      <p>Conteúdo da segunda parte superior (direita).</p>
+      <p>Aqui aparece a tabela de itens cadastrados.</p>
+
+      <div class="col form-label btn btn-light">
+        {{ form_adicionar_item_ordem_venda.pesquisar_descricao.label }}
+        {{ form_adicionar_item_ordem_venda.pesquisar_descricao(class="form-control") }}
+      </div>
+      <div class="col form-label btn btn-light">
+        {{ form_adicionar_item_ordem_venda.pesquisar_ean.label }}
+        {{ form_adicionar_item_ordem_venda.pesquisar_ean(class="form-control") }}
+      </div>
+      <div class="col form-label btn btn-light">
+        {{ form_adicionar_item_ordem_venda.pesquisar_categoria.label }}
+        {{ form_adicionar_item_ordem_venda.pesquisar_categoria(class="form-control") }}
+      </div>
+    </section>
+
+    <section class="box bottom">
+      <h2>Parte inferior</h2>
+      <p>aqui aparecem os itens do pedido.</p>
+    </section>
+  </div>
+  <!-- Rodapé fixo para mensagens/alerts -->
+  <footer class="w3-container w3-center w3-padding w3-light-grey"
+          style="position:fixed; bottom:0; left:0; width:100%; z-index:1000;">
+
+    {% if alert_message %}
+    {% if alert_type == "success" %}
+    <div class="w3-panel w3-green">
+      <p>{{ alert_message }}</p>
+    </div>
+    {% elif alert_type == "error" %}
+    <div class="w3-panel w3-red">
+      <p>{{ alert_message }}</p>
+    </div>
+    {% elif alert_type == "warning" %}
+    <div class="w3-panel w3-yellow">
+      <p>{{ alert_message }}</p>
+    </div>
+    {% else %}
+    <div class="w3-panel w3-blue">
+      <p>{{ alert_message }}</p>
+    </div>
+    {% endif %}
+    {% endif %}
+
+  </footer>
+</form>
+
+{% endblock %}
+</body>

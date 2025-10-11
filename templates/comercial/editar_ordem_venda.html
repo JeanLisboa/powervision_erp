@@ -17,24 +17,19 @@
             </div>
             <div class="col form-label btn btn-light">
                {{form_editar_ordem_venda.pesquisar_ordem_venda.label}}
-               {{form_editar_ordem_venda.pesquisar_ordem_venda}}
+               {{form_editar_ordem_venda.pesquisar_ordem_venda(class="form-control tam_campo_data", value=ordem_venda)}}
             </div>
-            <div class="col form-label btn btn-light">
                {{form_editar_ordem_venda.botao_pesquisar_ordem_venda(class="btn btn-primary mt-3")}}
                {{form_editar_ordem_venda.botao_excluir_ordem_venda(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
-            </div>
-            <script src="static/js/pesquisa_produto.js" defer></script>
+                <script src="static/js/pesquisa_produto.js" defer></script>
         </section>
 
         <section class="box top-right">
-            <br>
-                {% if linha_para_editar is not none %}
-
-
-                    <div class="form-label btn btn-light">
-                        {{form_editar_ordem_venda.pesquisar_descricao.label(class="form-label" )  }}
-                        {{form_editar_ordem_venda.pesquisar_descricao(class="form-control tam_campo_descricao", value=descricao, id="pesquisar_descricao") }}
-                    </div>
+            {% if linha_para_editar is not none %}
+                <div class="form-label btn btn-light">
+                    {{form_editar_ordem_venda.pesquisar_descricao.label(class="form-label" )  }}
+                    {{form_editar_ordem_venda.pesquisar_descricao(class="form-control tam_campo_descricao", value=descricao, id="pesquisar_descricao") }}
+                </div>
                     <div class="form-label btn btn-light">
                         {{form_editar_ordem_venda.adicionar_quantidade.label(class="form-label" )  }}
                         {{form_editar_ordem_venda.adicionar_quantidade(class="form-control tam_campo_quantidade_grande", value=quantidade, id="adicionar_quantidade") }}
@@ -43,15 +38,14 @@
                         {{form_editar_ordem_venda.adicionar_preco_unitario.label(class="form-label" )  }}
                         {{form_editar_ordem_venda.adicionar_preco_unitario(class="form-control tam_campo_quantidade_grande", value=val_unitario, id="adicionar_preco_unitario") }}
                     </div>
-
                 {% endif %}
-                <footer class="w3-container w3-teal">
                     {{form_editar_ordem_venda.botao_salvar_item_adicionado(class='form-label class = btn btn-primary')}}
                     {{form_editar_ordem_venda.botao_descartar_item_adicionado(class='form-label class = btn btn-secondary')}}
-                </footer>
         </section>
 
+
     <section class="box bottom">
+        {{ form_editar_ordem_venda.botao_adicionar_item(class="btn btn-primary mt-3") }}
         <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
             <thead>
                 <tr class="cab_tabela">
@@ -120,7 +114,7 @@
                     </tr>
                 {% endif %}
                 </tbody>
-            </table>
+        </table>
     </section>
 </div>
   </form>
