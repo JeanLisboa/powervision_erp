@@ -8,7 +8,6 @@
 
   <div class="page">
     <section class="box top-left">
-      <h2>Parte superior 1</h2>
       <section class="box top-left">
         <div class="col form-label btn btn-light">
           {{form_adicionar_item_ordem_venda.data.label}}
@@ -20,8 +19,6 @@
         </div>
         {{ form_adicionar_item_ordem_venda.botao_pesquisar_ordem_venda(class="btn btn-primary mt-3") }}
       </section>
-      <h2>Parte superior 2</h2>
-      <p>Ao clicar no item da tabela no section direito, o item é adicionado ao section esquerdo.</p>
 
       <div class="col form-label btn btn-light">
         {{form_adicionar_item_ordem_venda.codigo.label}}
@@ -45,17 +42,13 @@
       </div>
         {{ form_adicionar_item_ordem_venda.botao_incluir_item(class="btn btn-primary mt-3") }}
         <br>
-      {{ form_adicionar_item_ordem_venda.botao_atualizar_ordem_venda(class="btn btn-primary mt-3") }}
+        {{ form_adicionar_item_ordem_venda.botao_atualizar_ordem_venda(class="btn btn-primary mt-3") }}
         {{ form_adicionar_item_ordem_venda.botao_cancelar(class="btn btn-primary mt-3") }}
 
 
     </section>
 
     <section class="box top-right">
-      <h2>Parte superior 2</h2>
-      <p>Conteúdo da segunda parte superior (direita).</p>
-      <p>Aqui aparece a tabela de itens cadastrados.</p>
-
       <div class="col form-label btn btn-light">
         {{ form_adicionar_item_ordem_venda.pesquisar_descricao.label }}
         {{ form_adicionar_item_ordem_venda.pesquisar_descricao(class="form-control") }}
@@ -68,12 +61,55 @@
         {{ form_adicionar_item_ordem_venda.pesquisar_categoria.label }}
         {{ form_adicionar_item_ordem_venda.pesquisar_categoria(class="form-control") }}
       </div>
+      <div class="col form-label btn btn-light">
+        {{ form_adicionar_item_ordem_venda.pesquisar_fornecedor.label }}
+        {{ form_adicionar_item_ordem_venda.pesquisar_fornecedor(class="form-control") }}
+      </div>
+      {{ form_adicionar_item_ordem_venda.botao_pesquisar_item(class="btn btn-primary mt-3") }}
+      <div  class="borda_simples  container_com_barra_rolagem">
+          <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2">
+        <thead>
+          <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+            <th>
+            </th>
+            <th>DESCRICAO</th>
+            <th>FORNECEDOR</th>
+            <th>EAN</th>
+            <th>VALOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if ordem_venda is not none %}
+          {% if resultado_pesquisa_produtos %}
+            {% for i in resultado_pesquisa_produtos %}
+          <tr>
+            <td>
+                <form method="POST">
+                    {{form_adicionar_item_ordem_venda.hidden_tag()}}
+                    <input type="hidden" name="incluir_item_ordem_venda_selecionado" value="{{ i[3] }}">
+                        {{form_adicionar_item_ordem_venda.botao_selecionar_item(class='btn btn-sm btn-outline-primary')}}
+                </form>
+            </td>
+            <td>{{ i[4] }}</td>
+            <td>{{ i[2] }}</td>
+            <td>{{ i[3] }}</td>
+            <td>{{ i[7] }}</td>
+
+
+          </tr>
+
+          {% endfor %}
+          {% else %}
+          {% endif %}
+          {% endif %}
+        </tbody>
+      </table>
+      </div>
+
     </section>
 
     <section class="box bottom">
-      <h2>Parte inferior</h2>
-      <p>aqui aparecem os itens do pedido.</p>
-      <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+      <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2"   id="tabela-itens">
             <thead>
                 <tr class="cab_tabela">
                     <th>DATA</th>
@@ -116,12 +152,7 @@
                         <td>{{i[13]}}</td>
                         <td>{{i[14]}}</td>
                         <td>{{i[15]}}</td>
-                        <td>
 
-                        </td>
-                        <td>
-
-                        </td>
                     </tr>
                     {% endfor %}
                 {% else %}

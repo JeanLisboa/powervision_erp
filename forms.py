@@ -249,12 +249,14 @@ class ModComercial:
 
     class AdicionarItemOrdemVenda(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        ordem_venda = StringField("Ordem de Venda", validators=[ReadOnly()])
+        ordem_venda = StringField("Ordem de Venda", validators=[ReadOnly(),])
         codigo = StringField("Código")
         ean = StringField("EAN")
         descricao = StringField("Descrição", validators=[ReadOnly()])
         preco_unitario = FloatField("Preço Unitário")
         quantidade = IntegerField("Quantidade")
+        botao_pesquisar_ordem_venda = SubmitField("Pesquisar Ordem")
+        botao_selecionar_item = SubmitField("+")
 
         botao_incluir_item = SubmitField("Incluir Item")
         botao_atualizar_ordem_venda = SubmitField("Atualizar Ordem de Venda")
@@ -263,6 +265,7 @@ class ModComercial:
         pesquisar_descricao = StringField("Descrição")
         pesquisar_ean = StringField("EAN")
         pesquisar_categoria = StringField("Categoria")
+        pesquisar_fornecedor = StringField("Fornecedor")
         botao_pesquisar_item = SubmitField("Pesquisar Item")
 
         categoria = StringField("Categoria", validators=[ReadOnly()])
