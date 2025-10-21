@@ -15,37 +15,35 @@
         </div>
         <div class="col form-label btn btn-light">
           {{form_adicionar_item_ordem_venda.ordem_venda.label}}
-          {{form_adicionar_item_ordem_venda.ordem_venda(class="form-control")}}
+          {{form_adicionar_item_ordem_venda.ordem_venda(class="form-control tam_campo_80", value=ordem_venda)}}
         </div>
         {{ form_adicionar_item_ordem_venda.botao_pesquisar_ordem_venda(class="btn btn-primary mt-3") }}
       </section>
 
       <div class="col form-label btn btn-light">
         {{form_adicionar_item_ordem_venda.codigo.label}}
-        {{form_adicionar_item_ordem_venda.codigo(class="form-control")}}
+        {{form_adicionar_item_ordem_venda.codigo(class="form-control tam_campo_80", value=linha_a_adicionar[1])}}
       </div>
       <div class="col form-label btn btn-light">
         {{form_adicionar_item_ordem_venda.ean.label}}
-        {{form_adicionar_item_ordem_venda.ean(class="form-control")}}
+        {{form_adicionar_item_ordem_venda.ean(class="form-control tam_campo_100", value=linha_a_adicionar[3])}}
       </div>
       <div class="col form-label btn btn-light">
-        {{form_adicionar_item_ordem_venda.descricao.label}}
-        {{form_adicionar_item_ordem_venda.descricao(class="form-control")}}
+        {{ form_adicionar_item_ordem_venda.descricao.label}}
+        {{ form_adicionar_item_ordem_venda.descricao(class="form-control", value=linha_a_adicionar[4])}}
       </div>
       <div class="col form-label btn btn-light">
-        {{form_adicionar_item_ordem_venda.preco_unitario.label}}
-        {{form_adicionar_item_ordem_venda.preco_unitario(class="form-control")}}
+        {{ form_adicionar_item_ordem_venda.preco_unitario.label}}
+        {{ form_adicionar_item_ordem_venda.preco_unitario(class="form-control tam_campo_90", value=linha_a_adicionar[7])}}
       </div>
       <div class="col form-label btn btn-light">
         {{form_adicionar_item_ordem_venda.quantidade.label}}
-        {{form_adicionar_item_ordem_venda.quantidade(class="form-control")}}
+        {{form_adicionar_item_ordem_venda.quantidade(class="form-control tam_campo_80", value=1)}}
       </div>
-        {{ form_adicionar_item_ordem_venda.botao_incluir_item(class="btn btn-primary mt-3") }}
+        {{ form_adicionar_item_ordem_venda.botao_incluir_item(class="btn btn-primary mt-3  ps-1 pe-1") }}
+        {{ form_adicionar_item_ordem_venda.botao_cancelar(class="btn btn-secondary mt-3 pe-1 ps-1" ) }}
         <br>
         {{ form_adicionar_item_ordem_venda.botao_atualizar_ordem_venda(class="btn btn-primary mt-3") }}
-        {{ form_adicionar_item_ordem_venda.botao_cancelar(class="btn btn-primary mt-3") }}
-
-
     </section>
 
     <section class="box top-right">
@@ -55,18 +53,18 @@
       </div>
       <div class="col form-label btn btn-light">
         {{ form_adicionar_item_ordem_venda.pesquisar_ean.label }}
-        {{ form_adicionar_item_ordem_venda.pesquisar_ean(class="form-control") }}
+        {{ form_adicionar_item_ordem_venda.pesquisar_ean(class="form-control tam_campo_100") }}
       </div>
       <div class="col form-label btn btn-light">
         {{ form_adicionar_item_ordem_venda.pesquisar_categoria.label }}
-        {{ form_adicionar_item_ordem_venda.pesquisar_categoria(class="form-control") }}
+        {{ form_adicionar_item_ordem_venda.pesquisar_categoria(class="form-control tam_campo_90") }}
       </div>
       <div class="col form-label btn btn-light">
         {{ form_adicionar_item_ordem_venda.pesquisar_fornecedor.label }}
         {{ form_adicionar_item_ordem_venda.pesquisar_fornecedor(class="form-control") }}
       </div>
       {{ form_adicionar_item_ordem_venda.botao_pesquisar_item(class="btn btn-primary mt-3") }}
-      <div  class="borda_simples  container_com_barra_rolagem">
+      <div  class="borda_simples  container_com_barra_rolagem_200">
           <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2">
         <thead>
           <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
@@ -87,7 +85,7 @@
                 <form method="POST">
                     {{form_adicionar_item_ordem_venda.hidden_tag()}}
                     <input type="hidden" name="incluir_item_ordem_venda_selecionado" value="{{ i[3] }}">
-                        {{form_adicionar_item_ordem_venda.botao_selecionar_item(class='btn btn-sm btn-outline-primary')}}
+                        {{form_adicionar_item_ordem_venda.botao_selecionar_item(class='btn btn-sm btn-outline-primary p-0 pe-1 ps-1 m-0 ')}}
                 </form>
             </td>
             <td>{{ i[4] }}</td>

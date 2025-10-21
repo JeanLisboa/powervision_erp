@@ -129,7 +129,9 @@ def editar_ordem_venda():
             mydb.close()
     print(CorFonte.fonte_amarela() + "Função editar_ordem_venda"+ CorFonte.reset_cor())
     form_editar_ordem_venda = ModComercial.EditarOrdemVenda()
+    global ordem_venda
     ordem_venda = form_editar_ordem_venda.pesquisar_ordem_venda.data
+
     session["ordem_venda"] = ordem_venda
 
     if request.method == "POST":
@@ -137,29 +139,14 @@ def editar_ordem_venda():
             try:
                 if "botao_pesquisar_ordem_venda" in request.form:
                     ordem_venda = session.get("ordem_venda")
-                    logging.info("botao_pesquisar_ordem_venda ACIONADO")
-                    logging.info(f'ordem_venda: {ordem_venda}')
+                    print("botao_pesquisar_ordem_venda ACIONADO")
+                    print(f'ordem_venda: {ordem_venda}')
                     session["ordem_venda_pesquisada"] = ordem_venda
-                    # pesquisar ordem de venda
-
-
-                    cliente = session.get('cliente')
-                    # fixme: alterar para chamar a função do utils/buscadores
                     resultado_pesquisa = pesquisar_ordem_venda(ordem_venda)
                     print(f'resultado_pesquisa: {resultado_pesquisa}')
-                    # temp = []  # lista temporaria para armazenar os resultados
-
-                    # for i in resultado_pesquisa:
-                    #     print(f'i: {i} | cliente: {cliente} ')
-                    #     i = i + cliente
-                    #     temp.append(i)
-                    #     print(temp)
-                    print(f'----------------------------------------------')
-                    # resultado_pesquisa = temp
                     session["resultado_pesquisa"] = resultado_pesquisa
                     logging.info(f'resultado_pesquisa: {resultado_pesquisa}')
                     ordem_venda = session.get("ordem_venda")
-                    print(f'teste ordem venda na pesquisa: {ordem_venda}')
                     return render_template('comercial/editar_ordem_venda.html',
                                            data=Formatadores.os_data(),
                                            ordem_venda=ordem_venda,
@@ -181,6 +168,7 @@ def editar_ordem_venda():
 
         try:
             if "botao_excluir_item" in request.form:
+                # todo: implementar funcionalidade EXCLUIR ITEM
                 print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_excluir_item_ordem_venda" + CorFonte.reset_cor())
 
         except Exception as e:
@@ -192,14 +180,6 @@ def editar_ordem_venda():
                 session["ordem_venda"] = ordem_venda
                 resultado_pesquisa = session.get("resultado_pesquisa")
                 return redirect(url_for("adicionar_item_ordem_venda"))
-                # if ordem_venda:
-                #     return redirect(url_for("adicionar_item_ordem_venda"))
-
-                # return render_template('comercial/editar_ordem_venda.html',
-                #                        data=Formatadores.os_data(),
-                #                        ordem_venda=ordem_venda,
-                #                        resultado_pesquisa=resultado_pesquisa,
-                #                        form_editar_ordem_venda=form_editar_ordem_venda)
 
         except Exception as e:
             logging.exception(e)
@@ -344,17 +324,16 @@ def editar_ordem_venda():
                            form_editar_ordem_venda=form_editar_ordem_venda)
 
 def adicionar_item_ordem_venda():
+    print(f'Função adicionar_item_ordem_venda')
     form_adicionar_item_ordem_venda = ModComercial.AdicionarItemOrdemVenda()
     ordem_venda = session.get('ordem_venda')
-    # todo: puxar ordem_venda da tela edtar ordem venda
-    # todo: ajustar tabela para 10 lnhas na pesq de produtos
-
+    print(f'ordem_venda recuperado teste: {ordem_venda}')
     # QUADRO 1
     # PUXAR SESSION ordem_venda
     if request.method == "POST":
         try:
             if "botao_pesquisar_ordem_venda" in request.form:
-                logging.info("botao_pesquisar_ordem_venda ACIONADO")
+                print("botao_pesquisar_ordem_venda ACIONADO")
                 ordem_venda = form_adicionar_item_ordem_venda.ordem_venda.data
                 session['ordem_venda'] = ordem_venda
                 print(f'ordem_venda: {ordem_venda}')
@@ -363,14 +342,12 @@ def adicionar_item_ordem_venda():
                 print(f'resultado_pesquisa: {resultado_pesquisa}')
                 session['resultado_pesquisa'] = resultado_pesquisa
 
-                # retorna os itens cadastrados
-
-
         except Exception as e:
             logging.exception(e)
 
         try:
             if "botao_pesquisar_item" in request.form:
+                print(f'botao_pesquisar_item ACIONADO')
                 descricao = form_adicionar_item_ordem_venda.pesquisar_descricao.data
                 categoria = form_adicionar_item_ordem_venda.pesquisar_categoria.data
                 ean = form_adicionar_item_ordem_venda.pesquisar_ean.data
@@ -382,8 +359,8 @@ def adicionar_item_ordem_venda():
                 ordem_venda = resultado_pesquisa_produtos[0][1]
                 session['ordem_venda'] = ordem_venda
                 print('resultado_pesquisa_produtos')
-                for i in resultado_pesquisa_produtos:
-                    print(i)
+                # for i in resultado_pesquisa_produtos:
+                #     print(i)
                 resultado_pesquisa = session.get('resultado_pesquisa')
                 session['resultado_pesquisa_produtos'] = resultado_pesquisa_produtos
                 return render_template('comercial/adicionar_item_ordem_venda.html',
@@ -397,41 +374,58 @@ def adicionar_item_ordem_venda():
             logging.exception(e)
         try:
             if "botao_selecionar_item" in request.form:
+                print("botao_selecionar_item Acionado")
+                linha_a_adicionar = session.get('linha_a_adicionar')
                 resultado_pesquisa_produtos_ = session.get('resultado_pesquisa_produtos')
                 print(f'resultado_pesquisa_produtos: {resultado_pesquisa_produtos_}')
                 resultado_pesquisa_add_item = session.get('resultado_pesquisa')
                 print(f'resultado_pesquisa (ordem_venda): {resultado_pesquisa_add_item}')
-                logging.info("botao_selecionar_item Acionado")
                 item_selecionado = request.form.get('incluir_item_ordem_venda_selecionado')
                 print(f'item_selecionado: {item_selecionado}')
                 # Verifica se o EAN está presente
                 encontrado = any(item[6] == item_selecionado for item in resultado_pesquisa_add_item)
-
                 if encontrado:
                     print(f"❌ EAN {item_selecionado} já consta na OV!")
+                    alert = ''
                 else:
                     # ADICIONAR ITEM À ORDEM DE VENDA
                     print(f" ✅ EAN {item_selecionado} disponível para inclusão na OV.")
+                    quantidade_adicionada = form_adicionar_item_ordem_venda.quantidade.data
+                    print(f'quantidade: {quantidade_adicionada}')
 
-                    def linha_a_adicionar(resultado_pesquisa_produtos_, item_selecionado):
+                    valor_unitario_adicionado = form_adicionar_item_ordem_venda.preco_unitario.data
+                    print(f'valor_unitario: {valor_unitario_adicionado}')
+
+
+                    def linha_a_adicionar(resultado_pesquisa_produtos_):
                         print('Esta funçao informa a linha a ser adicionada na ordem de venda')
                         posicao = 0
+
                         # print(resultado_pesquisa_produtos)
                         for i in resultado_pesquisa_produtos_:
                             if i[3] == item_selecionado:
                                 print(f'Localizado na posição: {posicao}')
+                                print(f'item do resultado_pesquisa_produtos_*******************************************************')
                                 print(i)
+                                print('********************************************************************************************')
                                 session['i'] = i
                                 break
+
                             posicao += 1
                             print(f'{i[3]} | {item_selecionado}')
                         i = session.get('i')
-                        print(item_selecionado)
+                        print(f'item_selecionado: {item_selecionado}')
+                        print(f'return: {i}')
                         return i
 
                     # todo: renderizar linha para os campos da section esquerda inferior
-                    linha_a_adicionar(resultado_pesquisa_produtos_, item_selecionado)
-                    resultado_pesquisa_produtos_ = session.get('resultado_pesquisa_produtos')
+                    print('**********************************************************************************')
+                    print(resultado_pesquisa_produtos_)
+                    print(item_selecionado)
+                    print('**********************************************************************************')
+                    linha_a_adicionar = linha_a_adicionar(resultado_pesquisa_produtos_)
+                    session['linha_a_adicionar'] = linha_a_adicionar
+
                     #
                     # linha_a_adicionar(resultado_pesquisa_produtos_, item_selecionado)
                     #
@@ -476,29 +470,132 @@ def adicionar_item_ordem_venda():
                     #
                     # # adicionar_item(linha_a_adicionar)
 
-
         except Exception as e:
             logging.exception(e)
-    # BOTAO INCLUIR ITEM, - INCLUI O IITEM NA TABELA DE ITENS DE ORDEM DE COMPRA
+
+        # confgurar botao incluir item selecionado à ordem de venda
+
+        try:
+            if "botao_incluir_item" in request.form:
+                print('botao_incluir_item acionado')
+                # receber linha completa
+                linha_a_adicionar = session.get('linha_a_adicionar')
+                print(f'linha_a_adicionar recuperado: {linha_a_adicionar}')
+
+                # receber informações
+                ean = linha_a_adicionar[3]
+                print(f'ean recuperado: {ean}')
+
+                # receber item completo
+                item_completo = modulos.utils.buscadores.Buscadores.OrdemVenda.pesquisar_produtos(descricao="", ean=ean, categoria="", fornecedor="")
+                item_completo = item_completo[0] # tupla
+                print(f'item_completo: {item_completo}')
+                ordem_venda = session.get('ordem_venda')
+                print(f'ordem_venda recuperado: {ordem_venda}')
+                # DATA, ORDEM VENDA, ITEM, COD PRODUTO, FORNECEDOR, DESCRIÇÃO, EAN, UN,
+                # TABELA, PRECO LISTA, PRECO VENDA, QUANTIDADE, ACRESC_DESC, TOTAL_PEDIDO,
+                # USUARIO, STATUS_PEDIDO, COD_CLIENTE, CLIENTE
+
+                quantidade_adicionada = form_adicionar_item_ordem_venda.quantidade.data
+                print(f'quantidade: {quantidade_adicionada}')
+
+                valor_unitario_adicionado = form_adicionar_item_ordem_venda.preco_unitario.data
+                print(f'valor_unitario: {valor_unitario_adicionado}')
+                print('--------------------------------------------------')
+                # ordem_venda original
+                resultado_pesquisa = session.get('resultado_pesquisa')
+                print(f'itens da ordem_venda recuperados:')
+                for i in resultado_pesquisa:
+                    print(i)
+
+                # preparar tupla para incluir na relação de itens da ordem de venda
+                data = Formatadores.os_data()
+                ordem_venda = ordem_venda
+                item = ''
+                cod_produto = item_completo[1]
+                fornecedor = item_completo[2]
+                descricao = item_completo[4]
+                ean = ean
+                un = item_completo[5]
+                tabela = '001'
+                preco_lista = item_completo[7]
+                preco_venda = valor_unitario_adicionado
+                quantidade = quantidade_adicionada
+                acresc_desc = (valor_unitario_adicionado * quantidade_adicionada) - (item_completo[7] * quantidade_adicionada)
+                total_pedido = preco_venda * quantidade
+                usuario = 'ADMiN'
+                status_pedido = 'ABERTO'
+                cod_cliente = resultado_pesquisa[0][16]
+                cliente = resultado_pesquisa[0][17]
+
+                nova_linha_ordem_venda = (data,
+                                          ordem_venda,
+                                          item, cod_produto,
+                                          fornecedor,
+                                          descricao,
+                                          ean,
+                                          un,
+                                          tabela,
+                                          preco_lista,
+                                          preco_venda,
+                                          quantidade,
+                                          acresc_desc,
+                                          total_pedido,
+                                          usuario,
+                                          status_pedido,
+                                          cod_cliente,
+                                          cliente)
+                # incluir a linha no pedido
+                resultado_pesquisa.append(nova_linha_ordem_venda[:])
+                # fixme: incluir regra para não repetir itens itens já cadastradso na lista
+                # todo: incluir sequencial
+                # todo: incluir valor total
+                session['resultado_pesquisa'] = resultado_pesquisa
+                print(f'resultado_pesquisa atualizado')
+                print('=================================================================================================')
+                for i in resultado_pesquisa:
+                    print(i)
+                print('=================================================================================================')
+
+                resultado_pesquisa_produtos = session.get('resultado_pesquisa_produtos')
+                # renderizar
+                # return render_template('comercial/adicionar_item_ordem_venda.html',
+                #                        form_adicionar_item_ordem_venda=form_adicionar_item_ordem_venda,
+                #                        data=Formatadores.os_data(),
+                #                        linha_a_adicionar=linha_a_adicionar,
+                #                        # ordem_venda_recuperado=ordem_venda_recuperado,
+                #                        resultado_pesquisa=resultado_pesquisa,
+                #                        resultado_pesquisa_produtos=resultado_pesquisa_produtos
+                #                        )
+
+        except Exception as e:
+            logging.info(e)
+
+        try:
+            if "botao_atualizar_ordem_venda" in request.form:
+                logging.info('botao_atualizar_ordem_venda_item acionado')
+                # receber ordem temporaria do try acima
+
+                # fazer update ou insert
+
+                # incluir a linha no pedido
+
+                # renderizar
+        except Exception as e:
+            logging.info(e)
 
 
-    # BOTAO ATUALIZAR ORDEM DE COMPRA - SALVA A ORDEM DE COMPRA
-    # BOTAO CANCELAR - LIMPA TODOS OS CAMPOS E VOLTA PARA A TELA GERAR ORDEM
-
-    # QUADRO 2
-    # CAMPO PESQUISA DESCRICAO, CATEGORIA E EAN
-
-    # TABELA DE PRODUTOS
-
-    # QUADRO 3
-    # TABELA COM OS ITENS JA SALVOS
+    linha_a_adicionar = session.get("linha_a_adicionar", None)
     resultado_pesquisa = session.get("resultado_pesquisa", None)
+    print(f'resultado_pesquisa: {resultado_pesquisa}')
     resultado_pesquisa_produtos = session.get("resultado_pesquisa_produtos", None)
-    ordem_venda_recuperado = session.get("ordem_venda", None)
+    # ordem_venda = session.get("ordem_venda", None)
+    ordem_venda = resultado_pesquisa[0][1]
     return render_template('comercial/adicionar_item_ordem_venda.html',
                            form_adicionar_item_ordem_venda=form_adicionar_item_ordem_venda,
                            data=Formatadores.os_data(),
-                           ordem_venda_recuperado=ordem_venda_recuperado,
+                           linha_a_adicionar=linha_a_adicionar,
+                           ordem_venda=ordem_venda,
                            resultado_pesquisa=resultado_pesquisa,
                            resultado_pesquisa_produtos=resultado_pesquisa_produtos)
 
