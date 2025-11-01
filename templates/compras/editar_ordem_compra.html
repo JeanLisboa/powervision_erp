@@ -7,51 +7,55 @@
 <!-- as duas linhas abaixo pertencem ao modal -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-TELA EDITAR ORDEM DE COMPRA
-<pre>CRIAR TRAVA PARA QUE O USUARIO NAO:
-    EXCLUA O ITEM DA OC, CASO ELE JÁ TENHA SIDO TOTAL, OU PARCIALMENTE RECEBIDO
-    DIMINUA A QUANTIDADE DO ITEM DA OC PARA UMA QUANTIDADE MENOR DO QUE JÁ FOI RECEBIDO
-</pre>
-<div class="div_secundaria">
-    <form action="" method="POST">
+<form action="" method="POST">
     {{form_editar_ordem_compra.csrf_token }}
-        <div class="container  mb-3" xmlns="http://www.w3.org/1999/html">
-            <div class="mb-1 float-esquerda-40pp">
-                <div class="col form-label btn btn-light">
-                   {{form_editar_ordem_compra.data.label }}
-                   {{form_editar_ordem_compra.data(class="form-control tam_campo_data",  value=data)}}
-                </div>
-                <div class="col form-label btn btn-light">
-                   {{form_editar_ordem_compra.pesquisar_ordem_compra.label}}
-                   {% if ordem_compra is not none %}
-                        {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", value=ordem_compra, id="pesquisar_ordem_compra")}}
-                   {% else %}
-                       {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", id="pesquisar_ordem_compra")}}
-                   {% endif %}
-                </div>
-                <div class="col form-label btn btn-light">
-                   {{form_editar_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-3")}}
-                   {{form_editar_ordem_compra.botao_excluir_ordem_compra(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
-                </div>
-                <script src="static/js/pesquisa_produto.js" defer></script>
-            </div>
-            <div  class="col form-label btn btn-light">
-                {{ form_editar_ordem_compra.descricao.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.descricao(class="form-control tam_campo_descricao_grande") }}
-            </div>
-            <div  class="form-label btn btn-light">
-                {{ form_editar_ordem_compra.quantidade.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.quantidade(class="form-control tam_campo_quantidade_grande", value=quantidade, id="quantidade") }}
-            </div>
-            <div  class="col form-label btn btn-light">
-                {{ form_editar_ordem_compra.val_unitario.label(class="form-label" )  }}
-                {{ form_editar_ordem_compra.val_unitario(class="form-control tam_campo_val_unit_grande", value=val_unitario, id="val_unitario") }}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{ form_editar_ordem_compra.botao_salvar_alteracoes(class="btn btn-primary mt-3", onclick="limparCampos()") }}
-                {{ form_editar_ordem_compra.botao_descartar_alteracoes(class="btn btn-secondary mt-3", onclick="limparCampos()") }}
-            </div>
-            <br>
+TELA EDITAR ORDEM DE COMPRA
+<pre>CRIAR TRAVA PARA QUE O USUARIO NAO: EXCLUA O ITEM DA OC, CASO ELE JÁ TENHA SIDO TOTAL, OU PARCIALMENTE RECEBIDO | DIMINUA A QUANTIDADE DO ITEM DA OC PARA UMA QUANTIDADE MENOR DO QUE JÁ FOI RECEBIDO
+</pre>
+
+<div class="page">
+    <section class="box top-left">
+        <div class="col form-label btn btn-light">
+            {{form_editar_ordem_compra.data.label }}
+            {{form_editar_ordem_compra.data(class="form-control tam_campo_data",  value=data)}}
+        </div>
+        <div class="col form-label btn btn-light">
+            {{form_editar_ordem_compra.pesquisar_ordem_compra.label}}
+            {% if ordem_compra is not none %}
+            {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", value=ordem_compra, id="pesquisar_ordem_compra")}}
+            {% else %}
+            {{form_editar_ordem_compra.pesquisar_ordem_compra(class="form-control tam_campo_data", id="pesquisar_ordem_compra")}}
+            {% endif %}
+        </div>
+        <div class="col form-label btn btn-light">
+            {{form_editar_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary mt-3")}}
+            {{form_editar_ordem_compra.botao_excluir_ordem_compra(class="btn btn-secondary mt-3", onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
+        </div>
+    </section>
+
+
+    <script src="static/js/pesquisa_produto.js" defer></script>
+    <section class="box top-right">
+        <div  class="col form-label btn btn-light">
+            {{ form_editar_ordem_compra.descricao.label(class="form-label" )  }}
+            {{ form_editar_ordem_compra.descricao(class="form-control tam_campo_descricao_grande") }}
+        </div>
+
+        <div  class="form-label btn btn-light">
+            {{ form_editar_ordem_compra.quantidade.label(class="form-label" )  }}
+            {{ form_editar_ordem_compra.quantidade(class="form-control tam_campo_quantidade_grande", value=quantidade, id="quantidade") }}
+        </div>
+
+        <div  class="col form-label btn btn-light">
+            {{ form_editar_ordem_compra.val_unitario.label(class="form-label" )  }}
+            {{ form_editar_ordem_compra.val_unitario(class="form-control tam_campo_val_unit_grande", value=val_unitario, id="val_unitario") }}
+        </div>
+
+        <div class="col form-label btn btn-light">
+            {{ form_editar_ordem_compra.botao_salvar_alteracoes(class="btn btn-primary mt-3", onclick="limparCampos()") }}
+            {{ form_editar_ordem_compra.botao_descartar_alteracoes(class="btn btn-secondary mt-3", onclick="limparCampos()") }}
+        </div>
+    </section>
             <script>
                 function limparCampos() {
                 setTimeout(() => {
@@ -85,26 +89,24 @@ TELA EDITAR ORDEM DE COMPRA
         .catch(error => console.error("Erro:", error));
     }
 </script>
-
-
+    <section class="box bottom">
         {{ form_editar_ordem_compra.botao_adicionar_item(class="btn btn-primary mt-5", id="botao_adicionar_item") }}
-
             <div class="mt-2 float-child-ordem-compra">
                 <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
-                        <thead>
-                            <tr class="cab_tabela">
-                                <th>DESCRIÇÃO</th>
-                                <th>QTD. TOTAL</th>
-                                <th>PRECO</th>
-                                <th>VAL. TOTAL</th>
-                                <th>SALDO QTD</th>
-                                <th>SALDO VAL</th>
-
-
-                                <th>STATUS</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <thead>
+                        <tr class="cab_tabela">
+                            <th>DESCRIÇÃO</th>
+                            <th>QTD. TOTAL</th>
+                            <th>PRECO</th>
+                            <th>VAL. TOTAL</th>
+                            <th>SALDO QTD</th>
+                            <th>SALDO VAL</th>
+                            <th>STATUS</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
                             {% for i in ordem_pesquisada %}
                             <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                                 <td>{{ i[3] }}</td>
@@ -118,23 +120,22 @@ TELA EDITAR ORDEM DE COMPRA
                                     <form method="POST">
                                         {{ form_editar_ordem_compra.hidden_tag() }}
                                             <input type="hidden" id='myBtn' name="editar__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
-                                        {{ form_editar_ordem_compra.botao_editar_item(class='btn btn-primary') }}
-
+                                        {{ form_editar_ordem_compra.botao_editar_item(class='btn btn-sm btn-outline-primary') }}
                                     </form>
                                 </td>
                                 <td>
                                     <form method="POST">
                                         {{form_editar_ordem_compra.hidden_tag() }}
                                         <input type="hidden" name="excluir__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
-                                        {{form_editar_ordem_compra.botao_excluir_item(class='btn btn-primary' , onclick="return confirm('Tem certeza de que deseja excluir esta ordem?')") }}
+                                        {{form_editar_ordem_compra.botao_excluir_item(class='btn btn-sm btn-outline-secondary' , onclick="return confirm('Tem certeza de que deseja excluir este  item ?')") }}
                                     </form>
                                 </td>
                             </tr>
                             {% endfor %}
                         </tbody>
-                    </table>
+                </table>
             </div>
-        </div>
+    </section>
         <!-- inicio da estrutura do modal -->
 
         <div id="id02" class="w3-modal">
@@ -176,8 +177,8 @@ TELA EDITAR ORDEM DE COMPRA
                 </footer>
             </div>
         </div>
-    </form>
 </div>
+</form>
 <script>
     document.querySelectorAll('.has-submenu > a').forEach(menu => {
   menu.addEventListener('click', function (e) {

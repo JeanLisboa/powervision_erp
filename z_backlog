@@ -1,0 +1,15 @@
+REFATORAR compras/cadastrar_produtos
+# problemas:
+1 - código muito extenso
+2 - muitas funções misturadas
+
+
+
+# melhoria:
+
+- criar uma função para o render_template
+- Verificar se há funções com código repetido
+- criar regra para nao entrar linhas com códigos repetidos
+
+
+

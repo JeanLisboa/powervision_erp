@@ -163,6 +163,7 @@ def precificacao():
                     cont = 0
                     relatorio_temp = session.get('relatorio_temp')
                     print('for i in relatorio_precificacao:')
+                    # FIXME: LOCALIZAR ERRO NO FOR, POIS ESTÁ DANDO ERRO NO CÁLCULO
                     for i in relatorio_precificacao:
                         print(i)
                         m = lista_final[cont][0]  # converte a margem para decimal

@@ -1,3 +1,4 @@
+MARCADORES
 
 Tag	        | Significado	                                    | Quando usar
 _______________________________________________________________________________________________________
@@ -11,3 +12,7 @@ REVIEW	    | Código que precisa ser revisado	                | Para revisão de
 DEPRECATED	| Código que será removido no futuro	            | Quando algo não deve mais ser usado
 IDEA	    | Sugestão de melhoria ou funcionalidade futura	    | Para brainstorms rápidos dentro do códdigo
 WARNING     | Alerta de segurança ou comportamento inesperado	| Algo que pode quebrar em certas situações
+
+
+GITHUB
+

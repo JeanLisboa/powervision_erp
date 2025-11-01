@@ -90,6 +90,11 @@ class Sobre:
     def backlog():
         return modulos.sobre.backlog()
 
+    @staticmethod
+    @app.route('/teste', methods=['POST', 'GET'])
+    def teste():
+        return modulos.sobre.teste()
+
 class Compras:
 
     @staticmethod
@@ -157,6 +162,11 @@ class Comercial:
         return modulos.comercial.gerar_ordem_venda()
 
     @staticmethod
+    @app.route('/adicionar_item_ordem_venda', methods=['POST', 'GET'])
+    def adicionar_item_ordem_venda():
+        return modulos.comercial.adicionar_item_ordem_venda()
+
+    @staticmethod
     @app.route('/gestao_carteira', methods=['POST', 'GET'])
     def gestao_carteira():
         return modulos.comercial.gestao_carteira()
@@ -199,11 +209,24 @@ def fiscal():
 def login():
     return render_template('login.html')
 
+import logging
+import logging.config
+import json
 
-@app.route('/deploy', methods=['POST', 'GET'])
-def teste():
-    return render_template('deploy.html')
+# Lê o arquivo JSON e aplica a configuração
+with open("config/logging_config.json", "r", encoding="utf8") as f:
+    config = json.load(f)
+    logging.config.dictConfig(config)
 
+# Obtém o logger nomeado
+logger = logging.getLogger("meuapp")
+
+# Exemplo de uso
+# logger.debug("mensagem de debug")
+# logger.info("mensagem de info")
+# logger.warning("mensagem de aviso")
+# logger.error("mensagem de erro")
+# logger.critical("mensagem crítica")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',  debug=True, port=5000)

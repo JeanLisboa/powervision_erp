@@ -338,11 +338,48 @@ class Buscadores:
                 return None
 
     class OrdemVenda:
+
+
         @staticmethod
-        def buscar_pelo_cliente(cliente):
+        def pesquisar_produtos(descricao: str, ean: str, categoria: str, fornecedor: str):
+            print(CorFonte.fonte_amarela() + 'função pesquisar_produtos' + CorFonte.reset_cor())
+            query = "SELECT * FROM PRODUTOS WHERE 1=1 AND DESCRICAO LIKE %s AND EAN LIKE %s AND CATEGORIA LIKE %s AND FORNECEDOR LIKE %s;"
+            logging.info(f'query (parametrizada): {query}')
+            try:
+                mydb.connect()
+                mycursor = mydb.cursor()
+                # executa query de forma segura
+                valores = (f"%{descricao}%", f"%{ean}%", f"%{categoria}%", f"%{fornecedor}%")
+                mycursor.execute(query, valores)
+                resultado_pesquisa = mycursor.fetchall()
+                return resultado_pesquisa
 
-            pass
+            except Exception as e:
+                logging.error(f"Erro ao pesquisar ordem_venda: {e}")
+                return []
 
+            finally:
+                mydb.close()
+        @staticmethod
+        def pesquisar_ordem_venda(ordem_venda: str):
+            print(CorFonte.fonte_amarela() + 'função editar_ordem_venda | pesquisar_ordem_venda' + CorFonte.reset_cor())
+
+            query = "SELECT * FROM ordem_venda WHERE ordem_venda LIKE %s;"
+            logging.info(f'query (parametrizada): {query}, valor: %{ordem_venda}%')
+            try:
+                mydb.connect()
+                mycursor = mydb.cursor()
+                # executa query de forma segura
+                mycursor.execute(query, (f"%{ordem_venda}%",))
+                resultado_pesquisa = mycursor.fetchall()
+                return resultado_pesquisa
+
+            except Exception as e:
+                logging.error(f"Erro ao pesquisar ordem_venda: {e}")
+                return []
+
+            finally:
+                mydb.close()
     class OrdemCompra:
 
         @staticmethod
@@ -372,11 +409,7 @@ class Buscadores:
             valor,
             usuario,
         ):
-            print(
-                CorFonte.fonte_amarela()
-                + "class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra"
-                + CorFonte.reset_cor()
-            )
+            print(CorFonte.fonte_amarela() + "class Buscadores.OrdemCompra | metodo atualizar_saldo_ordem_compra" + CorFonte.reset_cor())
 
             query = """
             INSERT INTO ESTOQUE 
@@ -899,12 +932,7 @@ class Buscadores:
 
         @staticmethod
         def buscar_fornecedor():
-            print(
-                CorFonte.fonte_amarela()
-
-                + f"class Buscadores.OrdemCompra | metodo buscar_fornecedor"
-                + CorFonte.reset_cor()
-            )
+            print(CorFonte.fonte_amarela() + f"class Buscadores.OrdemCompra | metodo buscar_fornecedor" + CorFonte.reset_cor())
             try:
                 query = f"select razaosocial from fornecedores order by razaosocial"
                 mydb.connect()
@@ -945,11 +973,7 @@ class Buscadores:
                 return myresult
 
     def buscar_produto_pelo_ean(ean):
-        print(
-            CorFonte.fonte_amarela()
-            + "classe Buscadores | método buscar_produto_pelo_ean"
-            + CorFonte.reset_cor()
-        )
+        print(CorFonte.fonte_amarela()+ "classe Buscadores | método buscar_produto_pelo_ean" + CorFonte.reset_cor())
         try:
             query = f'select * from produtos where ean = "{ean}"'
             mydb.connect()
@@ -957,10 +981,7 @@ class Buscadores:
             myresult = mycursor.fetchall()
             mydb.commit()
             mydb.close()
-            # print(myresult)
             try:
-                # print(len(myresult))
-
                 if len(myresult) > 0:
                     print('return False')
                     return False

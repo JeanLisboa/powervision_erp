@@ -20,6 +20,9 @@ def estrutura():
 def backlog():
     return render_template('sobre/backlog.html')
 
+def teste():
+    return render_template('sobre/teste.html')
+
 
 def fluxograma():
     return render_template('sobre/fluxograma.html')

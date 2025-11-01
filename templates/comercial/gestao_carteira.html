@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<title>{% block title %}Mod Comercial | Gestão de Carteira {% endblock %}</title>
+
+
+<div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
+    <div>
+        <h2></h2>
+    </div>
+    <form method="POST">
+
+        {{ form_gestao_carteira.hidden_tag() }}
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="box bottom">
+<div style="position:fixed; bottom:0; left:0; width:100%; z-index:000;">
+
+  <h1>teste alert</h1>
+  {% if alert_message %}
+    {% if alert_type == "success" %}
+      <div class="w3-panel w3-green">
+        <p>{{ alert_message }}</p>
+      </div>
+    {% elif alert_type == "error" %}
+      <div class="w3-panel w3-red">
+        <p>{{ alert_message }}</p>
+      </div>
+    {% elif alert_type == "warning" %}
+      <div class="w3-panel w3-yellow">
+        <p>{{ alert_message }}</p>
+      </div>
+    {% else %}
+      <div class="w3-panel w3-blue">
+        <p>{{ alert_message }}</p>
+      </div>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+</div>
+
+</section>

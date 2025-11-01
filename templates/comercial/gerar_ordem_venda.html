@@ -1,16 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
+
 <title>{% block title %}Mod Comercial | Gerar Ordem de Venda{% endblock %}</title>
 
+<form method="POST">
 
-<div class="div_secundaria_no_flex"  xmlns="http://www.w3.org/1999/html">
-    <div>
-        <h2></h2>
-    </div>
-    <form method="POST">
+    {{ form_gerar_ordem_venda.hidden_tag() }}
+    <div class="page">
 
-        {{ form_gerar_ordem_venda.hidden_tag() }}
-        <div class="mb-1 float-child-ordem-compra1-60">
+        <section class="box top-left">
             {{ form_gerar_ordem_venda.botao_submit_ordem_venda(class="btn btn-primary mt-3") }}
             {{ form_gerar_ordem_venda.botao_limpar_ordem(class="btn btn-secondary mt-3") }}
             <h5><small class="text-body-secondary">Dados da Ordem</small></h5>
@@ -24,7 +22,6 @@
             </div>
             <div  class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.cliente.label }}
-
                 {{ form_gerar_ordem_venda.cliente(class="form-control", value=cliente, disabled=True if lista_ordem_venda else False ) }}
             </div>
 
@@ -61,31 +58,27 @@
             <div class="jumbotron jumbotron-fluid">
                 <h4>Total Pedido: R$ {{ total_pedido }}</h4>
             </div>
+    </section>
 
-
-        </div>
-
-        <div class="float-child-ordem-compra2">
-            <div>
-                <h5><small class="text-body-secondary">Pesquisar Produto</small></h5>
-
-                <div class="col form-label btn btn-light">
-                    {{ form_gerar_ordem_venda.pesquisa_descricao.label }}
-                    {{ form_gerar_ordem_venda.pesquisa_descricao(class="form-control") }}
-                </div>
-                <div class="col form-label btn btn-light">
-                    {{ form_gerar_ordem_venda.pesquisa_categoria.label }}
-                    {{ form_gerar_ordem_venda.pesquisa_categoria(class="form-control") }}
-                </div>
-                <div class="col form-label btn btn-light">
-                    {{ form_gerar_ordem_venda.pesquisa_ean.label }}
-                    {{ form_gerar_ordem_venda.pesquisa_ean(class="form-control") }}
-                </div>
-
-                <button type="submit" name="botao_pesquisar_item" class="btn btn-primary">Pesquisar</button>
-                <!-- Coluna Direita: Lista de Produtos -->
-                <h5><small class="text-body-secondary">Lista de Produtos</small></h5>
-                <div  class="container_com_barra_rolagem" style="top: -1px">
+    <section class="box top-right">
+        <div>
+        <h5><small class="text-body-secondary">Pesquisar Produto</small></h5>
+            <div class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.pesquisa_descricao.label }}
+                {{ form_gerar_ordem_venda.pesquisa_descricao(class="form-control") }}
+            </div>
+            <div class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.pesquisa_categoria.label }}
+                {{ form_gerar_ordem_venda.pesquisa_categoria(class="form-control") }}
+            </div>
+            <div class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.pesquisa_ean.label }}
+                {{ form_gerar_ordem_venda.pesquisa_ean(class="form-control") }}
+            </div>
+            <button type="submit" name="botao_pesquisar_item" class="btn btn-primary">Pesquisar</button>
+            <!-- Coluna Direita: Lista de Produtos -->
+            <h5><small class="text-body-secondary">Lista de Produtos</small></h5>
+            <div  class="container_com_barra_rolagem" style="top: -1px">
                     <table class="table table-hover table-striped">
                 <thead>
                 <tr>
@@ -120,20 +113,17 @@
             </table>
                 </div>
             </div>
-        </div>
-    </form>
-
-    <br>
-    <!-- Linha abaixo: Itens da Ordem -->
-    <div class="container_com_barra_100%">
-
-
+    </section>
+    <section class="box bottom">
         <table class="table table-hover table-striped">
             <thead>
                 <tr>
 
                     <th>Data</th>
                     <th>Ordem Venda</th>
+                    <th>Cod Cliente</th>
+                    <th>Destinatário</th>
+
                     <th>Item</th>
                     <th>Código Produto</th>
                     <th>Fornecedor</th>
@@ -156,6 +146,9 @@
             <tr>
                 <td>{{ data }}</td>  <!-- Data -->
                 <td>{{i[6]}}</td>
+                <td>{{ i[13][0] }}</td>
+                <td>{{ i[13][1] }}</td>
+
                 <td>{{loop.index}}</td>
                 <td>{{i[0]}}</td>
                 <td>{{i[7]}}</td>
@@ -188,7 +181,11 @@
             {% endif %}
           </tbody>
         </table>
-    </div>
-</div>
+    </section>
+  </div>
+
+
+    </form>
+
 
 {% endblock %}

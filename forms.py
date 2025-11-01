@@ -42,7 +42,7 @@ class ModAdmin:
             validators=[DataRequired(), NumberRange(min=0.01)],
         )
         botao_salvar = SubmitField("Salvar Alterações")
-        botao_editar = SubmitField("Editar")
+        botao_editar = SubmitField("✏️")
 
 class ModCompras:
     class AnalisarOrdemCompra(FlaskForm):
@@ -63,8 +63,8 @@ class ModCompras:
         pesquisar_ordem_compra = StringField("Ordem", validators=[DataRequired()])
         botao_excluir_ordem_compra = SubmitField("Excluir Ordem")
         botao_pesquisar_ordem_compra = SubmitField("Pesquisar")
-        botao_excluir_item = SubmitField("Excluir Item")
-        botao_editar_item = SubmitField("Editar Item")
+        botao_excluir_item = SubmitField("❌️")
+        botao_editar_item = SubmitField("✏️")
         botao_salvar_alteracoes = SubmitField("Salvar")
         botao_descartar_alteracoes = SubmitField("Descartar ")
         ean = StringField("Ean")
@@ -116,10 +116,10 @@ class ModCompras:
         botao_baixar_planilha = SubmitField("Baixar Arquivo Excel")
         botao_submit_cad_prod = SubmitField("Cadastrar")
         botao_cancelar_cad_prod = SubmitField("cancelar")
-        botao_excluir_cad_prod = SubmitField("excluir")
+        botao_excluir_cad_prod = SubmitField("❌️")
 
         # esta linha serve para armazenar o valor do produto para utilizar no botao editar linha do cadastro produto
-        botao_editar_cad_prod = SubmitField("Editar")
+        botao_editar_cad_prod = SubmitField("✏️")
         valor_produto = HiddenField("Valor do Produto")
 
     class GerarOrdemCompra(FlaskForm):
@@ -208,7 +208,7 @@ class ModCompras:
         unidade = StringField('Unidade')
         categoria = StringField('Categoria')
         quantidade = IntegerField('Quantidade')
-        preco_unitario = FloatField('Preço Unitário')
+        preco_unitario = FloatField('Preço Unit')
         ean = StringField('Ean')
         descricao = StringField('Descrição')
         botao_processar = SubmitField("Pesquisar")
@@ -227,8 +227,8 @@ class ModComercial:
         pesquisar_ordem_venda = StringField("Ordem", validators=[DataRequired()])
         botao_excluir_ordem_venda = SubmitField("Excluir Ordem")
         botao_pesquisar_ordem_venda = SubmitField("Pesquisar")
-        botao_excluir_item = SubmitField("Excluir Item")
-        botao_editar_item = SubmitField("Editar Item")
+        botao_excluir_item = SubmitField("❌️")
+        botao_editar_item = SubmitField("✏️")
         botao_salvar_alteracoes = SubmitField("Salvar")
         botao_descartar_alteracoes = SubmitField("Descartar ")
         ean = StringField("Ean")
@@ -253,12 +253,12 @@ class ModComercial:
         codigo = StringField("Código")
         ean = StringField("EAN")
         descricao = StringField("Descrição", validators=[ReadOnly()])
-        preco_unitario = FloatField("Preço Unitário")
+        preco_unitario = FloatField("Preço Unit.")
         quantidade = IntegerField("Quantidade")
         botao_pesquisar_ordem_venda = SubmitField("Pesquisar Ordem")
         botao_selecionar_item = SubmitField("+")
 
-        botao_incluir_item = SubmitField("Incluir Item")
+        botao_incluir_item = SubmitField("Incluir")
         botao_atualizar_ordem_venda = SubmitField("Atualizar Ordem de Venda")
         botao_cancelar = SubmitField("Cancelar")
 

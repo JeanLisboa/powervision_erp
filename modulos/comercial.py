@@ -1,12 +1,10 @@
 import logging
 import mysql.connector
 from flask import render_template, redirect, url_for, request, session, flash
-
 import geral
 import modulos.admin
 from forms import ModComercial
 from main import usuario
-
 from modulos.utils.formatadores import Formatadores
 from modulos.utils.atualizadores import AtualizaCodigo
 from modulos.utils.buscadores import Buscadores
@@ -57,8 +55,8 @@ def cadastrar_clientes():
         municipio = form_cadastrar_clientes.municipio.data
         uf = form_cadastrar_clientes.uf.data
         tabela = form_cadastrar_clientes.tabela.data
-        cliente = form_cadastrar_clientes.cliente.data
-        tabela = '001'
+
+        tabela = '001' # temporary
 
         try:
             if 'botao_submit_cad_cliente' in request.form:
@@ -104,21 +102,17 @@ def cadastrar_clientes():
         form_cadastrar_clientes=form_cadastrar_clientes
     )
 
-
 def editar_ordem_venda():
-
 
     def pesquisar_ordem_venda(ordem_venda_: str):
         print(CorFonte.fonte_amarela() + 'função editar_ordem_venda | pesquisar_ordem_venda' + CorFonte.reset_cor())
-
         query = "SELECT * FROM ordem_venda WHERE ordem_venda LIKE %s;"
         logging.info(f'query (parametrizada): {query}, valor: %{ordem_venda_}%')
+        mydb.connect()
+        # executa query
+        mycursor.execute(query, (f"%{ordem_venda}%",))
+        resultado_pesquisa = mycursor.fetchall()
         try:
-            mydb.connect()
-            mycursor = mydb.cursor()
-            # executa query de forma segura
-            mycursor.execute(query, (f"%{ordem_venda}%",))
-            resultado_pesquisa = mycursor.fetchall()
             return resultado_pesquisa
 
         except Exception as e:
@@ -131,9 +125,7 @@ def editar_ordem_venda():
     form_editar_ordem_venda = ModComercial.EditarOrdemVenda()
     global ordem_venda
     ordem_venda = form_editar_ordem_venda.pesquisar_ordem_venda.data
-
     session["ordem_venda"] = ordem_venda
-
     if request.method == "POST":
         if ordem_venda :
             try:
@@ -176,9 +168,9 @@ def editar_ordem_venda():
 
         try:
             if "botao_adicionar_item" in request.form and ordem_venda is not None:
-                print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_adicionar_item_ordem_venda" + CorFonte.reset_cor())
+                print("botao_adicionar_item_ordem_venda acionado")
                 session["ordem_venda"] = ordem_venda
-                resultado_pesquisa = session.get("resultado_pesquisa")
+                # resultado_pesquisa = session.get("resultado_pesquisa")
                 return redirect(url_for("adicionar_item_ordem_venda"))
 
         except Exception as e:
@@ -186,7 +178,7 @@ def editar_ordem_venda():
 
         try:
             if "botao_editar_item" in request.form:
-                print(CorFonte.fonte_amarela() + "Função editar_ordem_venda | botao_editar_item" + CorFonte.reset_cor())
+                print("botao_editar_item acionado")
                 ordem_venda_pesquisada = session.get("ordem_venda_pesquisada")
                 resultado_pesquisa = session.get("resultado_pesquisa")
                 print(f'resultado_pesquisa: {resultado_pesquisa}')
@@ -324,16 +316,17 @@ def editar_ordem_venda():
                            form_editar_ordem_venda=form_editar_ordem_venda)
 
 def adicionar_item_ordem_venda():
-    print(f'Função adicionar_item_ordem_venda')
+    print(f'Função adicionar_item_ordem_venda lin 319')
     form_adicionar_item_ordem_venda = ModComercial.AdicionarItemOrdemVenda()
     ordem_venda = session.get('ordem_venda')
-    print(f'ordem_venda recuperado teste: {ordem_venda}')
+
+    # print(f'ordem_venda recuperado teste: {ordem_venda}')
     # QUADRO 1
     # PUXAR SESSION ordem_venda
     if request.method == "POST":
         try:
             if "botao_pesquisar_ordem_venda" in request.form:
-                print("botao_pesquisar_ordem_venda ACIONADO")
+                print("botao_pesquisar_ordem_venda ACIONADO lin 329")
                 ordem_venda = form_adicionar_item_ordem_venda.ordem_venda.data
                 session['ordem_venda'] = ordem_venda
                 print(f'ordem_venda: {ordem_venda}')
@@ -347,7 +340,7 @@ def adicionar_item_ordem_venda():
 
         try:
             if "botao_pesquisar_item" in request.form:
-                print(f'botao_pesquisar_item ACIONADO')
+                print(f'botao_pesquisar_item ACIONADO lin 343')
                 descricao = form_adicionar_item_ordem_venda.pesquisar_descricao.data
                 categoria = form_adicionar_item_ordem_venda.pesquisar_categoria.data
                 ean = form_adicionar_item_ordem_venda.pesquisar_ean.data
@@ -374,7 +367,7 @@ def adicionar_item_ordem_venda():
             logging.exception(e)
         try:
             if "botao_selecionar_item" in request.form:
-                print("botao_selecionar_item Acionado")
+                print("botao_selecionar_item Acionado lin 370")
                 linha_a_adicionar = session.get('linha_a_adicionar')
                 resultado_pesquisa_produtos_ = session.get('resultado_pesquisa_produtos')
                 print(f'resultado_pesquisa_produtos: {resultado_pesquisa_produtos_}')
@@ -545,9 +538,19 @@ def adicionar_item_ordem_venda():
                                           status_pedido,
                                           cod_cliente,
                                           cliente)
-                # incluir a linha no pedido
-                resultado_pesquisa.append(nova_linha_ordem_venda[:])
+
+
                 # fixme: incluir regra para não repetir itens itens já cadastradso na lista
+
+                # incluir a linha no pedido
+                if nova_linha_ordem_venda not in resultado_pesquisa:
+                    resultado_pesquisa.append(nova_linha_ordem_venda[:])
+
+                else:
+                    print("Item ja existente na lista")
+
+
+                # resultado_pesquisa.append(nova_linha_ordem_venda[:])
                 # todo: incluir sequencial
                 # todo: incluir valor total
                 session['resultado_pesquisa'] = resultado_pesquisa
@@ -587,10 +590,10 @@ def adicionar_item_ordem_venda():
 
     linha_a_adicionar = session.get("linha_a_adicionar", None)
     resultado_pesquisa = session.get("resultado_pesquisa", None)
-    print(f'resultado_pesquisa: {resultado_pesquisa}')
+    # print(f'resultado_pesquisa: {resultado_pesquisa}')
     resultado_pesquisa_produtos = session.get("resultado_pesquisa_produtos", None)
     # ordem_venda = session.get("ordem_venda", None)
-    ordem_venda = resultado_pesquisa[0][1]
+    # ordem_venda = resultado_pesquisa[0][1]
     return render_template('comercial/adicionar_item_ordem_venda.html',
                            form_adicionar_item_ordem_venda=form_adicionar_item_ordem_venda,
                            data=Formatadores.os_data(),

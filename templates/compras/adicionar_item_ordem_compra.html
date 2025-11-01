@@ -18,7 +18,7 @@ TELA ADICIONAR ITEM À ORDEM DE COMPRA
         <!-- div1 -->
         <div class="float-child-ordem-compra2">
             <div  class="borda_simples  container_com_barra_rolagem">
-                <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="">
+                <table class="table table-hover table-striped" style="position:sticky" cellpadding="2" cellspacing="2" id="">
                     <thead>
                         <tr>
                             <th></th>
@@ -30,16 +30,17 @@ TELA ADICIONAR ITEM À ORDEM DE COMPRA
                         </tr>
                     </thead>
                 <tbody>
+
                 {% if ordem_pesquisada is not none %}
                     {% if result_pesq_forn %}
                         {% for i in result_pesq_forn %}
 <!--                    {% set contador_item = loop.index0 + 1 %}-->
 
-                <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                <tr class="width:100%  height:100% table table-hover table-bordered table-striped table-sm table-layout:fixed"  >
                     <td>
                         <form method="POST">
                                     {{form_adicionar_item_ordem_compra.hidden_tag()}}
-                                    <input type="hidden" name="incluir_item" value="{{i[3]}}">
+                                    <input type="hidden" name="incluir_item" value="{{i[2]}}">
                             {{form_adicionar_item_ordem_compra.botao_selecionar_item(class='btn btn-primary')}}
                         </form>
                     </td>

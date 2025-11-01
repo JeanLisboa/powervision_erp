@@ -32,7 +32,7 @@
                 </div>
                     <div class="form-label btn btn-light">
                         {{form_editar_ordem_venda.adicionar_quantidade.label(class="form-label" )  }}
-                        {{form_editar_ordem_venda.adicionar_quantidade(class="form-control tam_campo_quantidade_grande", value=quantidade, id="adicionar_quantidade") }}
+                        {{form_editar_ordem_venda.adicionar_quantidade(class="form-control tam_campo_80", value=quantidade, id="adicionar_quantidade") }}
                     </div>
                     <div class="form-label btn btn-light">
                         {{form_editar_ordem_venda.adicionar_preco_unitario.label(class="form-label" )  }}
@@ -95,7 +95,7 @@
                             <form method="POST">
                                 {{ form_editar_ordem_venda.hidden_tag() }}
                                     <input type="hidden" id='myBtn' name="editar__item" value="{{ i[6] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
-                                {{ form_editar_ordem_venda.botao_editar_item(class='btn btn-sm btn-outline-primary') }}
+                                {{ form_editar_ordem_venda.botao_editar_item(class='btn btn-sm btn-outline-primary p-0 pe-1 ps-1 m-0') }}
 
                             </form>
                         </td>
@@ -103,7 +103,7 @@
                             <form method="POST">
                                 {{form_editar_ordem_venda.hidden_tag() }}
                                     <input type="hidden" name="excluir__item" value="{{ i[7] }}"><!-- value será chadado no arquivo main.py no acionamento do botao -->
-                                {{form_editar_ordem_venda.botao_excluir_item(class='btn btn-sm btn-outline-primary' , onclick="return confirm('Tem certeza de que deseja excluir este item ?')") }}
+                                {{form_editar_ordem_venda.botao_excluir_item(class='btn btn-sm btn-outline-secondary p-0 pe-1 ps-1 m-0' , onclick="return confirm('Tem certeza de que deseja excluir este item ?')") }}
                             </form>
                         </td>
                     </tr>

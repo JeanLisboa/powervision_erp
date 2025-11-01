@@ -1,7 +1,7 @@
 # outras bibliotecas
 import ast
 import logging
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 import mysql.connector
 from flask import render_template, redirect, url_for, request, session, flash
 
@@ -1064,7 +1064,7 @@ def editar_ordem_compra():
                 # print(f'linha_para_editar: {linha_para_editar}')
                 return render_template(
                     "compras/editar_ordem_compra.html",
-                    script=script(),
+                    # script=script(),
                     ordem_compra=ordem_compra,
                     ordem_pesquisada=ordem_pesquisada,
                     form_editar_ordem_compra=form_editar_ordem_compra,
@@ -1119,9 +1119,8 @@ def editar_ordem_compra():
                 print()
                 for i in ordem_pesquisada:
                     print(i)
-                # return redirect(url_for("adicionar_item_ordem_compra"))  # teste
-            except:
-                pass
+            except Exception as e:
+                logging.exception(e)
 
             finally:
                 ordem_compra = ordem_pesquisada[0][1]
