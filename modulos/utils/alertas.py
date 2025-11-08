@@ -1,7 +1,7 @@
 from flask import session, redirect, url_for
 from modulos.utils.console import CorFonte
 alert = None
-alert_config = 'role="alert" style="max-width: 50%; margin: 0 auto;'
+alert_config = 'role="alert" style="max-width: 100% max-height: 10%; margin: 0 auto; align: right;  padding-top: 4px; padding-bottom: 4px'
 
 class AlertaMsg:
     def __init__(self):
