@@ -1,6 +1,7 @@
 from flask import session, redirect, url_for
 from modulos.utils.console import CorFonte
 alert = None
+alert_config = 'role="alert" style="max-width: 50%; margin: 0 auto;'
 
 class AlertaMsg:
     def __init__(self):
@@ -13,7 +14,7 @@ class AlertaMsg:
         print("class AlertaMsg: cadastro_cliente_realizado()")
         session["alert"] = (
             f'<div id = "alert" class="alert alert-success", '
-            f'role="alert">Cadastro Realizado Com Sucesso!</div>'
+            f'{alert_config}">Cadastro Realizado Com Sucesso!</div>'
         )
         return redirect(url_for("cadastrar_fornecedores"))
 
@@ -22,7 +23,7 @@ class AlertaMsg:
         print("class AlertaMsg: erro_ao_cadastrar_cliente()")
         session["alert"] = (
             f'<div id = "alert" class="alert alert-danger", '
-            f'role="alert">Erro ao Cadastrar Cliente: {msg_erro}</div>'
+            f'{alert_config}">Erro ao Cadastrar Cliente: {msg_erro}</div>'
         )
         return redirect(url_for("cadastrar_fornecedores"))
 
@@ -31,7 +32,7 @@ class AlertaMsg:
         print("class AlertaMsg: cep_invalido()")
         session["alert"] = (
             f'<div id = "alert" class="alert alert-danger", '
-            f'role="alert">CEP INVALIDO: CEP {cep}</div>'
+            f'{alert_config}">CEP INVALIDO: CEP {cep}</div>'
         )
         return redirect(url_for("cadastrar_fornecedores"))
 
@@ -40,7 +41,7 @@ class AlertaMsg:
         print("class AlertaMsg: produto_ja_cadastrado()")
         session["alert"] = (
             f'<div id = "alert" class="alert alert-danger", '
-            f'role="alert">PRODUTO JÁ CADASTRADO: EAN {ean}</div>'
+            f'{alert_config}">PRODUTO JÁ CADASTRADO: EAN {ean}</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
 
@@ -49,7 +50,7 @@ class AlertaMsg:
         print("class AlertaMsg: produto_incluido_na_tabela()")
         session["alert"] = (
             f'<div id = "alert" class="alert alert-success", '
-            f'role="alert">PRODUTO INCLUIDO NA TABELA: EAN {ean} | {descricao}</div>'
+            f'{alert_config}">PRODUTO INCLUIDO NA TABELA: EAN {ean} | {descricao}</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
 
@@ -57,7 +58,7 @@ class AlertaMsg:
     def produto_ja_digitado():
         print("class AlertaMsg: produto_ja_digitado()")
         session["alert"] = (
-            f'<div id = "alert" class="alert alert-danger", role="alert">PRODUTO JÁ DIGITADO</div>'
+            f'<div id = "alert" class="alert alert-danger", {alert_config}">PRODUTO JÁ DIGITADO</div>'
         )
         # return redirect(url_for('cadastrar_produtos'))
 
@@ -70,7 +71,7 @@ class AlertaMsg:
         )
         session["alert"] = (
             f'<div id = "alert" class="alert alert-danger", '
-            f'role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>'
+            f'{alert_config}">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
 
@@ -83,7 +84,7 @@ class AlertaMsg:
         )
         session["alert"] = (
             f'<div id = "alert" class="alert alert-danger", '
-            f'role="alert">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>'
+            f'{alert_config}">TODOS OS CAMPOS DEVEM SER PREENCHIDOS</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
 
@@ -96,7 +97,7 @@ class AlertaMsg:
         )
         session["alert"] = (
             f'<div id = "alert" class="alert alert-danger", '
-            f'role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>'
+            f'{alert_config}">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
 
@@ -108,7 +109,7 @@ class AlertaMsg:
         )
         session["alert"] = (
             f'<div id = "alert" class="alert alert-danger", '
-            f'role="alert">EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>'
+            f'{alert_config}>EAN {ean} JÁ CONSTA NA TABELA DE ITENS A CADASTRAR</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
 
@@ -120,9 +121,7 @@ class AlertaMsg:
             + "class AlertaMsg: produto_cadastrado_com_sucesso()"
             + CorFonte.reset_cor()
         )
-        session["alert"] = (
-            '<div id = "alert" class="alert alert-success", '
-            'role="alert">PRODUTO CADASTRADO COM SUCESSO</div>'
+        session["alert"] = (f'<div id = "alert" class="alert alert-success", {alert_config}">PRODUTO CADASTRADO COM SUCESSO</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
 
@@ -133,9 +132,7 @@ class AlertaMsg:
             + "class AlertaMsg: fornecedor_invalido_cad_prod()"
             + CorFonte.reset_cor()
         )
-        session["alert"] = (
-            '<div id="alert" class="alert alert-danger" '
-            'role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>'
+        session["alert"] = (f'<div id="alert" class="alert alert-danger" {alert_config}">INSIRA UM FORNECEDOR VÁLIDO</div>'
         )
         return redirect(url_for("cadastrar_produtos"))
 
@@ -146,8 +143,7 @@ class AlertaMsg:
             + "class AlertaMsg: cad_fornecedor_realizado()"
             + CorFonte.reset_cor()
         )
-        session["alert"] = (
-            '<div id="alert" class="alert alert-success", role="alert">CADASTRO REALIZADO!</div>'
+        session["alert"] = (f'<div id="alert" class="alert alert-success", {alert_config}">CADASTRO REALIZADO!</div>'
         )
         return redirect(url_for("cadastrar_fornecedores"))
 
@@ -158,9 +154,9 @@ class AlertaMsg:
             + "class AlertaMsg: fornecedor_invalido()"
             + CorFonte.reset_cor()
         )
-        session["alert"] = (
-            '<div id="alert" class="alert alert-danger" role="alert">INSIRA UM FORNECEDOR VÁLIDO</div>'
+        session["alert"] = (f'<div id="alert" class="alert alert-danger" {alert_config}" style="max-width: 50%; margin: 0;">INSIRA UM FORNECEDOR VÁLIDO</div>'
         )
+
         return redirect(url_for("cadastrar_fornecedores"))
 
     @staticmethod
@@ -170,8 +166,7 @@ class AlertaMsg:
             + "class AlertaMsg: cnpj_invalido()"
             + CorFonte.reset_cor()
         )
-        session["alert"] = (
-            '<div id = "alert" class="alert alert-danger" role="alert">CNPJ INVALIDO!</div>'
+        session["alert"] = (f'<div id = "alert" class="alert alert-danger" {alert_config}">CNPJ INVALIDO!</div>'
         )
         return redirect(url_for("cadastrar_fornecedores"))
 
@@ -182,8 +177,7 @@ class AlertaMsg:
             + "class AlertaMsg: cnpj_ja_existente()"
             + CorFonte.reset_cor()
         )
-        session["alert"] = (
-            '<div id = "alert" class="alert alert-danger" role="alert">CNPJ JA EXISTENTE!</div>'
+        session["alert"] = (f'<div id = "alert" class="alert alert-danger" {alert_config}">CNPJ JA EXISTENTE!</div>'
         )
         return redirect(url_for("cadastrar_fornecedores"))
 
@@ -194,7 +188,6 @@ class AlertaMsg:
             + "class AlertaMsg: cadastro_inexistente()"
             + CorFonte.reset_cor()
         )
-        session["alert"] = (
-            '<div id = "alert" class="alert alert-danger" role="alert">CADASTRO INEXISTENTE</div>'
+        session["alert"] = (f'<div id = "alert" class="alert alert-danger" {alert_config}">CADASTRO INEXISTENTE</div>'
         )
         return redirect(url_for("gerar_ordem_de_compra"))
