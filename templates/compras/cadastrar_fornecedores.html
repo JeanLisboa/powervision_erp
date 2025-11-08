@@ -5,69 +5,63 @@
 <title>{% block title %}Mod Compras | Cad Fornecedor{% endblock %}</title>
 <pre> TELA CADASTRAR FORNECEDORES</pre>
 
-<div class="div_secundaria justify-content-center">
+<div class="page_1">
     <form action="" method="POST">
         {{ form_fornecedores.csrf_token }}
         <div>
-            <div  class="col form-label mt-4 btn btn-light">
+            <div  class="col form-label  btn btn-light">
                 {{ form_fornecedores.data.label }}
                 {{ form_fornecedores.data(class="form-control tam_campo_data", value=data) }}
             </div>
-            <div  class="col form-label mt-4 btn btn-light">
+            <div  class="col form-label  btn btn-light">
                 {{ form_fornecedores.cod_fornecedor.label }}
                 {{ form_fornecedores.cod_fornecedor(class="form-control", size=6, value=cod_fornecedor) }}
             </div>
             <br>
-            <div class="col form-label mt-4 btn btn-light">
+            <div class="col form-label  btn btn-light">
                 {{ form_fornecedores.nome_fantasia.label }}
                {{ form_fornecedores.nome_fantasia(class="form-control") }}
             </div>
-            <div class="col form-label mt-4 btn btn-light">
+            <div class="col form-label  btn btn-light">
                 {{ form_fornecedores.razao_social.label }}
                 {{ form_fornecedores.razao_social(class="form-control") }}
             </div>
-            <div class="col form-label mt-4 btn btn-light">
+            <div class="col form-label  btn btn-light">
                 {{ form_fornecedores.cnpj.label }}
                 {{ form_fornecedores.cnpj(class="form-control", size=14) }}
             </div>
-            <div class="col form-label mt-4 btn btn-light">
+            <div class="col form-label  btn btn-light">
                 {{ form_fornecedores.insc_estadual.label }}
                 {{ form_fornecedores.insc_estadual(class="form-control") }}
             </div>
-            <div class="col form-label mt-4 btn btn-light">
+            <div class="col form-label  btn btn-light">
                 {{ form_fornecedores.email.label }}
                 {{ form_fornecedores.email(class="form-control") }}
             </div>
-            <br>
-            <div class="col form-label mt-4 btn btn-light">
+
+            <div class="col form-label  btn btn-light">
                 {{ form_fornecedores.telefone.label }}
                 {{ form_fornecedores.telefone(class="form-control") }}
             </div>
-            <div class="col form-label mt-4 btn btn-light" >
+            <div class="col form-label  btn btn-light" >
                 {{ form_fornecedores.cep.label }}
                 {{ form_fornecedores.cep(class="form-control ") }}
             </div>
-            <div class="col form-label mt-4 btn btn-light" >
+            <div class="col form-label  btn btn-light" >
                 {{ form_fornecedores.endereco.label }}
                 {{ form_fornecedores.endereco(class="form-control") }}
             </div>
 
-                <div class="col form-label mt-4 btn btn-light">
+                <div class="col form-label  btn btn-light">
                     {{ form_fornecedores.municipio.label }}
                     {{ form_fornecedores.municipio(class="form-control") }}
                 </div>
-                <div class="col form-label mt-4 btn btn-light">
+                <div class="col form-label  btn btn-light">
                     {{ form_fornecedores.uf.label }}
                     {{ form_fornecedores.uf(class="form-control", size=2) }}
                 </div>
-                <div></div>
-
             </div>
-            <div></div>
 
-            <div class="col form-label mt-4">
-
-            </div>
             <div>
                 {{ form_fornecedores.botao_submit_cad_fornecedor(class="btn btn-primary") }}
                 {% if alert %}
