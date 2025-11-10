@@ -13,7 +13,11 @@ from modulos.utils.validadores import Validadores, ValidaStatusPedido
 from modulos.utils.console import CorFonte
 
 # inicialização de variáveis
-mydb = mysql.connector.connect(host="localhost", user="admin2024", password="204619", database="projeto_erp")
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="Ma204619@",
+    database="projeto_erp")
 mycursor = mydb.cursor()
 logging.basicConfig(level=logging.INFO)
 
@@ -646,15 +650,21 @@ def gerar_ordem_venda():
         mycursor.execute('select max(ordem_venda) FROM ORDEM_VENDA;')
         ordem_venda = mycursor.fetchall()
         # logging.info(f'ordem_venda: {ordem_venda[0][0]} - {type(ordem_venda)}')
-        ordem_venda =int(ordem_venda[0][0])
+        try:
+            ordem_venda =int(ordem_venda[0][0])
+            ordem_venda += 1
+            mycursor.fetchall()
+            fechadb = "SET SQL_SAFE_UPDATES = 1"
+            mycursor.execute(fechadb)
+            mycursor.fetchall()
+            mydb.commit()
+            mydb.close()
+        except:
+            ordem_venda = '000001'
+
         # logging.info(f'ordem_venda: {ordem_venda} - {type(ordem_venda)}')
-        ordem_venda += 1
-        mycursor.fetchall()
-        fechadb = "SET SQL_SAFE_UPDATES = 1"
-        mycursor.execute(fechadb)
-        mycursor.fetchall()
-        mydb.commit()
-        mydb.close()
+
+
 
         def completa_zeros(numero: str, tamanho: int = 6) -> str:
             logging.info(CorFonte.fonte_amarela() + "Função gera_ordem_venda | completa_zeros" + CorFonte.reset_cor())

@@ -14,9 +14,10 @@ from modulos.utils.alertas import AlertaMsg
 from modulos.utils.validadores import Validadores, ValidaStatusPedido
 from modulos.utils.console import CorFonte
 from modulos.utils.services import download_planilha
-
+user = 'admin'
+status = 'aberto'
 mydb = mysql.connector.connect(
-    host="localhost", user="admin2024", password="204619", database="projeto_erp"
+    host="localhost", user="root", password="Ma204619@", database="projeto_erp"
 )
 mycursor = mydb.cursor()
 
@@ -76,12 +77,13 @@ def cadastrar_fornecedores():
                 f"'{cep}',"
                 f"'{endereco}',"
                 f"'{municipio}',"
-                f"'{uf}'"
+                f"'{uf}',"
+                f"'{user}'"
             )
             query = (
                 f"INSERT INTO FORNECEDORES "
                 f"(DATA, CODIGO, NOMEFANTASIA, RAZAOSOCIAL, CNPJ, INSCRICAOESTADUAL, EMAIL, "
-                f"TELEFONE, CEP, ENDERECO, MUNICIPIO, UF) "
+                f"TELEFONE, CEP, ENDERECO, MUNICIPIO, UF, USER) "
                 f"VALUES ({values})"
             )
             print(query)
@@ -879,7 +881,7 @@ def analisar_ordem_de_compra():
     )
 
 def editar_ordem_compra():
-    print("função editar_ordem_compra")
+    print("função editarx'_ordem_compra")
     form_editar_ordem_compra = ModCompras.EditarOrdemCompra()
     ordem_compra = request.form.get("pesquisar_ordem_compra")
     session["ordem_compra"] = ordem_compra
@@ -905,7 +907,6 @@ def editar_ordem_compra():
                     # ✅ Inicializa `nova_ordem_pesquisada` como uma lista vazia para evitar erro
                     nova_ordem_pesquisada = []
                     if ordem_pesquisada:
-                        # Criar uma nova lista de tuplas com o status incluído
                         nova_ordem_pesquisada = [i + (status,) for i in ordem_pesquisada]
                         print(f"ordem_pesquisada modificada: {nova_ordem_pesquisada}")
 

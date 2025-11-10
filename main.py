@@ -34,8 +34,8 @@ csrf = CSRFProtect(app)
 
 mydb = mysql.connector.connect(
     host="localhost",
-    user="admin2024",
-    password="204619",
+    user="root",
+    password="Ma204619@",
     database="projeto_erp"
 )
 mycursor = mydb.cursor()
@@ -146,9 +146,14 @@ class Logistica:
         return modulos.logistica.estoque()
 
     @staticmethod
-    @app.route('/entrada_ordem_compra', methods=['POST', 'GET'])
-    def entrada_ordem_compra():
-        return modulos.logistica.entrada_ordem_compra()
+    @app.route('/entrada_ordem_compra_por_nota', methods=['POST', 'GET'])
+    def entrada_ordem_compra_por_nota():
+        return modulos.logistica.entrada_ordem_compra_por_nota()
+
+    @staticmethod
+    @app.route('/entrada_ordem_compra_por_pedido', methods=['POST', 'GET'])
+    def entrada_ordem_compra_por_pedido():
+        return modulos.logistica.entrada_ordem_compra_por_pedido()
 
 class Comercial:
     @staticmethod

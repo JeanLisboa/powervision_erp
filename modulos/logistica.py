@@ -3,6 +3,7 @@ import flash
 from flask import render_template, request, session, redirect
 import modulos.admin
 from forms import Mod_Logistica
+from modulos.utils import formatadores
 from modulos.utils.validadores import Validadores
 from modulos.utils.formatadores import Formatadores
 from  modulos.utils.buscadores import Buscadores, Estoque
@@ -19,7 +20,7 @@ fonte_azul_claro = "\033[36m"
 reset_cor = "\033[0m"
 
 
-def entrada_ordem_compra():
+def entrada_ordem_compra_por_nota():
     print("Função entrada_ordem_compra")
     """
     FUNÇÃO EXECUTADA AO CLICAR NO BOTÃO PESQUISAR ORDEM NA TELA ENTRADA ORDEM COMPRA
@@ -62,17 +63,16 @@ def entrada_ordem_compra():
     
     """
 
-    form_entrada_ordem_compra = Mod_Logistica.EntradaOrdemCompra()
-    razao_social = form_entrada_ordem_compra.razao_social.data
-    cnpj = form_entrada_ordem_compra.cnpj.data
-    nf = form_entrada_ordem_compra.nf.data
+    form_entrada_ordem_compra_por_nota = Mod_Logistica.EntradaOrdemCompra()
+    razao_social = form_entrada_ordem_compra_por_nota.razao_social.data
+    cnpj = form_entrada_ordem_compra_por_nota.cnpj.data
+    nf = form_entrada_ordem_compra_por_nota.nf.data
     pedido = ""
     itens_conferencia = ""
     validacao_1 = ""
     validacao_2 = ""
     validacao_3 = ""
     validacao_4 = ""
-    # lst_qtde_pedido = []
     lst_nf = []
     lst_itens_recebidos = []
     result_conferencia = []
@@ -325,7 +325,7 @@ def entrada_ordem_compra():
 
         try:
             if "botao_analisar_conferencia" in request.form:
-                nf = form_entrada_ordem_compra.nf.data
+                nf = form_entrada_ordem_compra_por_nota.nf.data
                 print(fonte_azul + "\nbotao_analisar_conferencia ACIONADO" + reset_cor)
                 nf = session.get('nf')
                 validacao_final = session.get('validacao_final', False)
@@ -550,8 +550,8 @@ def entrada_ordem_compra():
     print(f"validação_final antes do render_template = {validacao_final}")
 
     return render_template(
-        "logistica/entrada_ordem_compra.html",
-        form_entrada_ordem_compra=form_entrada_ordem_compra,
+        "logistica/entrada_ordem_compra_por_nota.html",
+        form_entrada_ordem_compra_por_nota=form_entrada_ordem_compra_por_nota,
         nf=nf,
         validacao_final=validacao_final,
         lst_nf=lst_nf,
@@ -560,6 +560,39 @@ def entrada_ordem_compra():
         result_conferencia=result_conferencia,
         itens_conferencia=itens_conferencia,
         data=Formatadores.formatar_data(Formatadores.os_data()))
+
+def entrada_ordem_compra_por_pedido():
+    form_entrada_ordem_compra_por_pedido = Mod_Logistica.EntradaOrdemCompraPorPedido()
+
+    razao_social = form_entrada_ordem_compra_por_pedido.razao_social.data
+    cnpj = form_entrada_ordem_compra_por_pedido.cnpj.data
+    nf = form_entrada_ordem_compra_por_pedido.nf.data
+    pedido = ""
+    itens_conferencia = ""
+    validacao_1 = ""
+    validacao_2 = ""
+    validacao_3 = ""
+    validacao_4 = ""
+    lst_nf = []
+    lst_itens_recebidos = []
+    result_conferencia = []
+    lst_diferenca = []
+    validacao_final = False
+
+    campo_qtde = 9999
+
+    return render_template(
+        "logistica/entrada_ordem_compra_por_pedido.html",
+        form_entrada_ordem_compra_por_pedido=form_entrada_ordem_compra_por_pedido,
+        nf=nf,
+        validacao_final=validacao_final,
+        lst_nf=lst_nf,
+        lst_diferenca=lst_diferenca,
+        lst_itens_recebidos=lst_itens_recebidos,
+        result_conferencia=result_conferencia,
+        itens_conferencia=itens_conferencia,
+        data=Formatadores.formatar_data(Formatadores.os_data()))
+
 
 def estoque():
     print("Função estoque")

@@ -57,7 +57,7 @@ class CorFonte:
 def acesso_db():
 
     mydb = mysql.connector.connect(
-        host="localhost", user="admin2024", password="204619", database="projeto_erp"
+        host="localhost", user="root", password="Ma204619@", database="projeto_erp"
     )
     connect = mydb.connect()
     mycursor = mydb.cursor()

@@ -4,53 +4,53 @@
 <title>{% block title %}Mod Compras | Cad Produto{% endblock %}</title>
 
 <pre>TELA CADASTRAR PRODUTOS</pre>
-<div class="div_secundaria">
+<div class="page_1">
     <form action="" method="POST">
         {{ form_cad_produtos.csrf_token }}
             {% if alert %}
                         {{ alert | safe }}
                     {% endif %}
-        <div class=" mb-3 float-child0 "> <!-- tela de pesquisa -->
-            <div class="mb-3 float_cad_produtos_tela_1">
-                <div class="col form-label mt-4 btn btn-light">
+
+            <section class="box top-left">
+                <div class="col form-label btn btn-light">
                     {{ form_cad_produtos.data.label }}
                     {{ form_cad_produtos.data(class="form-control tam_campo_data", value=data) }}
                 </div>
-                <div class="col form-label mt-4 btn btn-light">
+                <div class="col form-label  btn btn-light">
                     {{ form_cad_produtos.fornecedor.label }}
                     {{ form_cad_produtos.fornecedor(class="form-control tam_campo_descricao select_field_customizada", value=fornecedor) }}
                 </div>
-                <br>
-                <div class="col form-label mt-4 btn btn-light">
+                <div class="col form-label btn btn-light">
                     {{ form_cad_produtos.ean.label }}
                     {{ form_cad_produtos.ean(class="form-control tam_campo_ean") }}
                 </div>
-                <div class="col form-label mt-4 btn btn-light ">
+                <div class="col form-label btn btn-light ">
                     {{ form_cad_produtos.valor.label }}
                     {{ form_cad_produtos.valor(class="form-control tam_campo_data") }}
 
                 </div>
-                <br>
-                <div class="col form-label mt-4 btn btn-light">
+
+                <div class="col form-label btn btn-light">
                     {{ form_cad_produtos.descricao.label }}
                     {{ form_cad_produtos.descricao(class="form-control tam_campo_descricao") }}
                 </div>
-                <div class="col form-label mt-4 btn btn-light">
+                <div class="col form-label btn btn-light">
                     {{ form_cad_produtos.unidade.label }}
                     {{ form_cad_produtos.unidade(class="form-control") }}
                 </div>
-                <div class="col form-label mt-4 btn btn-light">
+                <div class="col form-label btn btn-light">
                     {{ form_cad_produtos.categoria.label }}
                     {{ form_cad_produtos.categoria(class="form-control") }}
                 </div>
                 <br>
-                {{ form_cad_produtos.botao_incluir_item(class="btn btn-primary mt-5") }}
+                {{ form_cad_produtos.botao_incluir_item(class="btn btn-primary ") }}
                 <br>
-            </div>
+            </section>
 
-            <div class="float_cad_produtos_tela_2"> <!-- resultado da busca -->
-                TABELA DE ITENS A CADASTRAR
-                <table class="table table-hover table-striped  " style="position:sticky" cellpadding="2" cellspacing="2" id="tabela-itens">
+
+        <section class="box top-right_2"> <!-- resultado da busca -->
+        TABELA DE ITENS A CADASTRAR
+                <table class="table table-sm table-hover table-striped  " style="position:sticky" id="tabela-itens">
                     <thead>
                         <tr>
                             <th>DATA</th>
@@ -82,7 +82,7 @@
                                     <form method="POST" action="{{ url_for('cadastrar_produtos') }}">
                                         {{ form_cad_produtos.hidden_tag() }}
                                     <input type="hidden" name="valor_produto" value="{{ i[1] }}">
-                                        {{ form_cad_produtos.botao_excluir_cad_prod(class='btn btn-primary') }}
+                                        {{ form_cad_produtos.botao_excluir_cad_prod(class='btn btn-tertiary btn-sm') }}
                                     </form>
                                 </td>
                             </tr>
@@ -95,10 +95,8 @@
                     {{ form_cad_produtos.botao_cancelar_cad_prod(class="btn btn-secondary") }}
                     {{ form_cad_produtos.botao_baixar_planilha(class="btn btn-secondary") }}
                 </div>
-            </div>
-        </div>
+            </section>
             <div>
-
             </div>
 
     </form>
@@ -122,7 +120,7 @@ script 2: função para fechar o div alert depois de 4 segundos
 
     </script>
     <script>
-            $(document).ready(function()
+            $(document).ready(function(){
                setTimeout(function() {
                     $("#alert-container").fadeOut("slow");
                 }, 4000);

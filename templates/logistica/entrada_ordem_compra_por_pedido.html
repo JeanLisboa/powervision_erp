@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<title>{% block title %}Mod Logistica | Entrada Por Pedido{% endblock %}</title>
+    <h5> Entrada por Pedido</h5>
+    <body>
+    <form action="" method="POST">
+        {{ form_entrada_ordem_compra_por_pedido.csrf_token }}
+        <div class="page">
+        <section>
+            <div class="col form-label btn btn-light">
+              {{ form_entrada_ordem_compra_por_pedido.data.label }}
+              {{ form_entrada_ordem_compra_por_pedido.data(class="form-control tam_campo_data", value=data) }}
+            </div>
+            <div class="col form-label btn btn-light">
+                {{ form_entrada_ordem_compra_por_pedido.nf.label }}
+                {{ form_entrada_ordem_compra_por_pedido.nf(class="form-control tam_campo_data", value=nf) }}
+            </div>
+                {{ form_entrada_ordem_compra_por_pedido.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
+
+        </section>
+        <section>
+            <table>
+                <thead>
+                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                        <th style="width: 10%;"></th>
+                        <th >Descrição</th>
+                        <th>EAN</th>
+                        <th style="width: 10%;">Un</th>
+                        <th>Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                    </tr>
+                </tbody>
+
+            </table>
+        </section>
+        </div>
+  </form>
+</body>
+{% endblock %}

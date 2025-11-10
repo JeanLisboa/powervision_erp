@@ -4,22 +4,22 @@ TELA ENTRADA ORDEM DE COMPRA
 
 <div class="div_secundaria">
 
-  <form action="" method="POST"> {{ form_entrada_ordem_compra.csrf_token }}
+  <form action="" method="POST"> {{ form_entrada_ordem_compra_por_nota.csrf_token }}
     <pre>
       - NF TESTE:2299      *** - DEVEM SER RESPEITADOS OS CRITÉRIOS PARA RECEBIMENTO. | 1.SE ACEITA PARCIAL | 2.SE GERA SALDO DE PEDIDO.
    </pre>
 
   <div class="entrada_ordem_compra_tela_1"> <!-- DIV 1 SUPERIOR (ESQUERDA) -->
     <div class="col form-label btn btn-light">
-      {{ form_entrada_ordem_compra.data.label }}
-      {{ form_entrada_ordem_compra.data(class="form-control tam_campo_data", value=data) }}
+      {{ form_entrada_ordem_compra_por_nota.data.label }}
+      {{ form_entrada_ordem_compra_por_nota.data(class="form-control tam_campo_data", value=data) }}
     </div>
     <div class="col form-label btn btn-light">
-      {{ form_entrada_ordem_compra.nf.label }}
-      {{ form_entrada_ordem_compra.nf(class="form-control tam_campo_data", value=nf) }}
+      {{ form_entrada_ordem_compra_por_nota.nf.label }}
+      {{ form_entrada_ordem_compra_por_nota.nf(class="form-control tam_campo_data", value=nf) }}
     </div>
 
-      {{ form_entrada_ordem_compra.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
+      {{ form_entrada_ordem_compra_por_nota.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
 
   </div> <!--  FIM DA DIV 1 SUPERIOR -->
   <div class=" mb-3 entrada_ordem_compra_tela_2"> <!-- DIV 2 SUPERIOR (DIREITA) -->
@@ -45,36 +45,36 @@ TELA ENTRADA ORDEM DE COMPRA
     </table>
 
       {% if validacao_final == False %}
-        {{ form_entrada_ordem_compra.botao_realizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+        {{ form_entrada_ordem_compra_por_nota.botao_realizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
       {% else %}
-        {{ form_entrada_ordem_compra.botao_realizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+        {{ form_entrada_ordem_compra_por_nota.botao_realizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
       {% endif %}
 
        {% if validacao_final == False %}
-        {{ form_entrada_ordem_compra.botao_limpar_pesquisa (class="btn btn-primary mt-0", disabled="disabled") }}
+        {{ form_entrada_ordem_compra_por_nota.botao_limpar_pesquisa (class="btn btn-primary mt-0", disabled="disabled") }}
       {% else %}
-        {{ form_entrada_ordem_compra.botao_limpar_pesquisa (class="btn btn-primary mt-0", enabled="enabled") }}
+        {{ form_entrada_ordem_compra_por_nota.botao_limpar_pesquisa (class="btn btn-primary mt-0", enabled="enabled") }}
       {% endif %}
 
   </div> <!-- FIM DA DIV 2 SUPERIOR -->
           {% if validacao_final == False %}
-            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+            {{ form_entrada_ordem_compra_por_nota.botao_analisar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
           {% else %}
-            {{ form_entrada_ordem_compra.botao_analisar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+            {{ form_entrada_ordem_compra_por_nota.botao_analisar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
           {% endif %}
 
 
           {% if validacao_final == False %}
-            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
+            {{ form_entrada_ordem_compra_por_nota.botao_finalizar_conferencia (class="btn btn-primary mt-0", disabled="disabled") }}
           {% else %}
-            {{ form_entrada_ordem_compra.botao_finalizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
+            {{ form_entrada_ordem_compra_por_nota.botao_finalizar_conferencia (class="btn btn-primary mt-0", enabled="enabled") }}
           {% endif %}
 
 
           {% if validacao_final == False %}
-            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", disabled="disabled") }}
+            {{ form_entrada_ordem_compra_por_nota.botao_alterar (class="btn btn-primary mt-0", disabled="disabled") }}
           {% else %}
-            {{ form_entrada_ordem_compra.botao_alterar (class="btn btn-primary mt-0", enabled="enabled") }}
+            {{ form_entrada_ordem_compra_por_nota.botao_alterar (class="btn btn-primary mt-0", enabled="enabled") }}
           {% endif %}
 
 
@@ -92,10 +92,10 @@ TELA ENTRADA ORDEM DE COMPRA
                 <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                   <td>{{ i[7] }}</td>
                   <td>{{ i[3] }}</td>
-                  {% if form_entrada_ordem_compra.botao_analisar_conferencia in request.form %}
-                    <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input", value=99  )  }}</td>
+                  {% if form_entrada_ordem_compra_por_nota.botao_analisar_conferencia in request.form %}
+                    <td>{{ form_entrada_ordem_compra_por_nota.quantidade(class="form-control tam_campo_data background-color-input", value=99  )  }}</td>
                   {% else %}
-                    <td>{{ form_entrada_ordem_compra.quantidade(class="form-control tam_campo_data background-color-input") }}</td>
+                    <td>{{ form_entrada_ordem_compra_por_nota.quantidade(class="form-control tam_campo_data background-color-input") }}</td>
 
                   {% endif %}
 
