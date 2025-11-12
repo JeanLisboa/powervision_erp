@@ -1,4 +1,6 @@
 import datetime
+import logging
+
 import flash
 from flask import render_template, request, session, redirect
 import modulos.admin
@@ -561,13 +563,22 @@ def entrada_ordem_compra_por_nota():
         itens_conferencia=itens_conferencia,
         data=Formatadores.formatar_data(Formatadores.os_data()))
 
-def entrada_ordem_compra_por_pedido():
-    form_entrada_ordem_compra_por_pedido = Mod_Logistica.EntradaOrdemCompraPorPedido()
+def entrada_ordem_compra_manual():
+    logging.info('Função entrada_ordem_compra_manual')
+    form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
+    ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
 
-    razao_social = form_entrada_ordem_compra_por_pedido.razao_social.data
-    cnpj = form_entrada_ordem_compra_por_pedido.cnpj.data
-    nf = form_entrada_ordem_compra_por_pedido.nf.data
-    pedido = ""
+    def pesquisa_ordem_compra():
+        pass
+
+    if request.method == "POST":
+        try:
+            if "botao_pesquisar_ordem_compra" in request.form:
+                print(f'Ordem Pesquisada: {ordem_compra}')
+        except Exception as e:
+            logging.info(e)
+
+
     itens_conferencia = ""
     validacao_1 = ""
     validacao_2 = ""
@@ -582,9 +593,8 @@ def entrada_ordem_compra_por_pedido():
     campo_qtde = 9999
 
     return render_template(
-        "logistica/entrada_ordem_compra_por_pedido.html",
-        form_entrada_ordem_compra_por_pedido=form_entrada_ordem_compra_por_pedido,
-        nf=nf,
+        "logistica/entrada_ordem_compra_manual.html",
+        form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
         validacao_final=validacao_final,
         lst_nf=lst_nf,
         lst_diferenca=lst_diferenca,

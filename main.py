@@ -151,9 +151,9 @@ class Logistica:
         return modulos.logistica.entrada_ordem_compra_por_nota()
 
     @staticmethod
-    @app.route('/entrada_ordem_compra_por_pedido', methods=['POST', 'GET'])
-    def entrada_ordem_compra_por_pedido():
-        return modulos.logistica.entrada_ordem_compra_por_pedido()
+    @app.route('/entrada_ordem_compra_manual', methods=['POST', 'GET'])
+    def entrada_ordem_compra_manual():
+        return modulos.logistica.entrada_ordem_compra_manual()
 
 class Comercial:
     @staticmethod

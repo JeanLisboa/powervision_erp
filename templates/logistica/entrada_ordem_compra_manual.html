@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<title>{% block title %}Mod Logistica | Entrada Por Pedido{% endblock %}</title>
-    <h5> Entrada por Pedido</h5>
+<title>{% block title %}Mod Logistica | Entrada Por ordem_compra{% endblock %}</title>
+    <h5> Entrada por ordem_compra</h5>
     <body>
     <form action="" method="POST">
-        {{ form_entrada_ordem_compra_por_pedido.csrf_token }}
+        {{ form_entrada_ordem_compra_manual.csrf_token }}
         <div class="page">
         <section>
             <div class="col form-label btn btn-light">
-              {{ form_entrada_ordem_compra_por_pedido.data.label }}
-              {{ form_entrada_ordem_compra_por_pedido.data(class="form-control tam_campo_data", value=data) }}
+              {{ form_entrada_ordem_compra_manual.data.label }}
+              {{ form_entrada_ordem_compra_manual.data(class="form-control tam_campo_data", value=data) }}
             </div>
             <div class="col form-label btn btn-light">
-                {{ form_entrada_ordem_compra_por_pedido.nf.label }}
-                {{ form_entrada_ordem_compra_por_pedido.nf(class="form-control tam_campo_data", value=nf) }}
+                {{ form_entrada_ordem_compra_manual.ordem_compra.label }}
+                {{ form_entrada_ordem_compra_manual.ordem_compra(class="form-control tam_campo_data", value=nf) }}
             </div>
-                {{ form_entrada_ordem_compra_por_pedido.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
+                {{ form_entrada_ordem_compra_manual.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
 
         </section>
         <section>

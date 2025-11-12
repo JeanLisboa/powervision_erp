@@ -381,7 +381,7 @@ class Mod_Logistica:
         botao_alterar = SubmitField("Alterar")
         botao_limpar_pesquisa = SubmitField("Limpar")
 
-    class EntradaOrdemCompraPorPedido(FlaskForm):
+    class EntradaOrdemCompraManual(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         nf = IntegerField("NF", validators=[NumberRange(min=1)])
         razao_social = StringField("Nome Fantasia")
