@@ -362,7 +362,7 @@ class Buscadores:
                 mydb.close()
         @staticmethod
         def pesquisar_ordem_venda(ordem_venda: str):
-            print(CorFonte.fonte_amarela() + 'função editar_ordem_venda | pesquisar_ordem_venda' + CorFonte.reset_cor())
+            logging.info(CorFonte.fonte_amarela() + 'função editar_ordem_venda | pesquisar_ordem_venda' + CorFonte.reset_cor())
 
             query = "SELECT * FROM ordem_venda WHERE ordem_venda LIKE %s;"
             logging.info(f'query (parametrizada): {query}, valor: %{ordem_venda}%')

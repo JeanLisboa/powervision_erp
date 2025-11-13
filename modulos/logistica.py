@@ -3,15 +3,14 @@ import logging
 
 import flash
 from flask import render_template, request, session, redirect
+
+import geral
 import modulos.admin
 from forms import Mod_Logistica
 from modulos.utils import formatadores
 from modulos.utils.validadores import Validadores
 from modulos.utils.formatadores import Formatadores
 from  modulos.utils.buscadores import Buscadores, Estoque
-
-
-
 
 
 fonte_vermelha = "\033[31m"
@@ -567,14 +566,15 @@ def entrada_ordem_compra_manual():
     logging.info('Função entrada_ordem_compra_manual')
     form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
     ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
-
-    def pesquisa_ordem_compra():
-        pass
-
+    resultado_pesquisa = []
     if request.method == "POST":
         try:
             if "botao_pesquisar_ordem_compra" in request.form:
                 print(f'Ordem Pesquisada: {ordem_compra}')
+                resultado_pesquisa = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
+                session['resultado_pesquisa'] = resultado_pesquisa
+                for i in resultado_pesquisa:
+                    print(i)
         except Exception as e:
             logging.info(e)
 
@@ -591,10 +591,11 @@ def entrada_ordem_compra_manual():
     validacao_final = False
 
     campo_qtde = 9999
-
+    resultado_pesquisa = session.get("resultado_pesquisa")
     return render_template(
         "logistica/entrada_ordem_compra_manual.html",
         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+        resultado_pesquisa=resultado_pesquisa,
         validacao_final=validacao_final,
         lst_nf=lst_nf,
         lst_diferenca=lst_diferenca,

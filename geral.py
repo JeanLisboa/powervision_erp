@@ -1138,8 +1138,6 @@ class Buscadores:
                 mydb.commit()
                 mydb.close()
 
-
-
         @staticmethod
         def busca_saldo_ordem_compra(ordem_compra):
             print(
@@ -1651,7 +1649,6 @@ class Buscadores:
                     return len(myresult), e
             except Exception as e:
                 return e
-
 
 
     def buscar_produto_pelo_ean(ean):

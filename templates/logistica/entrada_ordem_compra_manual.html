@@ -7,7 +7,55 @@
     <form action="" method="POST">
         {{ form_entrada_ordem_compra_manual.csrf_token }}
         <div class="page">
-        <section>
+            <section>
+            {% if resultado_pesquisa  %}
+                {%  for i in resultado_pesquisa %}
+                    <table>
+                        <thead>
+                        <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                            <th style="width: 10%;"></th>
+                            <th >Descrição</th>
+                            <th>EAN</th>
+                            <th style="width: 10%;">Un</th>
+                            <th>Valor</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                            <td>{{ i[0] }}</td>
+                            <td>{{ i[1] }}</td>
+                            <td>{{ i[2] }}</td>
+                            <td>{{ i[3] }}</td>
+                            <td>{{ i[4] }}</td>
+                            <td>{{ i[5] }}</td>
+                            <td>{{ i[6] }}</td>
+                            <td>{{ i[7] }}</td>
+                            <td>{{ i[8] }}</td>
+                            <td>{{ i[9] }}</td>
+                            <td>{{ i[10] }}</td>
+                            <td>{{ i[11] }}</td>
+                            <td>{{ i[12] }}</td>
+                            <td>{{ i[13] }}</td>
+                            <td>{{ i[14] }}</td>
+                        </tr>
+                    {%  endfor %}
+                {%  endif  %}
+                </tbody>
+
+            </table>
+
+            </section>
+            <section>
             <div class="col form-label btn btn-light">
               {{ form_entrada_ordem_compra_manual.data.label }}
               {{ form_entrada_ordem_compra_manual.data(class="form-control tam_campo_data", value=data) }}
@@ -18,24 +66,6 @@
             </div>
                 {{ form_entrada_ordem_compra_manual.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
 
-        </section>
-        <section>
-            <table>
-                <thead>
-                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                        <th style="width: 10%;"></th>
-                        <th >Descrição</th>
-                        <th>EAN</th>
-                        <th style="width: 10%;">Un</th>
-                        <th>Valor</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                    </tr>
-                </tbody>
-
-            </table>
         </section>
         </div>
   </form>
