@@ -2,72 +2,115 @@
 
 {% block content %}
 <title>{% block title %}Mod Logistica | Entrada Por ordem_compra{% endblock %}</title>
-    <h5> Entrada por ordem_compra</h5>
-    <body>
+
+<h5>Entrada por ordem_compra</h5>
+
+<div class="page">
+
     <form action="" method="POST">
         {{ form_entrada_ordem_compra_manual.csrf_token }}
-        <div class="page">
-            <section>
-            {% if resultado_pesquisa  %}
-                {%  for i in resultado_pesquisa %}
-                    <table>
-                        <thead>
-                        <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                            <th style="width: 10%;"></th>
-                            <th >Descrição</th>
-                            <th>EAN</th>
-                            <th style="width: 10%;">Un</th>
-                            <th>Valor</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
 
-                            <td>{{ i[0] }}</td>
-                            <td>{{ i[1] }}</td>
-                            <td>{{ i[2] }}</td>
-                            <td>{{ i[3] }}</td>
-                            <td>{{ i[4] }}</td>
-                            <td>{{ i[5] }}</td>
-                            <td>{{ i[6] }}</td>
-                            <td>{{ i[7] }}</td>
-                            <td>{{ i[8] }}</td>
-                            <td>{{ i[9] }}</td>
-                            <td>{{ i[10] }}</td>
-                            <td>{{ i[11] }}</td>
-                            <td>{{ i[12] }}</td>
-                            <td>{{ i[13] }}</td>
-                            <td>{{ i[14] }}</td>
-                        </tr>
-                    {%  endfor %}
-                {%  endif  %}
-                </tbody>
-
-            </table>
-
-            </section>
-            <section>
+        <!-- Filtros -->
+        <section class="top-left">
             <div class="col form-label btn btn-light">
-              {{ form_entrada_ordem_compra_manual.data.label }}
-              {{ form_entrada_ordem_compra_manual.data(class="form-control tam_campo_data", value=data) }}
+                {{ form_entrada_ordem_compra_manual.data.label }}
+                {{ form_entrada_ordem_compra_manual.data(class="form-control tam_campo_data", value=data) }}
             </div>
             <div class="col form-label btn btn-light">
                 {{ form_entrada_ordem_compra_manual.ordem_compra.label }}
                 {{ form_entrada_ordem_compra_manual.ordem_compra(class="form-control tam_campo_data", value=nf) }}
             </div>
-                {{ form_entrada_ordem_compra_manual.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
 
+            {{ form_entrada_ordem_compra_manual.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
         </section>
-        </div>
-  </form>
-</body>
+
+        <!-- Tabela 1 (vazia?) -->
+
+
+        <!-- Tabela 2 (resultado da consulta) -->
+        <section class="box top-right">
+            <div style="max-height: 320px; overflow-y: auto; overflow-x: auto;">
+                <table class="table table-hover table-striped table-bordered tabela-padrao">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">Data Ordem</th>
+                            <th>Ordem</th>
+                            <th>Item</th>
+                            <th>Descrição</th>
+                            <th>UN</th>
+                            <th>Categoria</th>
+                            <th>Codigo</th>
+                            <th>EAN</th>
+                            <th>Qtde</th>
+                            <th>Valor Un</th>
+                            <th>Valor Total</th>
+                            <th>Qtde Pend</th>
+                            <th>Valor Pend</th>
+                            <th>Status</th>
+                            <th>Usuario</th>
+                            <th>Entrada Quant.</th>
+                            <th>Entrada Valor</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if resultado_pesquisa %}
+                            {% for i in resultado_pesquisa %}
+                                <tr>
+                                        <td>{{ i[0] }}</td> <!-- data -->
+                                        <td>{{ i[1] }}</td> <!-- ordem -->
+                                        <td>{{ i[2] }}</td> <!-- item -->
+                                        <td>{{ i[3] }}</td> <!-- descricao -->
+                                        <td>{{ i[4] }}</td> <!-- un -->
+                                        <td>{{ i[5] }}</td> <!-- categoria -->
+                                        <td>{{ i[6] }}</td> <!-- codigo -->
+                                        <td>{{ i[7] }}</td> <!-- EAN -->
+                                        <td>{{ i[8] }}</td> <!-- Qtd -->
+                                        <td>{{ i[9] }}</td> <!-- Val un -->
+                                        <td>{{ i[10] }}</td> <!-- Valor Total -->
+                                        <td>{{ i[11] }}</td> <!-- Qtde Pendente -->
+                                        <td>{{ i[12] }}</td> <!-- Valor Pendente -->
+                                        <td>{{ i[13] }}</td> <!-- Status Ordem -->
+                                        <td>{{ i[14] }}</td> <!-- User -->
+                                        <td>
+                                            <label>
+                                                <input class="form-control entrada_ordem_compra_manual altura_input_padrao"
+                                                   type="number"
+                                                   name="campo_entrada_quantidade{{ loop.index0 }}"
+                                                   value="{{ i[11] if i[11] is not none or i[11] != '' else 0.00 }}"
+                                                   min="0.00"
+                                                   max="{{ i[11] }}"
+                                                   step="1" />
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <input class="form-control entrada_ordem_compra_manual"
+                                                       type="number"
+                                                       name="campo_entrada_valor {{ loop.index0 }}"
+                                                       value="{{ i[10] if i[10] is not none or i[10] != '' else 0.00 }}"
+                                                       min="0.00"
+                                                       max="{{ i[10] }}"
+                                                       step="0.01" />
+                                            </label>
+                                        </td>
+                                </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="17">Nenhuma informação encontrada</td>
+                            </tr>
+                        {% endif %}
+
+                    </tbody>
+
+                </table>
+            </div>
+        </section>
+
+    </form>
+
+</div>
+
 {% endblock %}
