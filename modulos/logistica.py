@@ -514,7 +514,6 @@ def entrada_ordem_compra_por_nota():
                     print("Pedido encerrado")
                 else:
                     print("pedido parcialmente recebido")
-
                 print("6 - ATUALIZA SALDO ORDEM COMPRA")
 
 
@@ -567,6 +566,31 @@ def entrada_ordem_compra_manual():
     form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
     ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
     resultado_pesquisa = []
+    # fixme: AJUSTAR BOTAO DE CONFIRMAÇÃO NO FRONTEND. FUNÇÃO JS abaixo
+    """<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const botao = document.getElementById("botao_salvar_entrada");
+
+    botao.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        Swal.fire({
+            title: "Confirmar salvamento?",
+            text: "Você está prestes a registrar a entrada. " +
+                "Deseja confirmar o recebimento ?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sim, salvar",
+            cancelButtonText: "Cancelar",
+            reverseButtons: true,
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById("form_entrada_ordem_compra_manual").submit();
+            }
+        });
+    });
+});
+</script>"""
     if request.method == "POST":
         try:
             if "botao_pesquisar_ordem_compra" in request.form:
@@ -575,34 +599,38 @@ def entrada_ordem_compra_manual():
                 session['resultado_pesquisa'] = resultado_pesquisa
                 for i in resultado_pesquisa:
                     print(i)
+                return render_template(
+                    "logistica/entrada_ordem_compra_manual.html",
+                    form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+                    resultado_pesquisa=resultado_pesquisa,
+                    data=Formatadores.formatar_data(Formatadores.os_data()))
         except Exception as e:
             logging.info(e)
 
+        try:
+            resultado_pesquisa = session.get("resultado_pesquisa")
+            if "botao_salvar_entrada" in request.form:
+                print("botao_salvar_entrada acionado")
+                for idx, item in enumerate(resultado_pesquisa):
+                    print(f'idx: {idx}\n'
+                          f' item: {item}')
+                    entrada_quantidade = request.form.get(f"campo_entrada_quantidade{idx}")
+                    entrada_valor = request.form.get(f"campo_entrada_valor{idx}")
+                    print(f"entrada_quantidade: {entrada_quantidade}, entrada_valor: {entrada_valor}")
+                    # SALVAR ESTOQUE NO BANCO DE DADOS
+                    def gravar_estoque():
+                        pass
+                    def atualizar_pedido():
+                        pass
 
-    itens_conferencia = ""
-    validacao_1 = ""
-    validacao_2 = ""
-    validacao_3 = ""
-    validacao_4 = ""
-    lst_nf = []
-    lst_itens_recebidos = []
-    result_conferencia = []
-    lst_diferenca = []
-    validacao_final = False
+        except Exception as e:
+            logging.info(e)
 
-    campo_qtde = 9999
-    resultado_pesquisa = session.get("resultado_pesquisa")
     return render_template(
         "logistica/entrada_ordem_compra_manual.html",
         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
-        resultado_pesquisa=resultado_pesquisa,
-        validacao_final=validacao_final,
-        lst_nf=lst_nf,
-        lst_diferenca=lst_diferenca,
-        lst_itens_recebidos=lst_itens_recebidos,
-        result_conferencia=result_conferencia,
-        itens_conferencia=itens_conferencia,
-        data=Formatadores.formatar_data(Formatadores.os_data()))
+        data=Formatadores.formatar_data(Formatadores.os_data())
+    )
 
 
 def estoque():

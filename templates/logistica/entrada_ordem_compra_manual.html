@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 
+
 {% block content %}
-<title>{% block title %}Mod Logistica | Entrada Por ordem_compra{% endblock %}</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <title>{% block title %}Mod Logistica | Entrada Por ordem_compra{% endblock %}</title>
 <h5>Entrada por ordem_compra</h5>
-
 <div class="page">
-
     <form action="" method="POST">
         {{ form_entrada_ordem_compra_manual.csrf_token }}
-
         <!-- Filtros -->
         <section class="top-left">
             <div class="col form-label btn btn-light">
@@ -20,13 +19,14 @@
                 {{ form_entrada_ordem_compra_manual.ordem_compra.label }}
                 {{ form_entrada_ordem_compra_manual.ordem_compra(class="form-control tam_campo_data", value=nf) }}
             </div>
-
             {{ form_entrada_ordem_compra_manual.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
+           {{ form_entrada_ordem_compra_manual.botao_salvar_entrada(
+                class="btn btn-primary",
+                id="botao_salvar_entrada"
+
+) }}
+
         </section>
-
-        <!-- Tabela 1 (vazia?) -->
-
-
         <!-- Tabela 2 (resultado da consulta) -->
         <section class="box top-right">
             <div style="max-height: 320px; overflow-y: auto; overflow-x: auto;">
@@ -88,7 +88,7 @@
                                             <label>
                                                 <input class="form-control entrada_ordem_compra_manual"
                                                        type="number"
-                                                       name="campo_entrada_valor {{ loop.index0 }}"
+                                                       name="campo_entrada_valor{{ loop.index0 }}"
                                                        value="{{ i[10] if i[10] is not none or i[10] != '' else 0.00 }}"
                                                        min="0.00"
                                                        max="{{ i[10] }}"
@@ -108,9 +108,6 @@
                 </table>
             </div>
         </section>
-
     </form>
-
 </div>
-
 {% endblock %}
