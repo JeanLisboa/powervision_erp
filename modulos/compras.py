@@ -108,26 +108,27 @@ def cadastrar_fornecedores():
     )
 
 def cadastrar_produtos():
-    print(CorFonte.fonte_amarela() + "cadastrar_produtos" + CorFonte.reset_cor())
+    print(CorFonte.fonte_azul() + "modulo compras | cadastrar_produtos" + CorFonte.reset_cor())
     alert = None
-    global lista_cadastro_produto
+
     global total_cadastro_produto
     global lista_contador_cadastro_produto
-
-    # lista_cadastro_produto = []
-    item_cadastro_produto = []
-    contador_item_cadastro_produto = 0
     form_cad_produtos = ModCompras.CadProduto()
-    cod_produto = AtualizaCodigo.cod_produto()
-    ean = form_cad_produtos.ean.data
     descricao = form_cad_produtos.descricao.data
     unidade = form_cad_produtos.unidade.data
+    ean = form_cad_produtos.ean.data
     valor = form_cad_produtos.valor.data
-    print(f"valor--------------------: {valor}")
     categoria = form_cad_produtos.categoria.data
-    data = Formatadores.os_data()
+    cod_produto = AtualizaCodigo.cod_produto()
     fornecedor = form_cad_produtos.fornecedor.data
     session["fornecedor"] = fornecedor
+
+
+    item_cadastro_produto = []
+    contador_item_cadastro_produto = 0
+    print(f"valor--------------------: {valor}")
+    lista_cadastro_produto = []
+    data = Formatadores.os_data()
     usuario = "ADMIN"
 
     # funções validadoras do item digitado na ordem de compra
@@ -179,11 +180,8 @@ def cadastrar_produtos():
     if request.method == "POST":
         if "botao_incluir_item" in request.form:  # inclui o item na tabela
             print(CorFonte.fonte_amarela() + "botao_incluir_item acionado" + CorFonte.reset_cor())
-
-            # recupera lista se ela existir, caso contrario cria uma nova
             lista_cadastro_produto = session.get("lista_cadastro_produto", [])
-
-            print(f"lista_cadastro_produto: {lista_cadastro_produto}")
+            print(f"lista_cadastro_produto (botao_incluir_item): {lista_cadastro_produto}")
             valida_campos = valida_campos()
             valida_ean_na_lista = valida_ean_na_lista()
             valida_ean_no_banco = valida_ean_no_banco()
@@ -204,10 +202,6 @@ def cadastrar_produtos():
                     session["lista_cadastro_produto"] = lista_cadastro_produto
                     print(f'lista_cadastro_produto: {lista_cadastro_produto}')
                     item_cadastro_produto.clear()
-                    # A LINHA ABAIXO SERVE PARA SALVAR O FORNECEDOR NA SESSÃO E,
-                    # MANTÊ-LO NA TELA AO INCLUIR O ITEM NA TABELA
-                    #   (obs.: DEVE SER PASSADO NO RENDER TEMPLATE)
-
                     fornecedor = session.get("fornecedor")
                     form_cad_produtos.ean.data =  ''
                     form_cad_produtos.descricao.data = ''
@@ -216,7 +210,6 @@ def cadastrar_produtos():
                     form_cad_produtos.valor.data = None
                     alert = AlertaMsg.produto_incluido_na_tabela(ean, descricao)
                     print(f"fornecedor recuperado no botao incluir item {fornecedor}")
-
 
                     return render_template(
                         "compras/cadastrar_produtos.html",
@@ -267,11 +260,14 @@ def cadastrar_produtos():
                 print(e)
 
             finally:
-                print('Finally')
+                print('Finally try_1')
 
         if "botao_submit_cad_prod" in request.form:
             print("botao_submit_cad_prod pressionado")
+
             try:
+                print('Dentro do try (botao_submit_cad_prod)')
+                lista_cadastro_produto = session.get("lista_cadastro_produto")
                 for i in lista_cadastro_produto:
                     print(i[1][0])
                     print(i[1][1])
@@ -281,7 +277,7 @@ def cadastrar_produtos():
                     print(i[1][5])
                     print(i[1][6])
                     data = data
-                    # codigo = cod_produto
+                    print(f'cod_produto: {type(cod_produto)} | {cod_produto}')
                     fornecedor = i[1][0]
                     ean = i[1][1]
                     descricao = i[1][2]
@@ -316,14 +312,24 @@ def cadastrar_produtos():
                     mycursor.fetchall()
                     mydb.commit()
                     alert = AlertaMsg.produto_cadastrado_com_sucesso()
+                    cod_produto = str(int(cod_produto) + 1).zfill(len(cod_produto))
+                    """
+                     int: remove os zeros  para incrementar
+                     +1:  faz o incremento
+                     zfill(len(cod_produto): devolve o tamanho original
+                    """
 
-                lista_cadastro_produto.clear()
+
+                lista_cadastro_produto.clear() # limpa a lista de produtos a cadastrar
+                session["lista_cadastro_produto"] = lista_cadastro_produto
                 redirect(url_for("cadastrar_produtos"))
+                alert = AlertaMsg.produto_cadastrado_com_sucesso()
                 return render_template(
                     "compras/cadastrar_produtos.html",
                     alert=alert,
                     fornecedor=fornecedor,
                     form_cad_produtos=form_cad_produtos,
+                    dicionario_cad_produtos=lista_cadastro_produto,
                     cod_produto=AtualizaCodigo.cod_produto(),
                     data=Formatadores.formatar_data(Formatadores.os_data()),
                 )
@@ -338,7 +344,7 @@ def cadastrar_produtos():
                         "compras/cadastrar_produtos.html",
                         alert=alert,
                         form_cad_produtos=form_cad_produtos,
-                        cod_produto=AtualizaCodigo.cod_produto(),
+                        # cod_produto=AtualizaCodigo.cod_produto(),
                         data=Formatadores.formatar_data(Formatadores.os_data()),
                     )
 
@@ -382,11 +388,9 @@ def cadastrar_produtos():
 
     return render_template(
         "compras/cadastrar_produtos.html",
-        alert=alert,
-        fornecedor=fornecedor,
         form_cad_produtos=form_cad_produtos,
-        dicionario_cad_produtos=lista_cadastro_produto,  # lista_cadastro_produto_cpp
-        cod_produto=AtualizaCodigo.cod_produto(),
+        dicionario_cad_produtos=lista_cadastro_produto,
+        alert=alert,
         data=Formatadores.formatar_data(Formatadores.os_data()))
 
 def gerar_ordem_compra():

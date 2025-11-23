@@ -20,7 +20,6 @@ class Comercial:
     def __init__(self):
         pass
 
-
     @staticmethod
     def cadastrar_cliente(data, cod_cliente, razao_social, cnpj, insc_estadual, email, cep, telefone, endereco, municipio, uf, tabela, usuario):
 
@@ -338,8 +337,6 @@ class Buscadores:
                 return None
 
     class OrdemVenda:
-
-
         @staticmethod
         def pesquisar_produtos(descricao: str, ean: str, categoria: str, fornecedor: str):
             print(CorFonte.fonte_amarela() + 'função pesquisar_produtos' + CorFonte.reset_cor())
@@ -971,7 +968,6 @@ class Buscadores:
             except:
                 myresult = ""
                 return myresult
-
     def buscar_produto_pelo_ean(ean):
         print(CorFonte.fonte_amarela()+ "classe Buscadores | método buscar_produto_pelo_ean" + CorFonte.reset_cor())
         try:
