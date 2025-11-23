@@ -1,5 +1,6 @@
 import datetime
 import logging
+from dis import print_instructions
 
 import flash
 from flask import render_template, request, session, redirect
@@ -611,17 +612,48 @@ document.addEventListener("DOMContentLoaded", function () {
             resultado_pesquisa = session.get("resultado_pesquisa")
             if "botao_salvar_entrada" in request.form:
                 print("botao_salvar_entrada acionado")
-                for idx, item in enumerate(resultado_pesquisa):
-                    print(f'idx: {idx}\n'
-                          f' item: {item}')
-                    entrada_quantidade = request.form.get(f"campo_entrada_quantidade{idx}")
-                    entrada_valor = request.form.get(f"campo_entrada_valor{idx}")
-                    print(f"entrada_quantidade: {entrada_quantidade}, entrada_valor: {entrada_valor}")
-                    # SALVAR ESTOQUE NO BANCO DE DADOS
-                    def gravar_estoque():
-                        pass
-                    def atualizar_pedido():
-                        pass
+
+                # CRIAR TABELA NO BANCO DE DADOS
+                # SALVAR ESTOQUE NO BANCO DE DADOS
+                resultado_pesquisa_temp = []
+                def atualizar_info_ordem_compra(resultado_pesquisa):
+                    print('Função atualizar_info_ordem_compra')
+                    logging.info('Atualiza quantidade e valor das tuplas que compoe a ordem compra, '
+                                 'preparando para atualizar o estoque no BD')
+                    for idx, item in enumerate(resultado_pesquisa):
+                        entrada_quantidade = request.form.get(f"campo_entrada_quantidade{idx}")
+                        entrada_valor = request.form.get(f"campo_entrada_valor{idx}")
+                        # converte para número
+                        entrada_quantidade = float(entrada_quantidade)
+                        logging.info(f'entrada_quantidade {entrada_quantidade} | {type(entrada_quantidade)}')
+                        entrada_valor = float(entrada_valor)
+                        logging.info(f'entrada_valor {entrada_valor} | {type(entrada_valor)}')
+                        a = float(item[11])
+                        b = float(item[12])
+                        logging.info(f'b: {type(b)} |  {b}')
+                        logging.info(f'a: {type(a)} |  {a}')
+                        a -= entrada_quantidade
+                        b -= entrada_valor
+                        try:
+                            item = list(item)
+                            item[11] = a
+                            item[12] = b
+                            item = tuple(item)
+                            resultado_pesquisa_temp.append(item[:])
+                            logging.info('final do loop | item atualizado')
+                            logging.info(item)
+                        except Exception as e:
+                            print(e)
+                    resultado_pesquisa_atualizado = resultado_pesquisa_temp
+                    return resultado_pesquisa_atualizado
+
+                prep_atualizar_estoque = atualizar_info_ordem_compra(resultado_pesquisa)
+                for i in prep_atualizar_estoque:
+                    print(i)
+
+
+                def atualizar_ordem_compra():
+                    pass
 
         except Exception as e:
             logging.info(e)
