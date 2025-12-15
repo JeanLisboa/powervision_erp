@@ -389,7 +389,7 @@ class Mod_Logistica:
         quantidade = IntegerField("Quantidade", validators=[NumberRange(min=0), DataRequired()]        )
         cnpj = IntegerField("CNPJ", validators=[Length(14, 14)])
         botao_pesquisar_ordem_compra = SubmitField("Pesquisar Ordem")
-        botao_realizar_conferencia = SubmitField("Realizar Conferência")
+        botao_salvar_entrada = SubmitField("Salvar")
         botao_finalizar_conferencia = SubmitField("Finalizar Conferência")
         botao_analisar_conferencia = SubmitField("Analisar Conferência")
         botao_alterar = SubmitField("Alterar")

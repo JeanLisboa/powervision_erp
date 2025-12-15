@@ -81,40 +81,57 @@ TELA PRECIFICACAO
                             <td>{{ i[3] }}</td>
                             <td>{{ i[5] }}</td>
                             <td>{{ i[7] }}</td>
-                            <td><input class="form-control tabela_precificacao"
+                            <td>
+                                <input class="form-control tabela_precificacao"
                                        type="number"
                                        name="margem_{{ loop.index0 }}"
                                        value="{{ i[9] if i[9] is not none or i[9] != '' else 0.00 }}"
                                        min="0.00"
                                        max="100.00"
-                                       step="0.01" /></td>
-                            <td><input class="form-control tabela_precificacao"
+                                       step="0.01" />
+                            </td>
+                            <td>
+                                <input class="form-control tabela_precificacao"
                                        type="number"
                                        name="custo_total_{{ loop.index0 }}"
                                        value="{{ i[10] if i[10] is not none or i[10] != '' else 0.00 }}"
                                        min="0.00"
-                                       step="0.01" /></td>
-                            <td><input class="form-control tabela_precificacao"
+                                       step="0.01" />
+                            </td>
+                            <td>
+                                <label>
+                                    <input class="form-control tabela_precificacao"
                                        type="number"
                                        name="acrescimo_{{ loop.index0 }}"
                                        value="{{ i[11] if i[11] is not none or i[11] != '' else 0.00 }}"
                                        min="0.00"
                                        max="100.00"
-                                       step="0.01" /></td>
-                            <td><input class="form-control tabela_precificacao"
+                                       step="0.01" />
+                                </label>
+                            </td>
+                            <td>
+                                <label>
+                                    <input class="form-control tabela_precificacao"
+
                                        type="number"
                                        name="desconto_{{ loop.index0 }}"
                                        value="{{ i[12] if i[12] is not none or i[12] != '' else 0.00 }}"
                                        min="0.00"
                                        max="100.00"
-                                       step="0.01" /></td>
-                            <td><input class="form-control tabela_precificacao"
+                                       step="0.01" />
+                                </label>
+                            </td>
+                            <td>
+                                <label>
+                                    <input class="form-control tabela_precificacao"
                                        type="number"
                                        name="preco_final_{{ loop.index0 }}"
                                        value="{{ i[13] if i[13] is not none or i[13] != '' else 0.00 }}"
                                        min="0.00"
 
-                                       step="0.01" /></td> <!-- i[13] -->
+                                       step="0.01" />
+                                </label>
+                            </td> <!-- i[13] -->
                         </tr>
                     {% endfor %}
                 {% else %}

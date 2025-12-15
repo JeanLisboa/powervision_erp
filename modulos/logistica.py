@@ -1,7 +1,6 @@
 import datetime
 import logging
-from dis import print_instructions
-
+import mysql.connector
 import flash
 from flask import render_template, request, session, redirect
 
@@ -9,6 +8,7 @@ import geral
 import modulos.admin
 from forms import Mod_Logistica
 from modulos.utils import formatadores
+from modulos.utils.queries import mycursor
 from modulos.utils.validadores import Validadores
 from modulos.utils.formatadores import Formatadores
 from  modulos.utils.buscadores import Buscadores, Estoque
@@ -21,6 +21,10 @@ fonte_azul = "\033[34m"
 fonte_azul_claro = "\033[36m"
 reset_cor = "\033[0m"
 
+mydb = mysql.connector.connect(
+    host="localhost", user="root", password="Ma204619@", database="projeto_erp"
+)
+mycursor = mydb.cursor()
 
 def entrada_ordem_compra_por_nota():
     print("Função entrada_ordem_compra")
@@ -567,7 +571,7 @@ def entrada_ordem_compra_manual():
     form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
     ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
     resultado_pesquisa = []
-    # fixme: AJUSTAR BOTAO DE CONFIRMAÇÃO NO FRONTEND. FUNÇÃO JS abaixo
+
     """<script>
 document.addEventListener("DOMContentLoaded", function () {
     const botao = document.getElementById("botao_salvar_entrada");
@@ -595,11 +599,71 @@ document.addEventListener("DOMContentLoaded", function () {
     if request.method == "POST":
         try:
             if "botao_pesquisar_ordem_compra" in request.form:
-                print(f'Ordem Pesquisada: {ordem_compra}')
                 resultado_pesquisa = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
                 session['resultado_pesquisa'] = resultado_pesquisa
-                for i in resultado_pesquisa:
-                    print(i)
+
+
+                def busca_estoque_por_ordem_compra(ordem_compra, ean):
+                    print('função busca_estoque_por_ordem_compra')
+                    query = """
+                            SELECT *
+                            FROM ESTOQUE
+                            WHERE ORDEM_COMPRA = %s
+                              AND EAN = %s;
+                        """
+                    mydb.connect()
+                    mycursor = mydb.cursor(dictionary=True)
+                    mycursor.execute(query, (ordem_compra, ean))
+                    resultado = mycursor.fetchall()
+                    resultado = list(resultado)
+                    print('resultado', resultado)
+                    print(f'Busca estoque {ordem_compra} item {ean} realizada.')
+                    return resultado
+
+                def valida_ordem_compra_pesquisada(ordem_compra, resultado_pesquisa):
+                    # print(f'função valida_ordem_compra_pesquisada | Ordem Pesquisada: {ordem_compra}')
+                    resultado_pesquisa_tmp = []
+                    try:
+                        print('----------------------------------------------------------')
+                        print('resultado_pesquisa')
+                        for i in resultado_pesquisa:
+                            print(i)
+                        print('----------------------------------------------------------')
+                        for i in resultado_pesquisa:
+                            print('dentro do for')
+                            print(i)
+                            resultado = busca_estoque_por_ordem_compra(ordem_compra=i[1], ean=i[7])
+                            print(f'QUANT RECEBDA: {resultado[0]['QTDE']}')
+                            print('-----------------i ajustado-----------------------')
+                            i = list(i)
+                            i[8] = (int (i[8])) - (int(resultado[0]['QTDE']))  # quant. pendente
+                            # print('--------------------- 1 -----------------------')
+                            if i[8]== 0:
+                                i[13] = 'CONCLUIDO'
+
+
+                            # print('--------------------- 2 -----------------------')
+                            i[11] = (int (i[11])) - (int(resultado[0]['QTDE'])) # entr. quant
+                            i[10] = (int (i[10])) * i[11] # entrada valor
+                            i = tuple(i)
+                            # print('--------------------- 3 -----------------------')
+                            resultado_pesquisa_tmp.append(i[:])
+                            print('resultado_pesquisa_tmp')
+                            # print('--------------------- 4 -----------------------')
+                            print(resultado_pesquisa_tmp)
+                            session['resultado_pesquisa_tmp'] = resultado_pesquisa_tmp
+
+                        resultado_pesquisa = resultado_pesquisa_tmp
+
+
+                    except Exception as e:
+                        print(e)
+                    return resultado_pesquisa
+
+                # 1 - valida se o item já foi recebido em estoque
+                resultado_pesquisa = valida_ordem_compra_pesquisada(ordem_compra, resultado_pesquisa)
+
+
                 return render_template(
                     "logistica/entrada_ordem_compra_manual.html",
                     form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
@@ -616,7 +680,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 # CRIAR TABELA NO BANCO DE DADOS
                 # SALVAR ESTOQUE NO BANCO DE DADOS
                 resultado_pesquisa_temp = []
-                def atualizar_info_ordem_compra(resultado_pesquisa):
+                def info_ordem_compra_atualizada(resultado_pesquisa):
                     print('Função atualizar_info_ordem_compra')
                     logging.info('Atualiza quantidade e valor das tuplas que compoe a ordem compra, '
                                  'preparando para atualizar o estoque no BD')
@@ -646,14 +710,83 @@ document.addEventListener("DOMContentLoaded", function () {
                             print(e)
                     resultado_pesquisa_atualizado = resultado_pesquisa_temp
                     return resultado_pesquisa_atualizado
+                prep_atualizar_estoque = info_ordem_compra_atualizada(resultado_pesquisa)
+                """
+                        APOS O USARIO CLICAR EM SALVAR ENTRADA, O QUE DEVE ACONTECER:
+                        - ATUALIZAR O ESTOQUE:
+                            . O SALDO DO PRODUTO DEVE SER INCREMENTADO NA TABELA ESTOQUE
+                        - REGISTRAR MOVIMENTAÇÃO
+                            . A MOVIMENTAÇÃO DEVE SER REGISTRADA NA TABELA PROPRIA
+                        ATUALIZAR ORDEM:
+                            . DE EM ABERTO PARA PARCIALMENTE RECEBIDA OU CONCLUIDA  
+                            
+                """
+                def atualizar_estoque(info_estoque):
+                    print('Função atualizar_estoque no banco de dados')
 
-                prep_atualizar_estoque = atualizar_info_ordem_compra(resultado_pesquisa)
-                for i in prep_atualizar_estoque:
-                    print(i)
+                    pass
 
+                def atualizar_mov_estoque(values):
+                    print('função atualizar_mov_estoque no banco de dados')
+                    mydb.connect()
+                    mycursor = mydb.cursor()
+                    values = values[0]
+                    values = list(values)
+                    data_entrada = str(datetime.date.today())
+                    values.insert(0, data_entrada)
+                    del values[11]
+                    del values[11]
+                    del values[11]
+                    del values[11]
+                    values.insert(-1, '15122030')
+                    values.insert(-1, '999999L')
+                    values.insert(-1, 'ENTRADA')
+                    print(f'list values: {values}')
+                    print(f'values: {values}')
+                    try:
+                        query = """
+                                INSERT INTO ESTOQUE (
+                                    DATA_ENTRADA,
+                                    DATA_ORDEM,
+                                    ORDEM_COMPRA,
+                                    ITEM,
+                                    DESCRICAO,
+                                    UNIDADE,
+                                    CATEGORIA,
+                                    CODIGO,
+                                    EAN,
+                                    QTDE,
+                                    VALOR,
+                                    DATA_VALIDADE,
+                                    LOTE,
+                                    TIPO_MOV,
+                                    USER
+                                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            """
+
+                        mycursor.execute(query, values)
+                        mydb.commit()
+                        print(f'query: {query}\n values: {values}')
+                        print("Registro inserido com sucesso.")
+                    except Exception as e:
+                        print(e)
 
                 def atualizar_ordem_compra():
+                    print('função atualizar tabela ordem_compra')
+                    # atualizar quantidade pendente
+                    # atualizar valor total item pendente
                     pass
+
+                for i in prep_atualizar_estoque:
+                    print(f'>>>>{i}')
+
+                    try:
+                        atualizar_ordem_compra()
+                        atualizar_mov_estoque(prep_atualizar_estoque)
+                        atualizar_ordem_compra()
+
+                    except Exception as e:
+                        print(e)
 
         except Exception as e:
             logging.info(e)
@@ -663,7 +796,6 @@ document.addEventListener("DOMContentLoaded", function () {
         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
         data=Formatadores.formatar_data(Formatadores.os_data())
     )
-
 
 def estoque():
     print("Função estoque")

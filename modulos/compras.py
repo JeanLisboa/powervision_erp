@@ -1499,11 +1499,10 @@ def relatorio_compras():
             params = (data_de, data_ate,f"%{ordem_compra}%", f"%{unidade}%", f"%{categoria}%",f"%{quantidade}%", f"%{ean}%", f"%{descricao}%"
             )
 
-            print(params)
-            print(query)
-
+            logging.info(params)
+            logging.info(query)
             mydb.connect()
-            mycursor = mydb.cursor()  # <- Faltava isso se você não declarou antes
+            mycursor = mydb.cursor()
 
             # Executa a consulta
             mycursor.execute(query, params)

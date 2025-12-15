@@ -44,10 +44,7 @@ def precificacao():
     unidade = form_precificacao.unidade.data
     descricao = form_precificacao.descricao.data
 
-
-
     if request.method == 'POST':
-
         try:
             if 'botao_pesquisar' in request.form:
                 logging.info('Botão pesquisar pressionado')

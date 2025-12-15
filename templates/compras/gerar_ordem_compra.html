@@ -65,28 +65,28 @@
                 <script src="static/js/pesquisa_produto.js" defer></script>
             </section>
             <section class="box top-right">
-    <div style="max-height: 320px; overflow-y: auto; overflow-x: auto;">
-        <table class="table table-hover table-striped table-bordered" >
-        <thead style="position: sticky; top: 0; background: white; z-index: 2;">
-            <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                <div style="max-height: 320px; overflow-y: auto; overflow-x: auto;">
+                    <table class="table table-hover table-striped table-bordered" >
+                        <thead style="position: sticky; top: 0; background: white; z-index: 2;">
+                            <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
                 <th style="width: 10%;"></th>
                 <th >Descrição</th>
                 <th>EAN</th>
                 <th style="width: 10%;">Un</th>
                 <th>Valor</th>
             </tr>
-        </thead>
-        <tbody>
-         {% if result_pesq_forn %}
-           {% for i in result_pesq_forn %}
-            <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
+                        </thead>
+                        <tbody>
+                            {% if result_pesq_forn %}
+                            {% for i in result_pesq_forn %}
+                        <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
             <td>
                 <form method="POST">
                     {{form_gerar_ordem_compra.hidden_tag()}}
                     <input class="" type="hidden" name="incluir_item" value="{{i[3]}}">
                     {{form_gerar_ordem_compra.botao_selecionar_item(class='btn btn-sm btn-outline-primary p-0 pe-1 ps-1 m-0')}}
                 </form>
-            </td>
+            </td>'
             <td>{{i[4]}}</td>
             <td>{{i[3]}}</td>
             <td>{{i[5]}}</td>
