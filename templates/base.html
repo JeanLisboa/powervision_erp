@@ -14,10 +14,14 @@
 
 </head>
 <body>
+
 <div class="div_principal" >
 {% include "navbar.html" %}
+{% include "_alerts.html" %}
+{% block content %}{% endblock %}
      <!-- Div reservada para alertas -->
   <div id="alert-box"><hr><br></div>
+
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     var submenus = document.querySelectorAll('.has-submenu .submenu');
@@ -59,11 +63,6 @@
     });
   });
 </script>
-
-
-{% block content %}
-
-{% endblock %}
 </div>
 </body>
 </html>
