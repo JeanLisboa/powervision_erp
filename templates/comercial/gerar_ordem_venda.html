@@ -4,11 +4,15 @@
 <title>{% block title %}Mod Comercial | Gerar Ordem de Venda{% endblock %}</title>
 
 <form method="POST">
-
     {{ form_gerar_ordem_venda.hidden_tag() }}
-    <div class="page">
 
+    <div class="page">
         <section class="box top-left">
+            {{ form_gerar_ordem_venda.botao_criar_nova_ordem_venda(class="btn btn-primary mt-3") }}
+            <div class="col form-label btn btn-light">
+                {{ form_gerar_ordem_venda.cliente.label }}
+                {{ form_gerar_ordem_venda.cliente(class="form-control", value=cliente, disabled=True if lista_ordem_venda else False ) }}
+            </div>
             {{ form_gerar_ordem_venda.botao_submit_ordem_venda(class="btn btn-primary mt-3") }}
             {{ form_gerar_ordem_venda.botao_limpar_ordem(class="btn btn-secondary mt-3") }}
             <h5><small class="text-body-secondary">Dados da Ordem</small></h5>
@@ -16,21 +20,20 @@
                 {{ form_gerar_ordem_venda.data.label }}
                 {{ form_gerar_ordem_venda.data(class="form-control tam_campo_data", value=data) }}
             </div>
-            <div  class="col form-label btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.ordem_venda.label }}
                 {{ form_gerar_ordem_venda.ordem_venda(class="form-control", value=ordem_venda) }}
             </div>
-            <div  class="col form-label btn btn-light">
-                {{ form_gerar_ordem_venda.cliente.label }}
-                {{ form_gerar_ordem_venda.cliente(class="form-control", value=cliente, disabled=True if lista_ordem_venda else False ) }}
-            </div>
 
+            <div>
+                {{ form_gerar_ordem_venda.status.label }}
+            </div>
             <h5><small class="text-body-secondary">Produto Selecionado</small></h5>
-            <div  class="col form-label btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.cod_produto.label }}
                 {{ form_gerar_ordem_venda.cod_produto(class="form-control tam_campo_100", value=tupla_linha_selecionada[0]) }}
             </div>
-            <div  class="col form-label btn btn-light">
+            <div class="col form-label btn btn-light">
                 {{ form_gerar_ordem_venda.ean.label }}
                 {{ form_gerar_ordem_venda.ean(class="form-control tam_campo_150", value=tupla_linha_selecionada[1]) }}
             </div>
@@ -58,72 +61,69 @@
             <div class="jumbotron jumbotron-fluid">
                 <h4>Total Pedido: R$ {{ total_pedido }}</h4>
             </div>
-    </section>
-
-    <section class="box top-right">
-        <div>
-        <h5><small class="text-body-secondary">Pesquisar Produto</small></h5>
-            <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_venda.pesquisa_descricao.label }}
-                {{ form_gerar_ordem_venda.pesquisa_descricao(class="form-control") }}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_venda.pesquisa_categoria.label }}
-                {{ form_gerar_ordem_venda.pesquisa_categoria(class="form-control") }}
-            </div>
-            <div class="col form-label btn btn-light">
-                {{ form_gerar_ordem_venda.pesquisa_ean.label }}
-                {{ form_gerar_ordem_venda.pesquisa_ean(class="form-control") }}
-            </div>
-            <button type="submit" name="botao_pesquisar_item" class="btn btn-primary">Pesquisar</button>
-            <!-- Coluna Direita: Lista de Produtos -->
-            <h5><small class="text-body-secondary">Lista de Produtos</small></h5>
-            <div  class="container_com_barra_rolagem" style="top: -1px">
-                    <table class="table table-hover table-striped">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Descrição</th>
-                    <th>Fornecedor</th>
-                    <th>EAN</th>
-                    <th>Un</th>
-                    <th>Valor</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% if lista_produtos %}
-                {% for i in lista_produtos %}
-                <tr>
-                    <td>
-                        <button type="submit" name="botao_selecionar_item" value="{{ i[3] }}" class="btn btn-sm btn-outline-primary">+</button>
-                    </td>
-                    <td>{{ i[4] }}</td>
-                    <td>{{ i[2] }}</td>
-                    <td>{{ i[3] }}</td>
-                    <td>{{ i[5] }}</td>
-                    <td>{{ i[7] }}</td>
-                </tr>
-                {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="6">Nenhum produto encontrado</td>
-                    </tr>
-                {% endif %}
-                </tbody>
-            </table>
+        </section>
+        <section class="box top-right">
+            <div>
+                <h5><small class="text-body-secondary">Pesquisar Produto</small></h5>
+                <div class="col form-label btn btn-light">
+                    {{ form_gerar_ordem_venda.pesquisa_descricao.label }}
+                    {{ form_gerar_ordem_venda.pesquisa_descricao(class="form-control") }}
                 </div>
+                <div class="col form-label btn btn-light">
+                    {{ form_gerar_ordem_venda.pesquisa_categoria.label }}
+                    {{ form_gerar_ordem_venda.pesquisa_categoria(class="form-control") }}
+                </div>
+                <div class="col form-label btn btn-light">
+                    {{ form_gerar_ordem_venda.pesquisa_ean.label }}
+                    {{ form_gerar_ordem_venda.pesquisa_ean(class="form-control") }}
+                </div>
+                <button type="submit" name="botao_pesquisar_item" class="btn btn-primary">Pesquisar</button>
+                <!-- Coluna Direita: Lista de Produtos -->
+                <h5><small class="text-body-secondary">Lista de Produtos</small></h5>
+                <div  class="container_com_barra_rolagem" style="top: -1px">
+                        <table class="table table-hover table-striped">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Descrição</th>
+                        <th>Fornecedor</th>
+                        <th>EAN</th>
+                        <th>Un</th>
+                        <th>Valor</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if lista_produtos %}
+                    {% for i in lista_produtos %}
+                    <tr>
+                        <td>
+                            <button type="submit" name="botao_selecionar_item" value="{{ i[3] }}" class="btn btn-sm btn-outline-primary">+</button>
+                        </td>
+                        <td>{{ i[4] }}</td>
+                        <td>{{ i[2] }}</td>
+                        <td>{{ i[3] }}</td>
+                        <td>{{ i[5] }}</td>
+                        <td>{{ i[7] }}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6">Nenhum produto encontrado</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+                    </div>
             </div>
-    </section>
-    <section class="box bottom">
-        <table class="table table-hover table-striped">
+        </section>
+        <section class="box bottom">
+            <table class="table table-hover table-striped">
             <thead>
                 <tr>
-
                     <th>Data</th>
                     <th>Ordem Venda</th>
                     <th>Cod Cliente</th>
                     <th>Destinatário</th>
-
                     <th>Item</th>
                     <th>Código Produto</th>
                     <th>Fornecedor</th>
@@ -181,7 +181,7 @@
             {% endif %}
           </tbody>
         </table>
-    </section>
+        </section>
   </div>
 
 
