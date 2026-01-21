@@ -613,21 +613,37 @@ def gestao_carteira():
 
 
 def gerar_ordem_venda():
+    print('Etapa 1: ABRE A TELA ')
     """
     REGRAS DO NEGOCIO:
-    AÇÃO DO USUARIO                                                         | OPERACAO | STATUS    | OBS
-    1 ABRE A TELA ( OV: "")                                                 |  GET     |           |
-    1.1 VALIDA SE O USER TEM OV EM RASCUNHO                                 |  GET     |           |
-    2 SELECIONA O CLIENTE E CLICA EM GERAR ORDEM DE VENDA (QUERY)           | INSERT   | RASCUNHO  | BOTÃO CRIAR_ORDEM DESABILITADO
-    3 INCLUI O PRIMEIRO ITEM                                                | UPDATE   | EM_EDICAO |
-    4 INCLUI ITEM ADICIONAL                                                 | INSERT   | EM_EDICAO |
-    4 ATUALIZA ITEM (QTDE/PREÇO)                                            | UPDATE   | EM_EDICAO |
-    4 REMOVE ITEM                                                           | DELETE   | EM_EDICAO |
-    5 CLICA EM SALVAR/FINALIZAR (PELO MENOS 1 ITEM VÁLIDO)                  | LIBERADA |           | BOTÃO CRIAR_ORDEM HABILITADO
+    AÇÃO DO USUARIO                                               | OV   |          | OPERACAO | STATUS    | OBS
+    1 ABRE A TELA                                                 | None |  GET     |           |
+    2 VALIDA SE O USER TEM OV EM RASCUNHO                         |      |  GET     |           |
+    2.1 CASO SIM:                                                 |      |  GET     |           |
+    2.1.1 DESABILITAR BOTÃO                                       |      |  GET     |           |
+    2.1.2 ACESSAR A TELA EDITAR_ORDEM_COMPRA                      |      |  GET     |           |
+    2.2 CASO NÃO:                                                 |      |  GET     |           |
+    2.2.1 CONTINUAR                                               |      |  GET     |           |
+    3 SELECIONA O CLIENTE E CLICA EM GERAR ORDEM DE VENDA (QUERY) |      | INSERT   | RASCUNHO  | BOTÃO CRIAR_ORDEM DESABILITADO
+    4 INCLUI O PRIMEIRO ITEM                                      |      | UPDATE   | EM_EDICAO |
+    4 INCLUI ITEM ADICIONAL                                       |      | INSERT   | EM_EDICAO |
+    4 ATUALIZA ITEM (QTDE/PREÇO)                                  |      | UPDATE   | EM_EDICAO |
+    4 REMOVE ITEM                                                 |      | DELETE   | EM_EDICAO |
+    5 CLICA EM SALVAR/FINALIZAR (PELO MENOS 1 ITEM VÁLIDO)        |      | LIBERADA |           | BOTÃO CRIAR_ORDEM HABILITADO
     """
-    usuario = 'admin'
+    form_gerar_ordem_venda = ModComercial.GerarOrdemVenda()
+    print(CorFonte.fonte_amarela() + "Função gera_ordem_venda" + CorFonte.reset_cor())
+    print('Processamento inicial')
+    usuario = 'jean'
+    session['usuario'] = usuario
+    total_pedido = 0
+    data = Formatadores.os_data()
+    ordem_venda = ''
+    alert = ''
+    print(f'ordem_venda (inicial) = {ordem_venda}')
+
     def usuario_tem_rascunho(usuario):
-        print('função usuario_tem_rascunho')
+        print(CorFonte.fonte_azul_claro() + 'subfunção usuario_tem_rascunho'+ CorFonte.reset_cor())
         mydb.connect()
         query = """
             SELECT 1
@@ -638,48 +654,52 @@ def gerar_ordem_venda():
         """
         mycursor.execute(query, (usuario,))
         resultado = mycursor.fetchone()
-        print(f'resultado = {resultado}')
         return resultado
 
     def desabilita_botao_criar_nova_ordem_venda():
-        print(f'função desabilita_botao_criar_nova_ordem_venda')
+        print(CorFonte.fonte_azul_claro() + f'subfunção desabilita_botao_criar_nova_ordem_venda' + CorFonte.reset_cor())
         if tem_rascunho:
             form_gerar_ordem_venda.botao_criar_nova_ordem_venda.render_kw = {"disabled": True}
+            # alert = AlertaMsg.erro_ao_processar_rascunho(usuario)
+            # flash(alert["mensagem"], alert["tipo"])
         else:
             form_gerar_ordem_venda.botao_criar_nova_ordem_venda.render_kw = {}
 
     def busca_n_ordem_venda():
-        print(CorFonte.fonte_amarela() + "Função gera_ordem_venda | busca_n_ordem_venda" + CorFonte.reset_cor())
+        print(CorFonte.fonte_azul_claro() + "subfunção busca_n_ordem_venda" + CorFonte.reset_cor())
         mydb.connect()
         mycursor.execute('select max(ordem_venda) FROM ORDEM_VENDA;')
         ordem_venda = mycursor.fetchone()
         print(f'ordem_venda = {ordem_venda}')
-        # logging.info(f'ordem_venda: {ordem_venda[0][0]} - {type(ordem_venda)}')
+
         try:
             ordem_venda =int(ordem_venda[0])
+            print('dentro do try')
+            print(f'ordem_venda = {ordem_venda}')
             # ordem_venda += 1
             mycursor.fetchall()
             mydb.close()
         except:
-            ordem_venda = '000001'
-
-        # logging.info(f'ordem_venda: {ordem_venda} - {type(ordem_venda)}')
-
+            print('dentro do except')
+            # ordem_venda = '000001'
+            ordem_venda = None
 
         def completa_zeros(numero: str, tamanho: int = 6) -> str:
-            logging.info(CorFonte.fonte_amarela() + "Função gera_ordem_venda | completa_zeros" + CorFonte.reset_cor())
+            logging.info(CorFonte.fonte_azul_claro() + "função aux completa_zeros" + CorFonte.reset_cor())
             return numero.zfill(tamanho)
 
-        ordem_venda = completa_zeros(str(ordem_venda))
+        if ordem_venda is None:
+            ordem_venda = ''
+        else:
+            ordem_venda = completa_zeros(str(ordem_venda))
         return ordem_venda
 
-    def criar_ordem_venda_inicial(ordem_venda, usuario, cod_cliente, cliente):
-        print("Função criar_ordem_venda_inicial")
+    def criar_ordem_venda_inicial(usuario, cod_cliente, cliente):
+        print(CorFonte.fonte_azul_claro() + "subfunção criar_ordem_venda_inicial" + CorFonte.reset_cor())
 
         query = """
             INSERT INTO ORDEM_VENDA (
                 DATA,
-                ORDEM_VENDA,
                 ITEM,
                 CODIGO_PRODUTO,
                 FORNECEDOR,
@@ -699,31 +719,42 @@ def gerar_ordem_venda():
             )
             VALUES (
                 NOW(),
-                %s,
-                0, 0, 0, '', 0, '', '',
-                0, 0, 0, 0, 0,
-                %s,
-                'RASCUNHO',
-                %s,
-                %s
+                %s, %s, %s, %s, %s, %s, %s,
+                %s, %s, %s, %s, %s,
+                %s, %s, %s, %s
             );
         """
+
+        valores = (
+            0,  # ITEM
+            0,  # CODIGO_PRODUTO
+            0,  # FORNECEDOR
+            "",  # DESCRICAO
+            0,  # EAN
+            "",  # UN
+            "",  # TABELA
+            0,  # PRECO_LISTA
+            0,  # PRECO_VENDA
+            0,  # QUANTIDADE
+            0,  # ACRESC_DESC
+            0,  # TOTAL_PEDIDO
+            usuario,  # USUARIO
+            "RASCUNHO",  # STATUS_PEDIDO
+            cod_cliente,  # COD_CLIENTE
+            cliente  # CLIENTE
+        )
 
         try:
             mydb.connect()
             cursor = mydb.cursor()
 
-            valores = (
-                ordem_venda,
-                usuario,
-                cod_cliente,
-                cliente
-            )
-
-            logging.info(f"Criando ordem de venda (rascunho): {ordem_venda}")
             cursor.execute(query, valores)
-
             mydb.commit()
+
+            ordem_venda = cursor.lastrowid
+            logging.info(f"OV criada em rascunho: {ordem_venda}")
+
+            return ordem_venda
 
         except Exception as e:
             mydb.rollback()
@@ -734,86 +765,80 @@ def gerar_ordem_venda():
             cursor.close()
             mydb.close()
 
-    if usuario_tem_rascunho(usuario):
-        print('dentro do if usuario tem rascunho')
-        ordem_venda = busca_n_ordem_venda()
-        print(f'ordem_venda = {ordem_venda}')
-        alert = AlertaMsg.erro_ao_processar_rascunho(usuario)
-        flash(alert["mensagem"], alert["tipo"])
-        # session['alert'] = alert
-        # session['ordem_venda'] = ordem_venda
-        # return redirect(url_for("gerar_ordem_venda"))
-
-    # 1. O USUARIO ABRE A TELA
-
-    # 2. O USUARIO SELECIONA O CLIENTE E CLICA EM CRIAR ORDEM (QUERY)
-    total_pedido = 0
-    data = Formatadores.os_data()
-    logging.info(CorFonte.fonte_amarela() + "Função gera_ordem_venda"+ CorFonte.reset_cor())
-    form_gerar_ordem_venda = ModComercial.GerarOrdemVenda()
-    tem_rascunho = usuario_tem_rascunho(usuario) is not None
-    desabilita_botao_criar_nova_ordem_venda()
 
     if request.method == "POST":
         try:
             if "botao_criar_nova_ordem_venda" in request.form:
+                usuario = session.get("usuario")
                 print('botao_criar_nova_ordem_venda pressionado')
+                print('ETAPA 2:  VALIDA SE O USER TEM OV EM RASCUNHO')
+                alert = ''
+                tem_rascunho = usuario_tem_rascunho(usuario)
+                print(f'tem_rascunho = {tem_rascunho}')
+                if tem_rascunho:
+                    print('ETAPA 2.1:  INFORMAR AO USUARIO QUE HÁ RASCUNHO EM ABERTO E DESABILITAR O BOTÃO')
+                    desabilita_botao_criar_nova_ordem_venda()
+                    alert = AlertaMsg.erro_ao_processar_rascunho(usuario, ordem_venda)
+                    flash(alert["mensagem"], alert["tipo"])
 
-                """
-                    status: str
-                    origem: banco de dados
-                    descricao: obter última ordem venda salva
-                """
+                else:
+                    desabilita_botao_criar_nova_ordem_venda()
+                    print('O usuário NÃO tem rascunho')
+                    ordem_venda = busca_n_ordem_venda()
+                    session['ordem_venda'] = ordem_venda
+                    print('continuar')
+                    cliente = request.form['cliente']
+                    cliente_tupla = ast.literal_eval(cliente)
+                    cod_cliente = cliente_tupla[0]
+                    cliente = cliente_tupla[1]
+                    logging.info(f'cod_cliente: {cod_cliente}')
+                    logging.info(f'cliente: {cliente}')
+                    criar_ordem_venda_inicial(usuario,cod_cliente,cliente)
+                    desabilita_botao_criar_nova_ordem_venda()
 
+                print('Processamento final')
                 ordem_venda = busca_n_ordem_venda()
-                # print(f'Nova ordem_venda: {ordem_venda}')
                 session['ordem_venda'] = ordem_venda
-                cliente = request.form['cliente']
-                cliente_tupla = ast.literal_eval(cliente)
-                cod_cliente = cliente_tupla[0]
-                # print(f'cod_cliente: {cod_cliente}')
-                cliente = cliente_tupla[1]
-                # print(f'cliente: {cliente}')
-                # print(f'Salvando nova ov')
-
-                criar_ordem_venda_inicial(ordem_venda, usuario,cod_cliente,cliente)
-
-                # salvar numero da ordem, data, usuario
-                """
-                    status: dict
-                    origem: backend/usuario
-                    descricao: fazer query no banco de dados
-                """
-                return redirect(url_for("gerar_ordem_venda"))
-
+                print(f'ordem_venda = {ordem_venda}')
+                print(f'alert = {alert}')
+                print(f'total_pedido = {total_pedido}')
+                print(f'data = {data}')
+                return render_template('comercial/gerar_ordem_venda.html',
+                                       ordem_venda=ordem_venda,
+                                       alert=alert,
+                                       total_pedido=total_pedido,
+                                       relatorio_ordem_venda='',
+                                       form_gerar_ordem_venda=form_gerar_ordem_venda,
+                                       tupla_linha_selecionada='',
+                                       data=data)
         except Exception as e:
             print(e)
 
         try:
             if "botao_pesquisar_item" in request.form:
-                # cliente = session.get('cliente')
-                # logging.info("botao_pesquisar_item ACIONADO")
-                # pesquisa_descricao = form_gerar_ordem_venda.pesquisa_descricao.data
-                # pesquisa_categoria = form_gerar_ordem_venda.pesquisa_categoria.data
-                # pesquisa_ean = form_gerar_ordem_venda.pesquisa_ean.data
-                # # logging.info(f'pesq_descricao: {pesquisa_descricao} | pesquisa_categoria: {pesquisa_categoria} | pesquisa_ean: {pesquisa_ean}')
-                # lista_produtos = geral.Buscadores.OrdemVenda.buscar_lista_produtos(pesquisa_descricao, pesquisa_categoria, pesquisa_ean)
-                #
-                # fornecedor = lista_produtos[0][2]
-                # # logging.info(f'fornecedor: {fornecedor}')
-                # session['fornecedor'] = fornecedor
-                # session['lista_produtos'] = lista_produtos
-                # session['cliente'] = cliente
-                # form_gerar_ordem_venda.status.data = 'RASCUNHO'
-                # return render_template('gerar_ordem_venda.html',
-                #                        # ordem_venda=ordem_venda,
-                #                        total_pedido=total_pedido,
-                #                        relatorio_ordem_venda='',
-                #                        form_gerar_ordem_venda=form_gerar_ordem_venda,
-                #                        codigo_ordem_venda='',
-                #                        # lista_produtos=lista_produtos,
-                #                        data=data)
-                pass
+                cliente = session.get('cliente')
+                print("botao_pesquisar_item ACIONADO")
+                pesquisa_descricao = form_gerar_ordem_venda.pesquisa_descricao.data
+                pesquisa_categoria = form_gerar_ordem_venda.pesquisa_categoria.data
+                pesquisa_ean = form_gerar_ordem_venda.pesquisa_ean.data
+                logging.info(f'pesq_descricao: {pesquisa_descricao} | pesquisa_categoria: {pesquisa_categoria} | pesquisa_ean: {pesquisa_ean}')
+                lista_produtos = geral.Buscadores.OrdemVenda.buscar_lista_produtos(pesquisa_descricao, pesquisa_categoria, pesquisa_ean)
+
+                fornecedor = lista_produtos[0][2]
+                logging.info(f'fornecedor: {fornecedor}')
+                session['fornecedor'] = fornecedor
+                session['lista_produtos'] = lista_produtos
+                session['cliente'] = cliente
+                form_gerar_ordem_venda.status.data = 'RASCUNHO'
+                return render_template('gerar_ordem_venda.html',
+                                       ordem_venda=ordem_venda,
+                                       alert=alert,
+                                       total_pedido=total_pedido,
+                                       relatorio_ordem_venda='',
+                                       form_gerar_ordem_venda=form_gerar_ordem_venda,
+                                       codigo_ordem_venda='',
+                                       # lista_produtos=lista_produtos,
+                                       data=data)
         except Exception as e:
             logging.info(e)
 
@@ -1044,19 +1069,19 @@ def gerar_ordem_venda():
                                    tupla_linha_selecionada=tupla_linha_selecionada,
                                    lista_produtos=lista_produtos,
                                    total_pedido=total_pedido)
-
         except Exception as e:
             logging.info(f"Erro ao gerar ordem: {e}")
 
     ordem_venda = session.get('ordem_venda')
+    # print(f'ordem_venda: {ordem_venda}')
     tupla_linha_selecionada  = session.get('tupla_linha_selecionada')
     lista_produtos = session.get('lista_produtos')
     lista_ordem_venda = session.get('lista_ordem_venda')
 
-    # FIXME: AJUSTAR LISTA DE CLIENTES DA TELA GERAR_ORDEM_VENDA, POIS SÓ APARECE O PRIMEIRO CLIENTE DA LISTA
+        # FIXME: AJUSTAR LISTA DE CLIENTES DA TELA GERAR_ORDEM_VENDA, POIS SÓ APARECE O PRIMEIRO CLIENTE DA LISTA
     return render_template('comercial/gerar_ordem_venda.html',
                            ordem_venda=ordem_venda,
-                           alert=alert,
+                           # alert=alert,
                            total_pedido=total_pedido,
                            relatorio_ordem_venda='',
                            form_gerar_ordem_venda=form_gerar_ordem_venda,
@@ -1065,6 +1090,18 @@ def gerar_ordem_venda():
                            lista_produtos=lista_produtos,
                            lista_ordem_venda=lista_ordem_venda,
                            data=data)
+
+    # return render_template('comercial/gerar_ordem_venda.html',
+    #                        ordem_venda=ordem_venda,
+    #                        # alert=alert,
+    #                        total_pedido=total_pedido,
+    #                        relatorio_ordem_venda='',
+    #                        form_gerar_ordem_venda=form_gerar_ordem_venda,
+    #                        tupla_linha_selecionada=tupla_linha_selecionada,
+    #                        codigo_ordem_venda='',
+    #                        lista_produtos=lista_produtos,
+    #                        lista_ordem_venda=lista_ordem_venda,
+    #                        data=data)
 
 
 def relatorio_ordem_venda():

@@ -191,3 +191,12 @@ class AlertaMsg:
         session["alert"] = (f'<div id = "alert" class="alert alert-danger" {alert_config}">CADASTRO INEXISTENTE</div>'
         )
         return redirect(url_for("gerar_ordem_de_compra"))
+
+
+    def erro_ao_processar_rascunho(usuario,ordem):
+        print("class AlertaMsg: erro_ao_processar_rascunho()")
+
+        return {
+            "tipo": "warning",
+            "mensagem": f"O Usuário {usuario} possui a ordem {ordem} em rascunho."
+        }
