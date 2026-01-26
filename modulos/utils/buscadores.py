@@ -1,6 +1,7 @@
 import logging
 
 from modulos.utils.console import CorFonte
+from flask import session
 import os
 import xml.etree.ElementTree as ET
 from modulos.utils.queries import mydb, mycursor
@@ -1092,9 +1093,7 @@ class Buscadores:
 class Estoque:
     @staticmethod
     def atualiza_saldo_ordem_compra(ean, ordem_compra, quantidade, saldo_qtd, preco):
-        print(
-            CorFonte.fonte_amarela()
-            + "class Estoque | metodo atualiza_saldo_ordem_compra" + CorFonte.reset_cor())
+        print(CorFonte.fonte_amarela()+ "class Estoque | metodo atualiza_saldo_ordem_compra" + CorFonte.reset_cor())
 
 
         qtd_atualizada = saldo_qtd - quantidade
@@ -1122,81 +1121,83 @@ class Estoque:
             pass
 
     @staticmethod
-    def relatorio_estoque(data_inicial, data_final, ordem_compra, ean, tipo_mov, nota_fiscal, descricao):
+    def kardex(data_inicial=None,
+                          data_final=None,
+                          ordem_compra=None,
+                          ean=None,
+                          tipo_mov=None,
+                          nota_fiscal=None,
+                          descricao=None):
+
         estoque_processado = []
-        estoque = []
+
         print(f'Relatorio Estoque')
 
         try:
             query = "SELECT * FROM ESTOQUE WHERE 1=1"  # query base
             parametros = []
 
-            if data_inicial is not None and data_inicial is not '':
-
+            if data_inicial:
                 query += " AND DATA >= %s"
-                data_inicial = data_inicial.strftime('%Y-%m-%d')
-                parametros.append(data_inicial)
+                # data_inicial = data_inicial.strftime('%Y-%m-%d')
+                parametros.append(data_inicial.strftime('%Y-%m-%d'))
                 print(f'data_inicial = {data_inicial}')
-            else:
-                pass
 
-            if data_final is not None and data_final is not '':
+            if data_final:
                 query += " AND DATA <= %s"
-                data_final = data_final.strftime('%Y-%m-%d')
-                parametros.append(data_final)
+                parametros.append(data_final.strftime('%Y-%m-%d'))
                 print(f'data_final = {data_final}')
 
-            if ordem_compra is not None and ordem_compra is not '':
+            if ordem_compra:
                 query += " AND ORDEM_COMPRA = %s"
                 parametros.append(ordem_compra)
 
-            if ean is not None and ean is not '':
+            if ean:
                 query += " AND EAN = %s"
                 parametros.append(f'{ean}')
-            else:
-                pass
 
-            if tipo_mov is not None and tipo_mov is not '' and tipo_mov != 'Todos':
+            if tipo_mov and tipo_mov != 'Todos':
                 query += " AND TIPO_MOV = %s"
                 if tipo_mov == 'Saída':
-                    tipo_mov = 'saida'
+                    tipo_mov = 'SAIDA'
                 parametros.append(tipo_mov.upper())
-            else:
-                pass
 
-            if nota_fiscal is not None and nota_fiscal is not '':
+            if nota_fiscal:
                 query += " AND NOTA_FISCAL = %s"
                 parametros.append(nota_fiscal)
-            else:
-                pass
 
-            if descricao is not None:
+            if descricao:
                 query += " AND DESCRICAO LIKE %s"
-                parametros.append(f"%s{descricao}%")
+                parametros.append(f"{descricao}%")
 
-
-            query += ";"
+            query += " ORDER BY DATA_ENTRADA, ORDEM_COMPRA;"
             print(f'query: {query}')
             print(f'parametros: {parametros}')
 
+            try:
+                mydb.connect()
+                mycursor = mydb.cursor()
+                mycursor.execute(query, parametros)
+                registros = mycursor.fetchall()
+                print(f'registros')
+                for i in registros:
+                    print(i)
+                print(f'----------------')
+                saldo_qtd = 0
+                saldo_valor = 0
+                for item in registros:
+                    data, tipo, ordem, nota, ean, cod, desc, qtd, valor, usuario = item
+                    total = qtd * valor
+                    saldo_qtd += qtd
+                    saldo_valor += total
+                    processamento = (item, total,saldo_qtd, saldo_valor)
+                    estoque_processado.append(processamento)
 
-            mydb.connect()
-            mycursor.execute(query, parametros)
-            estoque = mycursor.fetchall()
-            saldo_qtd = 0
-            saldo_valor = 0
-            for item in estoque:
-                data, tipo, ordem, nota, ean, cod, desc, qtd, valor, usuario = item
-                total = qtd * valor
-                saldo_qtd += qtd
-                saldo_valor += total
-                processamento = (item, total,saldo_qtd, saldo_valor)
-                estoque_processado.append(processamento)
-            mydb.commit()
-            mydb.close()
+            except Exception as e:
+                print(e)
+
         except Exception as e:
             print(e)
-            pass
 
         return estoque_processado
 
@@ -1255,41 +1256,177 @@ class Pricing:
 
     @staticmethod
     def salvar_precificacao(relatorio_precificacao,usuario):
-            logging.info('class Pricing, método salvar_precificacao')
+        logging.info('class Pricing, método salvar_precificacao')
+        # AJUSTAR iNDEX
+        for i in relatorio_precificacao:
+            data_hoje = date.strftime(data, '%Y-%m-%d')
+            ean = i[1]
+            preco = i[3]
+            margem = i[4]
+            custos = i[5]
+            acrescimo = i[6]
+            desconto = i[7]
+            preco_venda = i[8]
+            usuario = usuario
+
+            # incluir instrução if ean já constar no bd, update
+            try:
+                logging.info('Dentro do try salvar_precificacao')
+                query = (f"INSERT INTO PRECIFICACAO(DATA,"
+                         f" EAN, VALOR, MARGEM, CUSTOS, ACRESCIMO, DESCONTO, PRECOVENDA, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);")
+                query ="""INSERT INTO PRECIFICACAO (DATA, EAN, VALOR, MARGEM, CUSTOS, ACRESCIMO, DESCONTO, PRECOVENDA, USUARIO) VALUES 
+                (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE 
+                DATA = VALUES(DATA),
+                VALOR = VALUES(VALOR),
+                MARGEM = VALUES(MARGEM),
+                CUSTOS = VALUES(CUSTOS),
+                ACRESCIMO = VALUES(ACRESCIMO),
+                DESCONTO = VALUES(DESCONTO),
+                PRECOVENDA = VALUES(PRECOVENDA),
+                USUARIO = VALUES(USUARIO);"""
+                logging.info(query)
+                valores = (data_hoje, ean, preco, margem, custos, acrescimo, desconto, preco_venda, usuario)
+                mydb.connect()
+                mycursor.execute(query, valores)
+                mycursor.fetchall()
+                mydb.commit()
+                mydb.close()
+
+            except Exception as e:
+                logging.error(e)
+                pass
+    @staticmethod
+    def update_precificacao(relatorio_precificacao, usuario):
+        logging.info('class Pricing, método update_precificacao')
+        data_hoje = date.today().strftime('%Y-%m-%d')
+        query = """
+            UPDATE PRECIFICACAO
+            SET
+                DATA = %s,
+                VALOR = %s,
+                MARGEM = %s,
+                CUSTOS = %s,
+                ACRESCIMO = %s,
+                DESCONTO = %s,
+                PRECOVENDA = %s,
+                USUARIO = %s
+            WHERE EAN = %s;
+        """
+
+        try:
+            mydb.connect()
             for i in relatorio_precificacao:
-                data_hoje = date.strftime(data, '%Y-%m-%d')
-                ean = i[3]
-                preco = i[7]
-                margem = i[9]
-                custos = i[10]
-                acrescimo = i[11]
-                desconto = i[12]
-                preco_venda = i[13]
-                usuario = usuario
+                valores = (
+                    data_hoje,
+                    i[3],  # preco custo
+                    i[4],  # margem
+                    i[5],  # custos
+                    i[6],  # acrescimo
+                    i[7],  # desconto
+                    i[8],  # preco venda
+                    usuario,
+                    i[1],  # ean (WHERE)
+                )
 
-                # incluir instrução if ean já constar no bd, update
-                try:
-                    logging.info('Dentro do try salvar_precificacao')
-                    query = (f"INSERT INTO PRECIFICACAO(DATA,"
-                             f" EAN, VALOR, MARGEM, CUSTOS, ACRESCIMO, DESCONTO, PRECOVENDA, USUARIO) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);")
-                    query ="""INSERT INTO PRECIFICACAO (DATA, EAN, VALOR, MARGEM, CUSTOS, ACRESCIMO, DESCONTO, PRECOVENDA, USUARIO) VALUES 
-                    (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE 
-                    DATA = VALUES(DATA),
-                    VALOR = VALUES(VALOR),
-                    MARGEM = VALUES(MARGEM),
-                    CUSTOS = VALUES(CUSTOS),
-                    ACRESCIMO = VALUES(ACRESCIMO),
-                    DESCONTO = VALUES(DESCONTO),
-                    PRECOVENDA = VALUES(PRECOVENDA),
-                    USUARIO = VALUES(USUARIO);"""
-                    logging.info(query)
-                    valores = (data_hoje, ean, preco, margem, custos, acrescimo, desconto, preco_venda, usuario)
-                    mydb.connect()
-                    mycursor.execute(query, valores)
-                    mycursor.fetchall()
-                    mydb.commit()
-                    mydb.close()
+                logging.info(f'Atualizando EAN {i[1]}')
+                mycursor.execute(query, valores)
 
-                except Exception as e:
-                    logging.error(e)
-                    pass
+            mydb.commit()
+
+        except Exception as e:
+            logging.error(f'Erro ao atualizar precificação: {e}')
+            mydb.rollback()
+
+        finally:
+            mydb.close()
+
+class Logistica:
+    print(CorFonte.fonte_amarela()+ "class Logistica" + CorFonte.reset_cor())
+
+    @staticmethod
+    def busca_estoque_por_ordem_compra(ordem_compra, ean):
+
+        logging.info('função busca_estoque_por_ordem_compra FORA da função principal')
+        query = """SELECT * FROM ESTOQUE WHERE ORDEM_COMPRA = %s AND EAN = %s; """
+        mydb.connect()
+        mycursor = mydb.cursor(dictionary=True)
+        mycursor.execute(query, (ordem_compra, ean))
+        resultado = mycursor.fetchall()
+        resultado = list(resultado)
+        logging.info(f'Busca estoque {ordem_compra} item {ean} realizada.')
+        return resultado
+
+    @staticmethod
+    def consulta_total_recebido(ordem_compra, ean):
+        print('def consulta_total_recebida(ordem_compra, ean):')
+        query = """
+            SELECT COALESCE(SUM(QTDE), 0)
+            FROM estoque
+            WHERE ordem_compra = %s
+              AND ean = %s
+        """
+        mydb.connect()
+        cursor = mydb.cursor(buffered=True)
+        cursor.execute(query, (ordem_compra, ean))
+        resultado = cursor.fetchone()[0]
+        cursor.close()
+        return resultado
+
+
+    @staticmethod
+    def valida_ordem_compra_pesquisada(ordem_compra, resultado_pesquisa):
+        print(f'subfunção valida_ordem_compra_pesquisada | Ordem Pesquisada: {ordem_compra}')
+        resultado_pesquisa_tmp = []
+        try:
+            contador_item_pesquisa = 0
+            for i in resultado_pesquisa:
+                print(f'linha {contador_item_pesquisa} | itens da pesquisa: ordem_compra: {i[1]} |ean: {i[7]}')
+                resultado = Logistica.busca_estoque_por_ordem_compra(ordem_compra=i[1], ean=i[7])
+
+                print(f'len de resultado = {len(resultado)} |resultado > {resultado}')
+                if len(resultado) == 0:
+                    print('dentro do if')
+                    i = list(i)
+                    i[13] = 'ABERTO'
+                    resultado_pesquisa_tmp.append(i[:])
+                else:
+                    try:
+                        total_recebido = Logistica.consulta_total_recebido(ordem_compra=i[1], ean=i[7])  # função
+                        logging.info(f'total recebido = {total_recebido}')
+
+                    except Exception as e:
+                        logging.critical(e)
+                        logging.info('Erro no teste_consulta_total_recebido')
+
+                    logging.info(f'resultado>> {resultado}')
+                    i = list(i)
+                    quantidade_recebida = int(resultado[0]['QTDE'])
+                    logging.info(f'item encontrado no estoque {quantidade_recebida} recebido(s)')
+                    quantidade_original = int(i[8])
+                    quant_pendente_atualizada \
+                        = quantidade_original - quantidade_recebida
+                    logging.info(f'quantidade_pendente_atual {quant_pendente_atualizada}')
+                    i[11] = (int(i[11])) - (total_recebido)  # entr. quant
+                    logging.info(f'i[11] {i[11]}')
+                    i[10] = (int(i[10])) * i[11]  # entrada valor
+                    logging.info(f'i[10] {i[10]}')
+
+                    if quant_pendente_atualizada > 0:
+                        i[13] = 'PENDENTE'
+                    else:
+                        i[13] = 'FINALIZADO'
+
+                    resultado_pesquisa_tmp.append(i[:])
+
+                    session['resultado_pesquisa_tmp'] = resultado_pesquisa_tmp
+
+                resultado_pesquisa = resultado_pesquisa_tmp
+
+                contador_item_pesquisa += 1
+                logging.info('-' * 150)
+
+        except Exception as e:
+            logging.info('Except da função valida_ordem_compra_pesquisada')
+            logging.info(e)
+
+        return resultado_pesquisa
