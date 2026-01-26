@@ -1209,24 +1209,48 @@ class Pricing:
 
     @staticmethod
     def relato_bd_precificacao(ean):
-        logging.info(CorFonte.fonte_amarela() + "class Pricing | metodo precificacao" + CorFonte.reset_cor())
+        logging.info(
+            CorFonte.fonte_amarela()
+            + "class Pricing | metodo precificacao"
+            + CorFonte.reset_cor()
+        )
+
         try:
-            query = (f"SELECT * FROM PRECIFICACAO WHERE 1=1 and "
-                     f"ean like '%{ean}%'")
+            query = (
+                "SELECT * FROM PRECIFICACAO "
+                "WHERE 1=1 AND ean LIKE %s"
+            )
 
             logging.debug(query)
             mydb.connect()
-            mycursor.execute(query)
+            mycursor.execute(query, (f"%{ean}%",))
             myresult = mycursor.fetchall()
-            mydb.commit()
             mydb.close()
             return myresult
 
         except Exception as e:
             logging.error(e)
-            # AlertaMsg.cadastro_inexistente()
-            pass
+            mydb.close()
+            return []
 
+
+    @staticmethod
+    def relato_geral_bd_precificacao():
+        logging.info("class Pricing | metodo relato_geral_bd_precificacao")
+        try:
+            query = "SELECT EAN FROM PRECIFICACAO"  # ajuste para a coluna correta
+
+            mydb.connect()
+            mycursor.execute(query)
+            resultado = mycursor.fetchall()
+            mydb.close()
+
+            # transforma [(valor,), (valor,)] em (valor, valor)
+            return tuple(row[0] for row in resultado)
+
+        except Exception as e:
+            logging.error(e)
+            return ()
 
     @staticmethod
     def relato_custos(ean, fornecedor, unidade, descricao):
