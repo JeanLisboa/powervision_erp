@@ -48,6 +48,8 @@
         }
       });
 
+
+
       // Adiciona um listener de clique no documento para fechar o submenu se o usuário clicar fora dele
       document.addEventListener('click', function(event) {
         // Verifica se o clique não está dentro do submenu ou do item pai
@@ -62,6 +64,27 @@
       });
     });
   });
+    let dadosAlterados = false;
+
+        // Marca alterações no formulário
+        document.addEventListener("change", function () {
+            dadosAlterados = true;
+        });
+
+        // Bloqueia ENTER para não submeter form
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+            }
+        });
+
+        // Aviso ao fechar/atualizar
+        window.addEventListener("beforeunload", function (event) {
+            if (dadosAlterados) {
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        });
 </script>
 </div>
 </body>
