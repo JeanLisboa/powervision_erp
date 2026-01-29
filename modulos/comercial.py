@@ -683,10 +683,7 @@ def gerar_ordem_venda():
     total_pedido = 0
     data = Formatadores.os_data()
     ordem_venda = None
-    # session['ordem_venda'] = ordem_venda
     alert = ''
-
-
 
     print(f'ordem_venda (inicial) = {ordem_venda}')
 
@@ -814,6 +811,7 @@ def gerar_ordem_venda():
         try:
             if "botao_criar_nova_ordem_venda" in request.form:
                 usuario = session.get("usuario")
+                total_pedido = 0
                 print(CorFonte.fonte_verde() + 'botao_criar_nova_ordem_venda pressionado' + CorFonte.reset_cor())
 
                 print('ETAPA 2:  VALIDA SE O USER TEM OV EM RASCUNHO')
@@ -893,7 +891,7 @@ def gerar_ordem_venda():
         try:
             if 'botao_incluir_item' in request.form:
                 # FIXME: AJUSTAR INFORMAÇÃO DO TOTAL DO PEDIDO PARA QUE NAO SEJA ATUALIZADO QUANDO O ITEM NÃO FOR INSERIDO NA TABELA
-                total_pedido = session.get('total_pedido', 0)
+                total_pedido = session.get('total_pedido',0)
                 print(CorFonte.fonte_verde() + 'botao_incluir_item ACIONADO' + CorFonte.reset_cor())
                 usuario = session.get('usuario')
 
