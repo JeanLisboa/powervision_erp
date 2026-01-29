@@ -1105,41 +1105,37 @@ def gerar_ordem_venda():
                 lista_ordem_venda = session.get('lista_ordem_venda')
                 print(f'3 - lista_ordem_venda recuperado: {lista_ordem_venda}')
 
+                def delete_ordem_venda_inicial(ordem_venda):
+                    print(f'Função delete_ordem_venda_inicial | ordem_venda={ordem_venda}')
+                    try:
+                        mydb.connect()
+                        query = """
+                                                   DELETE FROM ordem_venda
+                                                   WHERE ordem_venda = %s
+                                                     AND status_pedido = %s
+                                               """
+
+                        valores = (ordem_venda, 'rascunho')
+                        mycursor.execute(query, valores)
+                        mydb.commit()
+
+                        print(f'Registros deletados: {mycursor.rowcount}')
+
+                    except Exception as e:
+                        mydb.rollback()
+                        print(f'Erro ao deletar ordem_venda: {e}')
+
+                    finally:
+                        mydb.close()
+
                 while cont_temp <= len(lista_ordem_venda):
                     print(f'4 - lista_ordem_venda: {lista_ordem_venda}')
                     for i in lista_ordem_venda:
                         print(f'5 - lista_ordem_venda: {i}')
                         values_ordem_venda = (data.strftime('%Y-%m-%d'), i[6], cont_temp, i[0], i[7], i[2],i[1], i[3],i[4],i[5],i[11],i[8],i[12],i[9], f'{usuario}', 'ABERTO', i[13], i[14])
                         print(f'5 - values_ordem_venda: {values_ordem_venda}')
-
-                        def delete_ordem_venda_inicial(ordem_venda):
-                            print(f'Função delete_ordem_venda_inicial | ordem_venda={ordem_venda}')
-                            try:
-                                mydb.connect()
-                                query = """
-                                    DELETE FROM ordem_venda
-                                    WHERE ordem_venda = %s
-                                      AND status_pedido = %s
-                                """
-
-                                valores = (ordem_venda, 'rascunho')
-                                mycursor.execute(query, valores)
-                                mydb.commit()
-
-                                print(f'Registros deletados: {mycursor.rowcount}')
-
-                            except Exception as e:
-                                mydb.rollback()
-                                print(f'Erro ao deletar ordem_venda: {e}')
-
-                            finally:
-                                mydb.close()
-
-
                         ordem_venda = session.get('ordem_venda')
                         delete_ordem_venda_inicial(ordem_venda)
-
-                        cont_temp += 1
                         mydb.connect()
                         query = (
                                 f"INSERT INTO ORDEM_VENDA"
