@@ -339,6 +339,58 @@ class Buscadores:
 
     class OrdemVenda:
         @staticmethod
+        def buscar_pedidos():
+            print(CorFonte.fonte_amarela() + "Função buscar_pedidos" + CorFonte.reset_cor())
+
+            query = """
+            SELECT 
+                ordem_venda,
+                DATA,
+                COD_CLIENTE,
+                CLIENTE,
+                STATUS_PEDIDO,
+                SUM(TOTAL_PEDIDO) AS total_pedido
+            FROM (
+                SELECT DISTINCT
+                    ordem_venda,
+                    DATA,
+                    COD_CLIENTE,
+                    CLIENTE,
+                    STATUS_PEDIDO,
+                    TOTAL_PEDIDO
+            FROM ordem_venda) t
+            GROUP BY
+                ordem_venda,
+                DATA,
+                COD_CLIENTE,
+                CLIENTE,
+                STATUS_PEDIDO;
+            """
+            cursor = mydb.cursor()
+            cursor.execute(query)
+            return cursor.fetchall()
+        @staticmethod
+        def buscar_itens(ordem_venda):
+            query = """
+                SELECT 
+                status_pedido, 
+                item, 
+                codigo_produto, 
+                descricao, 
+                ean, 
+                un, 
+                preco_lista, 
+                preco_venda, 
+                descricao, 
+                quantidade, 
+                total_pedido FROM ordem_venda WHERE ordem_venda =  %s
+            """
+            cursor = mydb.cursor()
+            cursor.execute(query, (ordem_venda,))
+            return cursor.fetchall()
+
+
+        @staticmethod
         def pesquisar_produtos(descricao: str, ean: str, categoria: str, fornecedor: str):
             print(CorFonte.fonte_amarela() + 'função pesquisar_produtos' + CorFonte.reset_cor())
             query = "SELECT * FROM PRODUTOS WHERE 1=1 AND DESCRICAO LIKE %s AND EAN LIKE %s AND CATEGORIA LIKE %s AND FORNECEDOR LIKE %s;"
@@ -1454,3 +1506,6 @@ class Logistica:
             logging.info(e)
 
         return resultado_pesquisa
+
+class GestaoCarteira:
+    pass

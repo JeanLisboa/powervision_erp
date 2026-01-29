@@ -11,7 +11,7 @@ from modulos.utils import formatadores
 from modulos.utils.queries import mycursor
 from modulos.utils.validadores import Validadores
 from modulos.utils.formatadores import Formatadores
-from  modulos.utils.buscadores import Buscadores, Estoque
+from modulos.utils.buscadores import Buscadores, Estoque,Logistica
 
 logging.basicConfig(level=logging.INFO,format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 
@@ -577,6 +577,13 @@ def entrada_ordem_compra_por_nota():
         data=Formatadores.formatar_data(Formatadores.os_data()))
 
 def estoque():
+
+    # FIXME: DEFINIR OBJETIVO DO RELATORIO, SE MOSTRA O TOTAL POR ITEM, OU SE É UM KARDEX,
+    #  QUE RELACIONA TODAS AS MOVIMENTAÇÕES, ENTRADAS E SAIDAS.
+    #  QUERY >>
+    #  SELECT EAN, CODIGO, DESCRICAO, SUM(QTDE) OVER (PARTITION BY EAN) AS TOTAL_QTDE_POR_EAN
+    #  FROM ESTOQUE ORDER BY EAN;
+
     print("Função estoque")
     estoque_processado = []
     form_estoque = Mod_Logistica.Estoque()
@@ -592,7 +599,7 @@ def estoque():
         try:
             if "botao_relatorio_estoque" in request.form:
                 print("botao_relatorio_estoque")
-                estoque_processado = Estoque.relatorio_estoque(data_inicial, data_final, ordem_compra, ean, tipo_mov, nota_fiscal, descricao)
+                estoque_processado = Estoque.kardex(data_inicial, data_final, ordem_compra, ean, tipo_mov, nota_fiscal, descricao)
                 print(f'data_inicial = {data_inicial}')
                 print(f'data_final = {data_final}')
                 print(f'ordem_compra = {ordem_compra}')
@@ -636,95 +643,23 @@ def buscar_qtde_recebida(ordem_compra, ean):
     cursor.execute(query, (ordem_compra, ean))
     return int(cursor.fetchone()["total"])
 
-def consulta_total_recebido(ordem_compra, ean):
-    print('def consulta_total_recebida(ordem_compra, ean):')
-    query = """
-        SELECT COALESCE(SUM(QTDE), 0)
-        FROM estoque
-        WHERE ordem_compra = %s
-          AND ean = %s
-    """
-    mydb.connect()
-    cursor = mydb.cursor(buffered=True)
-    cursor.execute(query, (ordem_compra, ean))
-    resultado = cursor.fetchone()[0]
-    cursor.close()
-    return resultado
-
-def valida_ordem_compra_pesquisada(ordem_compra, resultado_pesquisa):
-    print(f'subfunção valida_ordem_compra_pesquisada | Ordem Pesquisada: {ordem_compra}')
-    resultado_pesquisa_tmp = []
-    try:
-        contador_item_pesquisa = 0
-        for i in resultado_pesquisa:
-            print(f'linha {contador_item_pesquisa} | itens da pesquisa: ordem_compra: {i[1]} |ean: {i[7]}')
-            resultado = busca_estoque_por_ordem_compra(ordem_compra=i[1], ean=i[7])
-            print(f'len de resultado = {len(resultado)} |resultado > {resultado}')
-            if len(resultado) == 0:
-                print('dentro do if')
-                i = list(i)
-                i[13] = 'ABERTO'
-                resultado_pesquisa_tmp.append(i[:])
-            else:
-                try:
-                    total_recebido = consulta_total_recebido(ordem_compra=i[1], ean=i[7])  # função
-                    logging.info(f'total recebido = {total_recebido}')
-
-                except Exception as e:
-                    logging.critical(e)
-                    logging.info('Erro no teste_consulta_total_recebido')
-
-                logging.info(f'resultado>> {resultado}')
-                i = list(i)
-                quantidade_recebida = int(resultado[0]['QTDE'])
-                logging.info(f'item encontrado no estoque {quantidade_recebida} recebido(s)')
-                quantidade_original = int(i[8])
-                quant_pendente_atualizada \
-                    = quantidade_original - quantidade_recebida
-                logging.info(f'quantidade_pendente_atual {quant_pendente_atualizada}')
-                i[11] = (int(i[11])) - (total_recebido)  # entr. quant
-                logging.info(f'i[11] {i[11]}')
-                i[10] = (int(i[10])) * i[11]  # entrada valor
-                logging.info(f'i[10] {i[10]}')
-
-                if quant_pendente_atualizada > 0:
-                    i[13] = 'PENDENTE'
-                else:
-                    i[13] = 'FINALIZADO'
-
-                resultado_pesquisa_tmp.append(i[:])
-
-            session['resultado_pesquisa_tmp'] = resultado_pesquisa_tmp
-
-            resultado_pesquisa = resultado_pesquisa_tmp
-
-            contador_item_pesquisa += 1
-            logging.info('-' * 150)
-
-    except Exception as e:
-        logging.info('Except da função valida_ordem_compra_pesquisada')
-        logging.info(e)
-
-    return resultado_pesquisa
-
 def info_ordem_compra_atualizada(resultado_pesquisa):
     print('Função info_ordem_compra_atualizada')
     # PROCESSAMENTO DA FUNÇÃO 'entrada_ordem_compra_manual, botão salvar entrada
     resultado_pesquisa_temp = []
     id = 0
     for idx, item in enumerate(resultado_pesquisa):
-        print(f'linha {id} ---------------------------------------------------------------------------------------------------------------------------')
         entrada_quantidade = request.form.get(f"campo_entrada_quantidade{idx}")
         entrada_valor = request.form.get(f"campo_entrada_valor{idx}")
         entrada_quantidade = float(entrada_quantidade)
         entrada_valor = float(entrada_valor)
-        print(f'entrada_quantidade (input usuário) {entrada_quantidade} | {type(entrada_quantidade)}')
-        print(f'entrada_valor (input usuário) {entrada_valor} | {type(entrada_valor)}')
+        logging.info(f'entrada_quantidade (input usuário) {entrada_quantidade} | {type(entrada_quantidade)}')
+        logging.info(f'entrada_valor (input usuário) {entrada_valor} | {type(entrada_valor)}')
 
         a = float(item[11])  # resultado_pesquisa
         b = float(item[12])  # resultado_pesquisa
-        print(f'a: {type(a)} |  {a}')
-        print(f'b: {type(b)} |  {b}')
+        logging.info(f'a: {type(a)} |  {a}')
+        logging.info(f'b: {type(b)} |  {b}')
         a = entrada_quantidade
         b = entrada_valor
         id += 1
@@ -734,9 +669,9 @@ def info_ordem_compra_atualizada(resultado_pesquisa):
             if item[11] == 0 or item[11] == 0.0:  # ignora se o item já tiver sido totalmente recebido
                 pass
             else:
-                print(f'item[11] {item[11]}')
+                logging.info(f'item[11] {item[11]}')
                 item[12] = b
-                print(f'item[12] {item[12]}')
+                logging.info(f'item[12] {item[12]}')
                 item = tuple(item)
                 resultado_pesquisa_temp.append(item[:])
                 logging.info(
@@ -808,7 +743,9 @@ def entrada_ordem_compra_manual():
                 session['ordem_compra'] = ordem_compra
                 logging.info(f'ordem_compra: {ordem_compra}')
                 resultado_pesquisa = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
-                resultado_pesquisa = valida_ordem_compra_pesquisada(ordem_compra, resultado_pesquisa)
+                resultado_pesquisa = Logistica.valida_ordem_compra_pesquisada(ordem_compra, resultado_pesquisa)
+                print(f'resultado_pesquisa: {resultado_pesquisa}')
+                # pesquisar se o item já foi recebido em estoque
                 session['resultado_pesquisa'] = resultado_pesquisa
                 logging.info(f'resultado_pesquisa: {resultado_pesquisa}')
                 return render_template(
@@ -853,3 +790,4 @@ def entrada_ordem_compra_manual():
         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
         data=Formatadores.formatar_data(Formatadores.os_data())
     )
+

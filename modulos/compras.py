@@ -522,12 +522,12 @@ def gerar_ordem_compra():
 
     # 1 - Definição das variáveis globais
     global contador_item
-    global lista_ordem_compra
     global total_ordem_compra
     global result_pesq_forn
     # 2 - Inicialização das variáveis
     total_ordem_compra = 0
     preco_medio = 0
+    # lista_ordem_compra = []
     result_pesq_forn = []
     item_ordem_compra = []
     linha_selecionada = []

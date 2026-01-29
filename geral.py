@@ -1,3 +1,5 @@
+import logging
+
 pasta_xml = r"C:\relato\XML\ANTIGOS" # utilizado pelo modulo logistica / entrada de ordem compra
 import mysql.connector
 from pandas.io.formats.info import series_see_also_sub
@@ -1595,61 +1597,66 @@ class Buscadores:
                 return myresult
 
         @staticmethod
-        def buscar_lista_produtos(descricao, categoria, ean):
+        def buscar_lista_produtos(descricao: str, categoria: str, ean: str):
             print(
                 CorFonte.fonte_amarela()
-                + "classe Buscadores | método buscar_produtos"
+                + "classe Buscadores | método buscar_lista_produtos"
                 + CorFonte.reset_cor()
             )
+
+            query = """
+                SELECT 
+                    p.DATA,
+                    p.CODIGO,
+                    p.FORNECEDOR,
+                    p.EAN,
+                    p.DESCRICAO,
+                    p.UNIDADE,
+                    p.CATEGORIA,
+                    pr.PRECOVENDA
+                FROM produtos p
+                LEFT JOIN precificacao pr 
+                    ON p.EAN = pr.EAN
+                WHERE 1=1;
+            """
+
+            """
+            AND (%s IS NULL OR p.CATEGORIA LIKE %s)
+                AND (%s IS NULL OR p.DESCRICAO LIKE %s)
+                AND (%s IS NULL OR p.EAN = %s)
+            """
+            params = []
+            if categoria:
+                query += " AND p.CATEGORIA LIKE %s"
+                params.append(f"%{categoria}%")
+
+            if descricao:
+                query += " AND p.DESCRICAO LIKE %s"
+                params.append(f"%{descricao}%")
+
+            if ean:
+                query += " AND p.EAN = %s"
+                params.append(ean)
+
+            logging.info("QUERY FINAL:", query)
+            logging.info("PARAMS:", params)
+            logging.info(f'query: {query}')
             try:
-                """
-                    SELECT 
-                        produtos.DATA,
-                        produtos.CODIGO,
-                        produtos.FORNECEDOR,
-                        produtos.EAN,
-                        produtos.DESCRICAO,
-                        produtos.CATEGORIA,
-                        produtos.UNIDADE,
-                        produtos.CATEGORIA,
-                        precificacao.PRECOVENDA  -- ou outras colunas úteis
-                    FROM 
-                        produtos
-                    INNER JOIN 
-                        precificacao
-                        ON produtos.EAN = precificacao.EAN
-                        where categoria="outros";
-                """
-                query = (f"SELECT produtos.DATA, "
-                         f"produtos.CODIGO, "
-                         f"produtos.FORNECEDOR, "
-                         f"produtos.EAN, "
-                         f"produtos.DESCRICAO, "
-                         f"produtos.UNIDADE, "
-                         f"produtos.CATEGORIA, "
-                         f"precificacao.PRECOVENDA FROM "
-                         f"produtos INNER JOIN precificacao ON "
-                         f"produtos.EAN = precificacao.EAN "
-                         f"where 1=1 and produtos.categoria like '%{categoria}%' and produtos.descricao like '%{descricao}%' and precificacao.ean like '%{ean}%';")
-
                 mydb.connect()
-                mycursor.execute(query)
-                myresult = mycursor.fetchall()
-                mydb.commit()
-                mydb.close()
-                # for i in myresult:
-                #     print(i)
-                # print(myresult)
-                try:
-                    if len(myresult) == 0:
-                        return 'Não há Resultados para Exibir'
-                    else:
-                        return myresult
-                except Exception as e:
-                    return len(myresult), e
-            except Exception as e:
-                return e
+                cursor = mydb.cursor()
+                cursor.execute(query, tuple(params))
+                resultado = cursor.fetchall()
+                return resultado or []
 
+            except Exception as e:
+                raise RuntimeError(f"Erro ao buscar produtos: {e}")
+
+            finally:
+                try:
+                    cursor.close()
+                    mydb.close()
+                except:
+                    pass
 
     def buscar_produto_pelo_ean(ean):
         print(

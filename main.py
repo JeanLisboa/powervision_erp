@@ -1,10 +1,8 @@
 # outras bibliotecas
 import mysql.connector
-import webbrowser
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFProtect
-from forms import ModComercial, ModPricing, Mod_Logistica, ModAdmin, ModCompras
-from wtforms import (SelectField)
+from forms import ModPricing
 from geral import Formatadores
 # modulos
 import modulos.admin
@@ -17,8 +15,11 @@ import modulos.logistica
 import modulos.pricing
 import modulos.sobre
 import modulos.precificacao
+import modulos.gestao_carteira
 import os
-import logging
+import logging.config
+import json
+
 log = logging.getLogger('werkzeug')
 # log.setLevel(logging.CRITICAL)  # Ou logging.CRITICAL para ocultar tudo
 
@@ -41,18 +42,15 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 
-
 @app.route('/')
 def main():
     return render_template('/homepage.html')
-
 
 class Admin:
     @staticmethod
     @app.route('/regra_negocio', methods=['POST', 'GET'])
     def regra_negocio():
         return modulos.admin.regra_negocio()
-
 
 class Sobre:
     @staticmethod
@@ -133,7 +131,6 @@ class Compras:
     def relatorio_compras():
         return modulos.compras.relatorio_compras()
 
-
 class Logistica:
     @staticmethod
     @app.route('/realizar_conferencia', methods=['POST', 'GET'])
@@ -155,11 +152,18 @@ class Logistica:
     def entrada_ordem_compra_manual():
         return modulos.logistica.entrada_ordem_compra_manual()
 
+
+@app.route('/gestao_carteira/', methods=['POST', 'GET'])
+def gestao_carteira_view():
+    print('gestao_carteira_view')
+    return modulos.gestao_carteira.gestao_carteira()
+
 class Comercial:
     @staticmethod
     @app.route('/cadastrar_clientes', methods=['POST', 'GET'])
     def cadastrar_clientes():
-       return modulos.comercial.cadastrar_clientes()
+        print('cadastrar_clientes(view)')
+        return modulos.comercial.cadastrar_clientes()
 
     @staticmethod
     @app.route('/gerar_ordem_venda', methods=['POST', 'GET'])
@@ -170,11 +174,6 @@ class Comercial:
     @app.route('/adicionar_item_ordem_venda', methods=['POST', 'GET'])
     def adicionar_item_ordem_venda():
         return modulos.comercial.adicionar_item_ordem_venda()
-
-    @staticmethod
-    @app.route('/gestao_carteira', methods=['POST', 'GET'])
-    def gestao_carteira():
-        return modulos.comercial.gestao_carteira()
 
     @staticmethod
     @app.route('/relatorio_ordem_venda', methods=['POST', 'GET'])
@@ -214,9 +213,7 @@ def fiscal():
 def login():
     return render_template('login.html')
 
-import logging
-import logging.config
-import json
+
 
 # Lê o arquivo JSON e aplica a configuração
 with open("config/logging_config.json", "r", encoding="utf8") as f:

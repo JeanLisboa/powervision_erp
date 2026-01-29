@@ -1,5 +1,8 @@
 from flask_wtf import FlaskForm
 from datetime import date
+
+from openpyxl.drawing.text import TextField
+
 import geral
 
 from wtforms import (
@@ -214,12 +217,7 @@ class ModCompras:
         botao_processar = SubmitField("Pesquisar")
         botao_limpar = SubmitField("Limpar")
 
-
 class ModComercial:
-    class GestaoCarteira(FlaskForm):
-        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        # todo: desenvolver
-
     class EditarOrdemVenda(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         pesquisar_nf = StringField("Nota Fiscal")
@@ -288,6 +286,21 @@ class ModComercial:
         buscar_cliente = geral.Buscadores.OrdemVenda.buscar_cliente()
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         ordem_venda = StringField("Ordem de Venda", validators=[Disabled()])
+        status = StringField("Status", render_kw={"readonly": True})
+        cod_produto = StringField("Código", validators=[ReadOnly()])
+        ean = StringField("EAN", validators=[ReadOnly()])
+        tabela = StringField("Tabela", validators=[ReadOnly()])
+        descricao = StringField("Descrição", validators=[ReadOnly()])
+        unidade = StringField("Unidade", validators=[ReadOnly()])
+        categoria = StringField("Categoria", validators=[ReadOnly()])
+        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00)])
+        quantidade = IntegerField("Quantidade", validators=[DataRequired()])
+
+        pesquisa_descricao = StringField("Descrição")
+        pesquisa_categoria = StringField("Categoria")
+        pesquisa_unidade = StringField("Unidade")
+        pesquisa_ean = StringField("Ean")
+
         cliente = SelectField(
             "Pesquisar Cliente",
             choices=[("", "Selecionar um Cliente")] +
@@ -307,22 +320,11 @@ class ModComercial:
             
         """
 
-        cod_produto = StringField("Código", validators=[ReadOnly()])
-        ean = StringField("EAN", validators=[ReadOnly()])
-        tabela = StringField("Tabela", validators=[ReadOnly()])
-        descricao = StringField("Descrição", validators=[ReadOnly()])
-        unidade = StringField("Unidade", validators=[ReadOnly()])
-        categoria = StringField("Categoria", validators=[ReadOnly()])
-        preco_unitario = FloatField("Preço Unitário", validators=[NumberRange(min=1.00)])
-        quantidade = IntegerField("Quantidade", validators=[DataRequired()])
-        pesquisa_descricao = StringField("Descrição")
-        pesquisa_categoria = StringField("Categoria")
-        pesquisa_unidade = StringField("Unidade")
-        pesquisa_ean = StringField("Ean")
-
+        botao_criar_nova_ordem_venda = SubmitField("Criar Ordem")
         botao_consulta = SubmitField("Consulta")
         botao_limpar_ordem = SubmitField("Limpar Ordem")
         botao_pesquisar_item = SubmitField("Pesquisar\nProduto")
+
 
         botao_incluir_item = SubmitField("Incluir Item")
         botao_remover_item = SubmitField("x")
@@ -337,7 +339,6 @@ class ModComercial:
         cliente = StringField("Cliente", validators=[])
         botao_consulta = SubmitField("Consulta")
         botao_limpar = SubmitField("Limpar")
-
 
 class ModPricing:
     class CadastrarTabela(FlaskForm):
@@ -364,6 +365,10 @@ class ModPricing:
         botao_calcular = SubmitField("Calcular")
         botao_salvar = SubmitField("Salvar")
         botao_cancelar = SubmitField("Cancelar")
+
+class ModGestaoCarteira:
+    class GestaoCarteira(FlaskForm):
+        ordem_venda = StringField("Ordem de Venda", validators=[DataRequired()])
 
 
 class Mod_Logistica:
