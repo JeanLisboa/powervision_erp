@@ -1,116 +1,103 @@
 {% extends "base.html" %}
-
 {% block content %}
 
 <div class="container-fluid vh-100 d-flex flex-column">
-
-    <!-- ===================== -->
-    <!-- TELA A - PEDIDOS -->
-    <!-- ===================== -->
 
     <h5 class="mt-2">Resumo de Pedidos</h5>
 
     <div class="flex-shrink-0" style="height: 30vh; overflow-y: auto;">
         <form action="" method="POST">
-            {{form_gestao_carteira.csrf_token}}
-            <table id="tabelaPedidos"
-                   class="table table-sm table-bordered table-hover align-middle mb-0">
+            {{ form_gestao_carteira.csrf_token }}
 
+            <table class="table table-sm table-bordered table-hover align-middle mb-0">
                 <thead class="table-primary sticky-top">
                     <tr>
                         <th style="width:50px">Sel.</th>
-                        <th style="width:50px"></th>
-                        <th style="width:20px">Status</th>
+                        <th style="width:50px">Alocar</th>
+                        <th style="width:30px"></th>
+                        <th>Status</th>
                         <th>Data</th>
                         <th>OV</th>
-                        <th>Cód. Cliente</th>
+                        <th>Cód Cliente</th>
                         <th>Cliente</th>
-                        <th class="text-end">Total Pedido</th>
+                        <th class="text-end">Total</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                {% if lista_ordem_venda %}
-                    {% for i in lista_ordem_venda %}
-                        <tr>
+                {% for i in lista_ordem_venda %}
+                    <tr>
+                        <!-- RADIO = navegação -->
+                        <td class="text-center">
+                            <input type="radio"
+                                   name="ordem_venda"
+                                   value="{{ i[0] }}"
+                                   class="form-check-input"
+                                   onchange="this.form.submit()"
+                                   {% if ordem_selecionada == i[0] %}checked{% endif %}>
+                        </td>
 
-                            <!-- SELECTBOX -->
-                            <td class="text-center">
-                                <input type="radio"
-                                       name="ordem_venda"
-                                       value="{{ i[0] }}"
-                                       class="form-check-input"
-                                       onchange="this.form.submit()"
-                                       {% if ordem_selecionada == i[0] %} checked {% endif %}>
-                            </td> <!--use checkbox opcional-->
-                            <td>🟢</td>  <!--🟢 🟡 🔴 -->
+                        <!-- CHECKBOX = ação -->
+                        <td class="text-center">
+                            <input type="checkbox"
+                                   name="ordem_alocada"
+                                   value="{{ i[0] }}"
+                                   class="form-check-input"
+                                   {% if i[0] in ordem_alocada %}checked{% endif %}>
+                        </td>
 
-                            <td>{{ i[4] }}</td>
-                            <td>{{ i[1] }}</td>
-                            <td>{{ i[0] }}</td>
-                            <td>{{ i[2] }}</td>
-                            <td>{{ i[3] }}</td>
-                            <td class="text-end">{{ i[5] }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endif %}
+                        <td>🟢</td>
+                        <td>{{ i[4] }}</td>
+                        <td>{{ i[1] }}</td>
+                        <td>{{ i[0] }}</td>
+                        <td>{{ i[2] }}</td>
+                        <td>{{ i[3] }}</td>
+                        <td class="text-end">{{ i[5] }}</td>
+                    </tr>
+                {% endfor %}
                 </tbody>
-
             </table>
+
+            <!-- botão futuro de ação -->
+            {{ form_gestao_carteira.botao_liberar_ov }}
+
         </form>
     </div>
 
     <hr class="my-2">
 
-    <!-- ===================== -->
-    <!-- TELA B - ITENS -->
-    <!-- ===================== -->
-
     <h5>Itens do Pedido Selecionado</h5>
 
-    <div class="flex-grow-1" style="overflow-y: auto;">
-        <table id="tabelaItens"
-               class="table table-sm table-bordered table-hover align-middle mb-0">
+    <div class="flex-grow-1" style="overflow-y:auto">
+        <table class="table table-sm table-bordered table-hover align-middle mb-0">
             <thead class="table-secondary sticky-top">
                 <tr>
-                    <th></th>
-                    <th></th>
                     <th>Status</th>
                     <th>Item</th>
-                    <th>Cód Produto</th>
+                    <th>Cód</th>
                     <th>Descrição</th>
                     <th>EAN</th>
                     <th>UN</th>
-                    <th class="text-end">Preço Custo</th>
-                    <th class="text-end">Preço Venda</th>
-                    <th class="text-end">Total</th>
+                    <th>Preço</th>
+                    <th>Total</th>
                 </tr>
             </thead>
             <tbody>
-            {% if lista_itens_ordem %}
-                {% for i in lista_itens_ordem %}
-                    <tr>
-                        <td></td>
-                        <td>🔴</td>
-                        <td>{{ i[0] }}</td>
-                        <td>{{ i[1] }}</td>
-                        <td>{{ i[2] }}</td>
-                        <td>{{ i[3] }}</td>
-                        <td>{{ i[4] }}</td>
-                        <td>{{ i[5] }}</td>
-                        <td>{{ i[6] }}</td>
-                        <td>{{ i[7] }}</td>
-                        <td>{{ i[9] }}</td>
-
-                    </tr>
-                {% endfor %}
-            {% endif %}
-
-                <!-- preenchido depois -->
+            {% for i in lista_itens_ordem %}
+                <tr>
+                    <td>🔴</td>
+                    <td>{{ i[1] }}</td>
+                    <td>{{ i[2] }}</td>
+                    <td>{{ i[3] }}</td>
+                    <td>{{ i[4] }}</td>
+                    <td>{{ i[5] }}</td>
+                    <td>{{ i[6] }}</td>
+                    <td>{{ i[7] }}</td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
 
 </div>
-
 {% endblock %}
