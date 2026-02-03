@@ -1,13 +1,13 @@
 from flask import render_template, request, session
 from modulos.utils.console import CorFonte
-from modulos.utils.buscadores import Buscadores
+from modulos.utils.buscadores import Buscadores, Estoque
 from forms import ModGestaoCarteira
 
 def gestao_carteira():
         """
             FLUXO DE PROCESSAMENTO
             *** INCLUIR BOTAO DE LIBERAÇÃO DO PEDIDO
-            *** INCLUIR UMA COLUNA PARA ALOCAR A ORDEM DE VENDA
+
             LAYOUT DA TELA DE GESTÃO DE CARTEIRA:
                 - LEGENDA:
                     - SINAL VERDE: ORDEM DE VENDA OU ITEM COMPLEMENTE ATENDIDA
@@ -43,6 +43,17 @@ def gestao_carteira():
                 ordem_selecionada = int(ordem)
                 session['ordem_selecionada'] = ordem_selecionada
                 lista_itens_ordem = Buscadores.OrdemVenda.buscar_itens(ordem_selecionada)
+                # estoque_livre = Estoque.informa_estoque_livre(ean)
+                print('-'*50)
+                lista_estoque_total = []
+                for i in lista_itens_ordem:
+                    print(f'i: {i}')
+                    print(f'i: {i[4]}')
+                    # estoque_total = Estoque.informa_estoque_livre(i[4])
+                    # lista_estoque_total.append(estoque_total[:])
+
+                print('-'*50)
+                print(f'lista_estoque_total: {lista_estoque_total}')
             else:
                 session.pop('ordem_selecionada', None)
                 ordem_selecionada = None
@@ -60,6 +71,7 @@ def gestao_carteira():
             ordem_alocada = []
         return render_template(
             'gestao_carteira/gestao_carteira.html',
+            estoque_total='',
             lista_ordem_venda=lista_ordem_venda,
             lista_itens_ordem=lista_itens_ordem,
             form_gestao_carteira=form_gestao_carteira,

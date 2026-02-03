@@ -52,7 +52,13 @@
                         <td>{{ i[0] }}</td>
                         <td>{{ i[2] }}</td>
                         <td>{{ i[3] }}</td>
-                        <td class="text-end">{{ i[5] }}</td>
+
+                        <td class="text-end">
+                            {{ "{:,.2f}".format(i[5] | float)
+                                .replace(",", "X")
+                                .replace(".", ",")
+                                .replace("X", ".") }}
+</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -80,6 +86,10 @@
                     <th>UN</th>
                     <th>Preço</th>
                     <th>Total</th>
+                    <th>Qtd Alocado</th>
+                    <th>Qtd Livre</th>
+                    <th>Qtd Total</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -91,8 +101,14 @@
                     <td>{{ i[3] }}</td>
                     <td>{{ i[4] }}</td>
                     <td>{{ i[5] }}</td>
-                    <td>{{ i[6] }}</td>
                     <td>{{ i[7] }}</td>
+                    <td>{{ "%.2f"|format(i[9] | float)
+
+                        }}</td>
+                    <td>-----</td>
+                    <td>-----</td>
+                    <td>{{ i[10] }}</td>
+
                 </tr>
             {% endfor %}
             </tbody>
