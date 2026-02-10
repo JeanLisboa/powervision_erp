@@ -369,26 +369,58 @@ class Buscadores:
             cursor = mydb.cursor()
             cursor.execute(query)
             return cursor.fetchall()
+
         @staticmethod
         def buscar_itens(ordem_venda):
+            print(
+                CorFonte.fonte_amarela()
+                + "Buscadores.OrdemVenda.buscar_itens"
+                + CorFonte.reset_cor()
+            )
+
             query = """
                 SELECT 
-                status_pedido, 
-                item, 
-                codigo_produto, 
-                descricao, 
-                ean, 
-                un, 
-                preco_lista, 
-                preco_venda, 
-                descricao, 
-                quantidade, 
-                total_pedido FROM ordem_venda WHERE ordem_venda =  %s
+                    ov.status_pedido,
+                    ov.item,
+                    ov.codigo_produto,
+                    ov.descricao,
+                    ov.ean,
+                    ov.un,
+                    ov.preco_lista,
+                    ov.preco_venda,
+                    ov.quantidade,
+                    ov.total_pedido,
+                    COALESCE(SUM(e.qtde), 0) AS estoque_livre
+                FROM ordem_venda ov
+                LEFT JOIN estoque e 
+                       ON e.ean = ov.ean
+                WHERE ov.ordem_venda = %s
+                GROUP BY
+                    ov.status_pedido,
+                    ov.item,
+                    ov.codigo_produto,
+                    ov.descricao,
+                    ov.ean,
+                    ov.un,
+                    ov.preco_lista,
+                    ov.preco_venda,
+                    ov.quantidade,
+                    ov.total_pedido;
             """
-            cursor = mydb.cursor()
-            cursor.execute(query, (ordem_venda,))
-            return cursor.fetchall()
 
+
+            try:
+                mydb.connect()
+                cursor = mydb.cursor()
+                cursor.execute(query, (ordem_venda,))
+                resultado = cursor.fetchall()
+                # mydb.close()
+                return resultado
+
+            except Exception as e:
+                print("Erro ao buscar itens da ordem:", e)
+                mydb.close()
+                return []
 
         @staticmethod
         def pesquisar_produtos(descricao: str, ean: str, categoria: str, fornecedor: str):
@@ -427,7 +459,6 @@ class Buscadores:
             except Exception as e:
                 logging.error(f"Erro ao pesquisar ordem_venda: {e}")
                 return []
-
             finally:
                 mydb.close()
     class OrdemCompra:
@@ -1144,6 +1175,25 @@ class Buscadores:
 
 class Estoque:
     @staticmethod
+    def informa_estoque_livre(ean):
+        print(CorFonte.fonte_amarela() + "class Estoque | metodo informa_estoque_livre" + CorFonte.reset_cor())
+        try:
+            query = f"""SELECT ean, SUM(qtde) AS total_qtde FROM estoque WHERE ean = {ean} GROUP BY ean;"""
+            mydb.connect()
+            cursor = mydb.cursor(dictionary=False)
+            cursor.execute(query)
+            resultado = cursor.fetchall()
+
+            mydb.close()
+            print(f'resultado: {resultado}')
+            return resultado
+
+        except Exception as e:
+            print("Erro ao buscar estoque:", e)
+            return None
+
+
+    @staticmethod
     def atualiza_saldo_ordem_compra(ean, ordem_compra, quantidade, saldo_qtd, preco):
         print(CorFonte.fonte_amarela()+ "class Estoque | metodo atualiza_saldo_ordem_compra" + CorFonte.reset_cor())
 
@@ -1168,7 +1218,7 @@ class Estoque:
             print(myresult)
             return myresult
         except Exception as e:
-            print(e)
+            print('erro',e)
             # geral.AlertaMsg.cadastro_inexistente()
             pass
 

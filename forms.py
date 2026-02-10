@@ -369,6 +369,7 @@ class ModPricing:
 class ModGestaoCarteira:
     class GestaoCarteira(FlaskForm):
         ordem_venda = StringField("Ordem de Venda", validators=[DataRequired()])
+        botao_liberar_ov = SubmitField("Liberar Ordens Alocadas")
 
 
 class Mod_Logistica:

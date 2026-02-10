@@ -86,27 +86,32 @@
                     <th>UN</th>
                     <th>Preço</th>
                     <th>Total</th>
-                    <th>Qtd Alocado</th>
-                    <th>Qtd Livre</th>
-                    <th>Qtd Total</th>
+                    <th>Quant Ordem Venda</th>
+                    <th>Qtd Estoque Alocado</th>
+                    <th>Qtd Estoque Livre</th>
+                    <th>Qtd Estoque Total</th>
 
                 </tr>
             </thead>
             <tbody>
-            {% for i in lista_itens_ordem %}
+            {% for i in lista_itens_ordem_expandida %}
                 <tr>
-                    <td>🔴</td>
+                    <td>
+                        {% if i[10] | int >= i[8] | int %}🟢
+                            {% elif i[10] | int > 0 %} 🟡
+                            {% else %}🔴
+                        {% endif %}
+                    </td>
                     <td>{{ i[1] }}</td>
                     <td>{{ i[2] }}</td>
                     <td>{{ i[3] }}</td>
                     <td>{{ i[4] }}</td>
                     <td>{{ i[5] }}</td>
                     <td>{{ i[7] }}</td>
-                    <td>{{ "%.2f"|format(i[9] | float)
-
-                        }}</td>
-                    <td>-----</td>
-                    <td>-----</td>
+                    <td>{{ "%.2f"|format(i[9] | float)}}</td>
+                    <td>{{ i[8] }}</td>
+                    <td>{{ i[11] }}</td>
+                    <td>{{ i[12] }}</td>
                     <td>{{ i[10] }}</td>
 
                 </tr>
