@@ -46,7 +46,13 @@
                                    {% if i[0] in ordem_alocada %}checked{% endif %}>
                         </td>
 
-                        <td>🟢</td>
+                        <td>
+                        {% if i[6] == 2 | int %}🟢
+                            {% elif i[6] == 1 | int %} 🟡
+                            {% else %}🔴
+                        {% endif %}
+                    </td>
+
                         <td>{{ i[4] }}</td>
                         <td>{{ i[1] }}</td>
                         <td>{{ i[0] }}</td>
@@ -58,7 +64,7 @@
                                 .replace(",", "X")
                                 .replace(".", ",")
                                 .replace("X", ".") }}
-</td>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -96,23 +102,51 @@
             <tbody>
             {% for i in lista_itens_ordem_expandida %}
                 <tr>
-                    <td>
-                        {% if i[10] | int >= i[8] | int %}🟢
+                    <td> {% if i[10] | int >= i[8] | int %}🟢
                             {% elif i[10] | int > 0 %} 🟡
                             {% else %}🔴
-                        {% endif %}
-                    </td>
+                        {% endif %} </td>
                     <td>{{ i[1] }}</td>
                     <td>{{ i[2] }}</td>
                     <td>{{ i[3] }}</td>
                     <td>{{ i[4] }}</td>
                     <td>{{ i[5] }}</td>
-                    <td>{{ i[7] }}</td>
-                    <td>{{ "%.2f"|format(i[9] | float)}}</td>
-                    <td>{{ i[8] }}</td>
-                    <td>{{ i[11] }}</td>
-                    <td>{{ i[12] }}</td>
-                    <td>{{ i[10] }}</td>
+                    <td class="text-end">
+                            {{ "{:,.2f}".format(i[7] | float)
+                                .replace(",", "X")
+                                .replace(".", ",")
+                                .replace("X", ".") }}
+                    </td>
+                    <td class="text-end">
+                            {{ "{:,.2f}".format(i[9] | float)
+                                .replace(",", "X")
+                                .replace(".", ",")
+                                .replace("X", ".") }}
+                        </td>
+                    <td class="text-end">
+                            {{ "{:,.2f}".format(i[8] | float)
+                                .replace(",", "X")
+                                .replace(".", ",")
+                                .replace("X", ".") }}
+                        </td>
+                    <td class="text-end">
+                            {{ "{:,.2f}".format(i[11] | float)
+                                .replace(",", "X")
+                                .replace(".", ",")
+                                .replace("X", ".") }}
+                        </td>
+                    <td class="text-end">
+                            {{ "{:,.2f}".format(i[12] | float)
+                                .replace(",", "X")
+                                .replace(".", ",")
+                                .replace("X", ".") }}
+                        </td>
+                    <td class="text-end">
+                            {{ "{:,.2f}".format(i[10] | float)
+                                .replace(",", "X")
+                                .replace(".", ",")
+                                .replace("X", ".") }}
+                        </td>
 
                 </tr>
             {% endfor %}
