@@ -6,13 +6,16 @@
     <h5 class="mt-2">Resumo de Pedidos</h5>
 
     <div class="flex-shrink-0" style="height: 30vh; overflow-y: auto;">
+
         <form action="" method="POST">
             {{ form_gestao_carteira.csrf_token }}
+                                {{ form_gestao_carteira.botao_liberar_ov(class="btn btn-primary mt-3") }}
+            <table class=" table table-sm table-bordered table-hover align-middle mb-0">
 
-            <table class="table table-sm table-bordered table-hover align-middle mb-0">
-                <thead class="table-primary sticky-top">
+
+                <thead class=" table-primary sticky-top">
                     <tr>
-                        <th style="width:50px">Sel.</th>
+                        <th style="width:40px  ">Sel.</th>
                         <th style="width:50px">Alocar</th>
                         <th style="width:30px"></th>
                         <th>Status</th>
@@ -28,7 +31,7 @@
                 {% for i in lista_ordem_venda %}
                     <tr>
                         <!-- RADIO = navegação -->
-                        <td class="text-center">
+                        <td class="text-center" style="line-height: 10px; padding: 0;">
                             <input type="radio"
                                    name="ordem_venda"
                                    value="{{ i[0] }}"
@@ -71,7 +74,7 @@
             </table>
 
             <!-- botão futuro de ação -->
-            {{ form_gestao_carteira.botao_liberar_ov }}
+
 
         </form>
     </div>

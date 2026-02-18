@@ -12,6 +12,7 @@ def gestao_carteira():
     0: Vermelho (Sem estoque)
     1: Amarelo (Parcial)
     2: Verde (Atendida)
+
     """
 
     print(CorFonte.fonte_amarela() + "Iniciando Processamento de Carteira" + CorFonte.reset_cor())
@@ -19,6 +20,7 @@ def gestao_carteira():
 
     # 1. ESTADO INICIAL (Carrega as OVs para a Tabela Superior)
     lista_ordem_venda_base = Buscadores.OrdemVenda.buscar_pedidos()
+    print(f'lista_ordem_venda_base: {lista_ordem_venda_base}')
 
     # Recupera o estado da sessão
     ordem_selecionada = session.get('ordem_selecionada')
@@ -58,7 +60,7 @@ def gestao_carteira():
         except Exception as e:
             print(f"Erro ao calcular demanda de estoque: {e}")
 
-    # --- NOVO: CÁLCULO DE STATUS LINHA A LINHA PARA A LISTA DE ORDENS ---
+    # 3.1 CÁLCULO DE STATUS LINHA A LINHA PARA A LISTA DE ORDENS ---
     lista_ordem_venda_com_legenda = []
 
     for ov in lista_ordem_venda_base:
@@ -119,10 +121,13 @@ def gestao_carteira():
             # Expande a tupla com Alocado (11) e Livre (12)
             lista_itens_ordem_expandida.append(item + (alocado_nesta_ov, qtde_estoque_livre))
 
+    if 'botao_liberar_ov' in request.form:
 
-    print(f'lista_ordem_venda_com_legenda: {lista_ordem_venda_com_legenda}')
-    print(f'lista_ordem_venda_base: {lista_ordem_venda_base}')
-    print(f'lista_itens_ordem_expandida: {lista_itens_ordem_expandida}')
+        print('botao_liberar_ov acionado')
+
+    # print(f'lista_ordem_venda_com_legenda: {lista_ordem_venda_com_legenda}')
+    # print(f'lista_ordem_venda_base: {lista_ordem_venda_base}')
+    # print(f'lista_itens_ordem_expandida: {lista_itens_ordem_expandida}')
     return render_template(
         'gestao_carteira/gestao_carteira.html',
         lista_ordem_venda=lista_ordem_venda_com_legenda,  # Agora enviamos a lista com status
