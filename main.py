@@ -152,6 +152,12 @@ class Logistica:
     def entrada_ordem_compra_manual():
         return modulos.logistica.entrada_ordem_compra_manual()
 
+    @staticmethod
+    @app.route('/configuracao_layout_armazem', methods=['POST', 'GET'])
+    def configuracao_layout_armazem_view():
+        print('configuracao_layout_armazem_view')
+        return modulos.logistica.configuracao_layout_armazem()
+
 
 @app.route('/gestao_carteira/', methods=['POST', 'GET'])
 def gestao_carteira_view():
@@ -232,6 +238,11 @@ logger = logging.getLogger("meuapp")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',  debug=True, port=5000)
+
+
+    @app.template_filter('zfill')
+    def zfill_filter(value, width=2):
+        return str(value).zfill(width)
 
     # FIXME: AJUSTAR DIV DE TODAS AS JANELAS PARA QUE APAREÇA A ÁREA RESERVADA PARA ALERTS A EXEMPLO DA TELA GERAR ORDEM DE VENDA
     #

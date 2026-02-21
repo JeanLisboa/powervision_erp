@@ -12,6 +12,7 @@ from wtforms import (
     IntegerField,
     FloatField,
     HiddenField,
+    TextAreaField,
     DateField,
     ValidationError)
 from wtforms.validators import (
@@ -412,9 +413,32 @@ class Mod_Logistica:
         descricao = StringField('Descrição')
         botao_relatorio_estoque = SubmitField("Pesquisar")
 
-
     class Realizar_conferencia(FlaskForm):
         ordem_compra = StringField("Ordem de Compra")
         fornecedor = StringField("Fornecedor")
         botao_pesquisar_ordem_compra = SubmitField("Pesquisar")
         botao_limpar_pesquisa = SubmitField("Limpar")
+
+    class ConfiguracaoLayoutArmazem(FlaskForm):
+        # Identificação da Rua
+        prefixo_rua = StringField("Prefixo/Nome da Rua", validators=[DataRequired()],
+                                  render_kw={"placeholder": "Ex: A ou 01"})
+
+        # Dimensões
+        qtde_modulos = IntegerField("Qtd. de Módulos (Colunas)", validators=[DataRequired(), NumberRange(min=1)])
+        qtde_niveis = IntegerField("Qtd. de Níveis (Andares)", validators=[DataRequired(), NumberRange(min=1)])
+        qtde_posicoes = IntegerField("Posições por Nível", validators=[DataRequired(), NumberRange(min=1)], default=1)
+
+        # Regras de Negócio
+        tipo_zona = SelectField("Tipo de Zona", choices=[("PICKING", "Picking"), ("PULMAO", "Pulmão/Reserva")],
+                                default="PICKING")
+        criterio = SelectField("Critério de Saída",
+                               choices=[("FIFO", "FIFO (Primeiro que Entra)"), ("FEFO", "FEFO (Vencimento)")])
+
+        # O que você perguntou: Posições Bloqueadas
+        # O Admin digita os códigos que o sistema deve ignorar ao gerar
+        posicoes_bloqueadas = TextAreaField("Endereços para Bloquear (opcional)",
+                                            render_kw={
+                                                "placeholder": "Ex: A-01-02-01, A-01-02-02 (separados por vírgula)"})
+
+        botao_submit = SubmitField("Gerar Estrutura de Endereços")

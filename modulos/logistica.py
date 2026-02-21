@@ -12,6 +12,7 @@ from modulos.utils.queries import mycursor
 from modulos.utils.validadores import Validadores
 from modulos.utils.formatadores import Formatadores
 from modulos.utils.buscadores import Buscadores, Estoque,Logistica
+from modulos.utils.console import CorFonte
 
 logging.basicConfig(level=logging.INFO,format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 
@@ -791,3 +792,61 @@ def entrada_ordem_compra_manual():
         data=Formatadores.formatar_data(Formatadores.os_data())
     )
 
+
+def configuracao_layout_armazem():
+    print(CorFonte.fonte_amarela() + 'função configuracao_layout_armazem' + CorFonte.reset_cor())
+    form_configuracao_layout_armazem = Mod_Logistica.ConfiguracaoLayoutArmazem()
+
+    # Criamos uma lista vazia para o mapa
+    mapa_visual = []
+
+    # Se já houver dados no formulário (mesmo antes do POST, para preview dinâmico se desejar)
+    # ou logo após o POST para validar o que foi enviado
+    if form_configuracao_layout_armazem.qtde_modulos.data and form_configuracao_layout_armazem.qtde_niveis.data:
+        prefixo = form_configuracao_layout_armazem.prefixo_rua.data or "RUA"
+
+        # Geramos a malha de trás para frente (níveis altos primeiro para o visual ficar correto)
+        for n in range(form_configuracao_layout_armazem.qtde_niveis.data, 0, -1):
+            linha = []
+            for m in range(1, form_configuracao_layout_armazem.qtde_modulos.data + 1):
+                codigo = f"{prefixo}-{str(m).zfill(2)}-{str(n).zfill(2)}"
+                linha.append({'codigo': codigo, 'modulo': m, 'nivel': n})
+            mapa_visual.append(linha)
+
+    if request.method == "POST":
+        try:
+            # 1. Captura a string enviada pelo JS (ex: "A-01-01,A-01-05")
+            raw_bloqueados = form_configuracao_layout_armazem.posicoes_bloqueadas.data
+            print(f'raw_bloqueados: {raw_bloqueados}')
+
+            # 2. Converte em uma lista real de Python, removendo espaços e tratando vazios
+            lista_bloqueados = [codigo.strip() for codigo in raw_bloqueados.split(',')] if raw_bloqueados else []
+
+            # 3. Loops para gerar os endereços (conforme a regra do Admin)
+            prefixo = form_configuracao_layout_armazem.prefixo_rua.data
+
+            for m in range(1, form_configuracao_layout_armazem.qtde_modulos.data + 1):
+                for n in range(1, form_configuracao_layout_armazem.qtde_niveis.data + 1):
+                    for p in range(1, form_configuracao_layout_armazem.qtde_posicoes.data + 1):
+
+                        # Monta o código para conferência
+                        codigo_gerado = f"{prefixo}-{str(m).zfill(2)}-{str(n).zfill(2)}-{str(p).zfill(2)}"
+
+                        # O "PULO DO GATO": Verifica se o endereço não foi bloqueado no mapa
+                        # Note que o mapa visual só tem Rua-Módulo-Nível, então filtramos por essa base
+                        base_codigo = f"{prefixo}-{str(m).zfill(2)}-{str(n).zfill(2)}"
+
+                        if base_codigo not in lista_bloqueados:
+                            salvar_no_banco_posicao_ativa(codigo_gerado)
+                            # print(f"Salvando: {codigo_gerado}")
+                        else:
+                            print(f"Bloqueado pelo Admin: {codigo_gerado}")
+
+            # flash("Estrutura do armazém gerada com sucesso!", "success")
+
+        except Exception as e:
+            print('Erro no processamento do layout:', e)
+
+    return render_template('logistica/configuracao_layout_armazem.html',
+                           form_configuracao_layout_armazem=form_configuracao_layout_armazem,
+                           mapa_visual=mapa_visual)  # Enviamos o mapa pronto
