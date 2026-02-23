@@ -13,6 +13,13 @@ def gestao_carteira():
     1: Amarelo (Parcial)
     2: Verde (Atendida)
 
+    FLUXO:
+       AÇÃO DO USUARIO             | OPERAÇÃO | STATUS OV    | OBS
+    1. ACESSO À TELA               |   GET    | PENDENTE     |
+    2. LIBERAÇÃO OV                |  POST    | EM SEPARAÇÃO |
+    3. FATURAMENTO
+    3.1 PEDIDO TOTALMENTE FATURADO |  POST    | FINALIZADO   |
+
     """
 
     print(CorFonte.fonte_amarela() + "Iniciando Processamento de Carteira" + CorFonte.reset_cor())
@@ -122,12 +129,34 @@ def gestao_carteira():
             lista_itens_ordem_expandida.append(item + (alocado_nesta_ov, qtde_estoque_livre))
 
     if 'botao_liberar_ov' in request.form:
+        # todo: 1 - criar tabela de estoque alocado
+        #           Coluna         |    Tipo  | Descrição
+        #           id_reserva     | INT (PK) | Identificador único.
+        #           id_ordem_venda | INT (FK) | Referência ao pedido
+        #           ean	           | VARCHAR  | Produto reservado.
+        #           quantidade	   | DECIMAL  | Quantidade que saiu do "Livre" e foi para o "Reservado"
+        #           data_reserva   | DATETIME |	Quando o analista deu o "Commit"..
+        #       2 - o estoque disponível deve ser (estoque total - estoque reservado)
+        #       3 - o status da ov deve ser alterado para 'EM SEPARAÇÃO'
+        #       4 - a logistica deve realizar a separação e retornar a quantidade ( pode haver rupturas )
+        #       4.1 *** - como os dados sao coletados? cabe outro sistema ?
+        #       5 - a logistica deve retornar a ov para faturamento
+        #       6 - o status deve ser alterado para 'apto a faturar'
+        #       6.1 - fiscal *** ???.
+        #       7 - realizar o faturamento.
+        #       8 - alterar o status do pedido
 
-        print('botao_liberar_ov acionado')
+
+        print('botao_liberar_ov acionado\n Ordens enviadas para separação')
+        # TODO: 1 - ENVIO DE PICKING WAVE ( POR ENDEREÇO, A DESENVOLVER )
+        # TODO: 2 - ALTERAR O STATUS DA OV PARA 'EM SEPARAÇÃO'.
+        # TODO: 3 - GERAR A FILA DE SEPARAÇÃO NA LOGISTICA
 
     # print(f'lista_ordem_venda_com_legenda: {lista_ordem_venda_com_legenda}')
     # print(f'lista_ordem_venda_base: {lista_ordem_venda_base}')
     # print(f'lista_itens_ordem_expandida: {lista_itens_ordem_expandida}')
+
+
     return render_template(
         'gestao_carteira/gestao_carteira.html',
         lista_ordem_venda=lista_ordem_venda_com_legenda,  # Agora enviamos a lista com status

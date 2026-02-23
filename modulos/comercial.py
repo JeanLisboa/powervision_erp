@@ -660,7 +660,7 @@ def gerar_ordem_venda():
     print('Etapa 1: ABRE A TELA ')
     """
     REGRAS DO NEGOCIO:
-    AÇÃO DO USUARIO                                               | OV   |          | OPERACAO | STATUS    | OBS
+    AÇÃO DO USUARIO                                               | OV   | OPERACAO | STATUS    | OBS
     1 ABRE A TELA                                                 | None |  GET     |           |
     2 VALIDA SE O USER TEM OV EM RASCUNHO                         |      |  GET     |           |
     2.1 CASO SIM:                                                 |      |  GET     |           |
@@ -673,7 +673,8 @@ def gerar_ordem_venda():
     4 INCLUI ITEM ADICIONAL                                       |      | INSERT   | EM_EDICAO |
     4 ATUALIZA ITEM (QTDE/PREÇO)                                  |      | UPDATE   | EM_EDICAO |
     4 REMOVE ITEM                                                 |      | DELETE   | EM_EDICAO |
-    5 CLICA EM SALVAR/FINALIZAR (PELO MENOS 1 ITEM VÁLIDO)        |      | LIBERADA |           | BOTÃO CRIAR_ORDEM HABILITADO
+    5 CLICA EM SALVAR/FINALIZAR (PELO MENOS 1 ITEM VÁLIDO)        |      | LIBERADA |  ABERTO   | BOTÃO CRIAR_ORDEM HABILITADO
+    
     """
     form_gerar_ordem_venda = ModComercial.GerarOrdemVenda()
     print(CorFonte.fonte_amarela() + "Função gera_ordem_venda" + CorFonte.reset_cor())
@@ -689,17 +690,22 @@ def gerar_ordem_venda():
 
     def usuario_tem_rascunho(usuario):
         print(CorFonte.fonte_azul_claro() + 'subfunção usuario_tem_rascunho'+ CorFonte.reset_cor())
-        mydb.connect()
-        query = """
-            SELECT 1
+        try:
+            mydb.connect()
+            query = f"""
+                SELECT COALESCE(ordem_venda, '') AS ordem_venda
             FROM ORDEM_VENDA
             WHERE USUARIO = %s
               AND STATUS_PEDIDO = 'RASCUNHO'
-            LIMIT 1
-        """
-        mycursor.execute(query, (usuario,))
-        resultado = mycursor.fetchone()
-        return resultado
+            LIMIT 1;
+"""
+            mycursor.execute(query, (usuario,))
+            resultado = mycursor.fetchone()
+            # resultado = resultado[0]
+            return resultado[0] if resultado else ''
+        except Exception as e:
+            print('erro',e)
+            return 0
 
     def desabilita_botao_criar_nova_ordem_venda():
         print(CorFonte.fonte_azul_claro() + f'subfunção desabilita_botao_criar_nova_ordem_venda' + CorFonte.reset_cor())
@@ -820,6 +826,8 @@ def gerar_ordem_venda():
                 print(f'tem_rascunho = {tem_rascunho}')
 
                 if tem_rascunho:
+                    ordem_venda = usuario_tem_rascunho(usuario)
+                    ordem_venda = completa_zeros(str(ordem_venda))
                     print('ETAPA 2.1A:  INFORMAR AO USUARIO QUE HÁ RASCUNHO EM ABERTO E DESABILITAR O BOTÃO')
                     desabilita_botao_criar_nova_ordem_venda()
                     alert = AlertaMsg.erro_ao_processar_rascunho(usuario, ordem_venda)

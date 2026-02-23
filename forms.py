@@ -14,6 +14,9 @@ from wtforms import (
     HiddenField,
     TextAreaField,
     DateField,
+BooleanField,
+
+
     ValidationError)
 from wtforms.validators import (
     DataRequired,
@@ -393,8 +396,14 @@ class Mod_Logistica:
         nf = IntegerField("NF", validators=[NumberRange(min=1)])
         razao_social = StringField("Nome Fantasia")
         ordem_compra = IntegerField("Ordem de Compra", validators=[NumberRange(min=1)])
-        quantidade = IntegerField("Quantidade", validators=[NumberRange(min=0), DataRequired()]        )
+        quantidade = IntegerField("Qtde Entrada", validators=[NumberRange(min=0), DataRequired()]        )
         cnpj = IntegerField("CNPJ", validators=[Length(14, 14)])
+        lote = StringField("Lote")
+        data_validade = DateField("Data_Validade")
+        endereco = SelectField('Endereço🔍')
+        endereco_automatico = BooleanField('Endereço Automático')
+        incluir_lote = SubmitField('Incluir Lote')
+
         botao_pesquisar_ordem_compra = SubmitField("Pesquisar Ordem")
         botao_salvar_entrada = SubmitField("Salvar")
         botao_finalizar_conferencia = SubmitField("Finalizar Conferência")
@@ -441,4 +450,5 @@ class Mod_Logistica:
                                             render_kw={
                                                 "placeholder": "Ex: A-01-02-01, A-01-02-02 (separados por vírgula)"})
 
-        botao_submit = SubmitField("Gerar Estrutura de Endereços")
+        botao_gerar_estrutura_enderecos = SubmitField("Gerar Estrutura de Endereços")
+        botao_submit = SubmitField("Salvar")

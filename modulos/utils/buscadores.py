@@ -359,12 +359,15 @@ class Buscadores:
                     STATUS_PEDIDO,
                     TOTAL_PEDIDO
             FROM ordem_venda) t
+            WHERE STATUS_PEDIDO <> 'RASCUNHO'
             GROUP BY
                 ordem_venda,
                 DATA,
                 COD_CLIENTE,
                 CLIENTE,
                 STATUS_PEDIDO;
+             
+            
             """
             cursor = mydb.cursor()
             cursor.execute(query)
@@ -372,11 +375,10 @@ class Buscadores:
 
         @staticmethod
         def buscar_itens(ordem_venda):
-            print(
-                CorFonte.fonte_amarela()
-                + "Buscadores.OrdemVenda.buscar_itens"
-                + CorFonte.reset_cor()
-            )
+            """
+                BUSCA OS ITENS DE UMA ORDEM DE VENDA QUE NÃO SEJAM RAS
+            """
+            print(CorFonte.fonte_amarela() + "Buscadores.OrdemVenda.buscar_itens" + CorFonte.reset_cor())
 
             query = """
                 SELECT 
@@ -394,7 +396,7 @@ class Buscadores:
                 FROM ordem_venda ov
                 LEFT JOIN estoque e 
                        ON e.ean = ov.ean
-                WHERE ov.ordem_venda = %s
+                WHERE ov.ordem_venda = %s and status_pedido <> 'RASCUNHO'
                 GROUP BY
                     ov.status_pedido,
                     ov.item,
@@ -407,7 +409,6 @@ class Buscadores:
                     ov.quantidade,
                     ov.total_pedido;
             """
-
 
             try:
                 mydb.connect()

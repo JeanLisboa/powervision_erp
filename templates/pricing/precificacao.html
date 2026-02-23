@@ -9,14 +9,15 @@ TELA PRECIFICACAO
     padding: 0px;
     height: 20px;
     background-color: transparent; /* Fundo transparente */
-    font-size: 17px;
+    font-size: 15px;
 }
 </style>
-<div class="div_secundaria">
+
+<div class="container-fluid vh-100 d-flex flex-column">
+
     <form action="" method="POST">
         {{ form_precificacao.csrf_token }}
         <div>
-
             <div>
                 <div class="col form-label btn btn-light">
                 {{form_precificacao.data.label}}
@@ -56,7 +57,7 @@ TELA PRECIFICACAO
             <br><br>
             <br><br>
             <br><br>
-            <div  class="container_com_barra_rolagem" style="margin-top: -150px">
+            <div  class="container_com_barra_rolagem_600" style="margin-top: -150px">
             <table class="table table-hover table-striped " style="position:sticky top: 0" cellpadding="0" cellspacing="0" id="">
                 <thead>
                         <tr>

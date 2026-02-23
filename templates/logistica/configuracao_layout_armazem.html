@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block content %}
+
+<title>{% block title %}Logística | Layout do Armazém{% endblock %}</title>
+
+<style>
+    .layout-container { display: flex; gap: 20px; padding: 20px; }
+    .config-panel { flex: 1; max-width: 400px; background: #f8f9fa; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .preview-panel { flex: 2; background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+    .grid-armazem { display: grid; gap: 5px; margin-top: 15px; overflow-x: auto; }
+    .posicao-box {
+        width: 40px; height: 40px; border: 1px solid #ccc;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 10px; cursor: pointer; transition: 0.3s;
+    }
+    .posicao-box:hover { background-color: #e0e0e0; }
+    .posicao-bloqueada { background-color: #ff5252 !important; color: white; border-color: #b71c1c; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #333; }
+    .form-control { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    .btn-gerar { background: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%; }
+    <style>
+    /* Garante que o painel da direita use todo o espaço restante */
+    .preview-panel {
+        flex: 1;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        min-width: 0; /* Evita que o flex-item transborde */
+    }
+
+    /* Grid inteligente: minmax(0, 1fr) faz as células encolherem se necessário */
+    .grid-armazem {
+        display: grid;
+        gap: 4px;
+        margin-top: 15px;
+        width: 100%;
+        /* O número de colunas vem do Python/Flask */
+    }
+
+    /* Ajuste das caixas para serem responsivas */
+    .posicao-box {
+        aspect-ratio: 1 / 1; /* Mantém o quadrado perfeito */
+        min-width: 30px;
+        border: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem; /* Fonte menor para caber em grades grandes */
+        cursor: pointer;
+        transition: 0.2s;
+        background-color: #fff;
+    }
+</style>
+
+<script>
+    let bloqueados = [];
+
+    function toggleBloqueio(codigo) {
+        console.log("Tentando bloquear:", codigo); // Debug para você ver no F12
+        const element = document.getElementById('box-' + codigo);
+
+        if (!element) {
+            console.error("Elemento não encontrado: box-" + codigo);
+            return;
+        }
+
+        const index = bloqueados.indexOf(codigo);
+
+        if (index > -1) {
+            // Se já estava na lista, remove (Desbloqueia)
+            bloqueados.splice(index, 1);
+            element.classList.remove('posicao-bloqueada');
+        } else {
+            // Se não estava, adiciona (Bloqueia)
+            bloqueados.push(codigo);
+            element.classList.add('posicao-bloqueada');
+        }
+
+        // Atualiza o valor do campo oculto para o Python receber no POST
+        // Certifique-se que o ID aqui é o mesmo do seu TextArea no form
+        const inputHidden = document.getElementById('posicoes_bloqueadas');
+        if (inputHidden) {
+            inputHidden.value = bloqueados.join(',');
+        }
+    }
+</script>
+
+<div class="page">
+    <div class="layout-container">
+
+        <section class="config-panel">
+            <h3>Configurar Estrutura</h3>
+            <form method="POST">
+                {{ form_configuracao_layout_armazem.hidden_tag() }}
+
+                <div class="form-group">
+                    {{ form_configuracao_layout_armazem.prefixo_rua.label }}
+                    {{ form_configuracao_layout_armazem.prefixo_rua(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_configuracao_layout_armazem.qtde_modulos.label }}
+                    {{ form_configuracao_layout_armazem.qtde_modulos(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_configuracao_layout_armazem.qtde_niveis.label }}
+                    {{ form_configuracao_layout_armazem.qtde_niveis(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_configuracao_layout_armazem.qtde_posicoes.label }}
+                    {{ form_configuracao_layout_armazem.qtde_posicoes(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_configuracao_layout_armazem.criterio.label }}
+                    {{ form_configuracao_layout_armazem.criterio(class="form-control") }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_configuracao_layout_armazem.posicoes_bloqueadas.label }}
+                    {# Forçamos o id="posicoes_bloqueadas" aqui #}
+                    {{ form_configuracao_layout_armazem.posicoes_bloqueadas(id="posicoes_bloqueadas", class="form-control", rows="3") }}
+                </div>
+                {{ form_configuracao_layout_armazem.botao_gerar_estrutura_enderecos(class="btn btn-primary mt-3") }}
+                {{ form_configuracao_layout_armazem.botao_submit(class="btn btn-primary mt-3") }}
+            </form>
+        </section>
+
+        <section class="preview-panel">
+    <h3>Mapa Visual da Rua</h3>
+    <p><small>Clique para <b>Bloquear</b> (Ficarão vermelhas)</small></p>
+
+    <div class="grid-armazem"
+         style="grid-template-columns: repeat({{ form_configuracao_layout_armazem.qtde_modulos.data or 1 }}, minmax(0, 1fr));">
+
+        {% if mapa_visual %}
+            {% for linha in mapa_visual %}
+                {% for posicao in linha %}
+                    <div class="posicao-box"
+                         id="box-{{ posicao.codigo }}"
+                         onclick="toggleBloqueio('{{ posicao.codigo }}')"
+                         title="{{ posicao.codigo }}">
+                        {{ posicao.modulo }}-{{ posicao.nivel }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; color: #999; padding: 40px;">
+                Defina os módulos e níveis para visualizar o mapa.
+            </div>
+        {% endif %}
+    </div>
+</section>
+    </div>
+</div>
+
+
+
+{% endblock %}

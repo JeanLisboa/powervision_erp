@@ -631,6 +631,74 @@ def busca_estoque_por_ordem_compra(ordem_compra, ean):
     logging.info(f'Busca estoque {ordem_compra} item {ean} realizada.')
     return resultado
 
+def sugerir_endereco_entrada(entrada_estoque):
+        """
+        entrada_estoque: lista/tupla vinda do processamento de entrada
+        i[7] = EAN, i[11] = Quantidade, i[13] = Lote, i[14] = Validade
+        """
+        print(f'Acionando inteligência de sugestão para: {entrada_estoque[3]}')  # Descrição do item
+
+        # Extração das variáveis baseada nos índices informados
+        codigo_produto = entrada_estoque[7]
+        quantidade_entrada = entrada_estoque[11]
+        lote_entrada = entrada_estoque[13]
+        validade_entrada = entrada_estoque[14]
+
+        try:
+            mydb.connect()
+            cursor = mydb.cursor(dictionary=True)
+
+            # 1. BUSCA POR AGRUPAMENTO (Otimização de Espaço)
+            # Tenta achar onde já existe o MESMO produto para não espalhar o estoque
+            sql_mesmo_item = """
+                SELECT e.codigo_completo, s.quantidade, s.data_validade
+                FROM estoque_saldo s
+                JOIN estoque_enderecos e ON s.id_endereco = e.id
+                WHERE s.codigo_produto = %s 
+                  AND e.status = 'ATIVO'
+                ORDER BY s.quantidade ASC 
+                LIMIT 1
+            """
+            cursor.execute(sql_mesmo_item, (codigo_produto,))
+            sugestao = cursor.fetchone()
+
+            if sugestao:
+                # Dica: Você pode adicionar aqui uma lógica que verifica se a validade
+                # do saldo é a mesma da entrada para não misturar vencimentos no mesmo vão.
+                return {
+                    "codigo": sugestao['codigo_completo'],
+                    "motivo": f"Agrupamento: Já possui {sugestao['quantidade']} un. deste item."
+                }
+
+            # 2. BUSCA POR VAGO (Primeiro endereço vazio disponível)
+            sql_vazio = """
+                SELECT e.codigo_completo
+                FROM estoque_enderecos e
+                LEFT JOIN estoque_saldo s ON e.id = s.id_endereco
+                WHERE s.id_endereco IS NULL 
+                  AND e.status = 'ATIVO'
+                ORDER BY e.codigo_completo ASC 
+                LIMIT 1
+            """
+            cursor.execute(sql_vazio)
+            vazio = cursor.fetchone()
+
+            if vazio:
+                return {
+                    "codigo": vazio['codigo_completo'],
+                    "motivo": "Endereço totalmente vazio encontrado."
+                }
+
+            return {"codigo": None, "motivo": "Atenção: Não há endereços ativos disponíveis!"}
+
+        except Exception as e:
+            print(f"Erro crítico na sugestão de endereço: {e}")
+            return {"codigo": None, "motivo": f"Erro técnico: {str(e)}"}
+        finally:
+            if mydb.is_connected():
+                cursor.close()
+
+
 # FiXME: ALOCAR FUNÇÃO NA PASTA CORRETA
 def buscar_qtde_recebida(ordem_compra, ean):
     print('def buscar_qtde_recebida(ordem_compra, ean):')
@@ -684,6 +752,13 @@ def info_ordem_compra_atualizada(resultado_pesquisa):
     resultado_pesquisa_atualizado = resultado_pesquisa_temp
 
     return resultado_pesquisa_atualizado
+
+
+# fixme: atualizar a tela de entrada de ordem de compra para receber lotes e validade
+#  Qual é a melhor forma de receber os lotes e validades ?
+#  A entrada no estoque deve ter um padrão, por validade, ou por lote ?
+#  :
+
 
 def entrada_ordem_compra_manual():
     logging.info('Função entrada_ordem_compra_manual')
@@ -755,7 +830,7 @@ def entrada_ordem_compra_manual():
                     resultado_pesquisa=resultado_pesquisa,
                     data=Formatadores.formatar_data(Formatadores.os_data()))
         except Exception as e:
-            logging.info(e)
+            print(erro, e)
 
         try:
             if "botao_salvar_entrada" in request.form:
@@ -765,11 +840,15 @@ def entrada_ordem_compra_manual():
                 prep_atualizar_estoque = info_ordem_compra_atualizada(resultado_pesquisa)
                 contador_input_bd = 0
                 for i in prep_atualizar_estoque:
-                    logging.info(f'prep_atualizar_estoque: {prep_atualizar_estoque}')
                     print(f'prep_atualizar_estoque: {prep_atualizar_estoque}')
-                    logging.info(f'linha {contador_input_bd} |i = {i}')
+                    print(f'linha {contador_input_bd} |i = {i}')
                     try:
-                        atualizar_mov_estoque(i)
+                        print('descomentar linha para atualizar bd')
+                        # atualizar_mov_estoque(i)
+
+                        sugerir_endereco_entrada(i)
+                        rota_sugerir_endereco(i[7])
+
                     except Exception as e:
                         print(f'erro na função atualizar_mov_estoque {i} ')
                         print(e)
@@ -797,15 +876,48 @@ def configuracao_layout_armazem():
     print(CorFonte.fonte_amarela() + 'função configuracao_layout_armazem' + CorFonte.reset_cor())
     form_configuracao_layout_armazem = Mod_Logistica.ConfiguracaoLayoutArmazem()
 
-    # Criamos uma lista vazia para o mapa
-    mapa_visual = []
+    # --- FUNÇÕES DE APOIO SQL ---
+    def salvar_cabecalho_layout(prefixo, modulos, niveis, posicoes, zona):
+        sql = """
+            INSERT INTO layout_armazem (prefixo_rua, qtd_modulos, qtd_niveis, qtd_posicoes_por_nivel, tipo_zona, ativo)
+            VALUES (%s, %s, %s, %s, %s, TRUE)
+        """
+        try:
+            mydb.connect()
+            cursor = mydb.cursor()
+            cursor.execute(sql, (prefixo, modulos, niveis, posicoes, zona))
+            mydb.commit()
+        except Exception as e:
+            print(f"Erro ao salvar cabeçalho: {e}")
+            raise e
 
-    # Se já houver dados no formulário (mesmo antes do POST, para preview dinâmico se desejar)
-    # ou logo após o POST para validar o que foi enviado
+    def salvar_enderecos_estoque(lista_tuplas):
+        """
+        lista_tuplas: [(codigo_completo, rua, modulo, nivel, posicao), ...]
+        """
+        # SQL para a tabela operacional (a que terá muitas linhas)
+        sql = """
+            INSERT INTO estoque_enderecos (codigo_completo, prefixo_rua, modulo, nivel, posicao, status)
+            VALUES (%s, %s, %s, %s, %s, 'ATIVO')
+        """
+        try:
+            mydb.connect()
+            cursor = mydb.cursor()
+            # O executemany envia o bloco inteiro de uma vez só
+            cursor.executemany(sql, lista_tuplas)
+            mydb.commit()
+            print(f"Sucesso: {len(lista_tuplas)} endereços físicos criados no estoque.")
+        except Exception as e:
+            if mydb.is_connected():
+                mydb.rollback()
+            print(f"Erro ao salvar endereços no estoque: {e}")
+            raise e
+
+    # --- LÓGICA DE GERAÇÃO DO MAPA VISUAL ---
+    mapa_visual = []
+    # O mapa é gerado se o formulário tiver dados mínimos, independente de clicar em salvar
     if form_configuracao_layout_armazem.qtde_modulos.data and form_configuracao_layout_armazem.qtde_niveis.data:
         prefixo = form_configuracao_layout_armazem.prefixo_rua.data or "RUA"
-
-        # Geramos a malha de trás para frente (níveis altos primeiro para o visual ficar correto)
         for n in range(form_configuracao_layout_armazem.qtde_niveis.data, 0, -1):
             linha = []
             for m in range(1, form_configuracao_layout_armazem.qtde_modulos.data + 1):
@@ -813,40 +925,50 @@ def configuracao_layout_armazem():
                 linha.append({'codigo': codigo, 'modulo': m, 'nivel': n})
             mapa_visual.append(linha)
 
+    # --- TRATAMENTO DOS BOTÕES ---
     if request.method == "POST":
-        try:
-            # 1. Captura a string enviada pelo JS (ex: "A-01-01,A-01-05")
-            raw_bloqueados = form_configuracao_layout_armazem.posicoes_bloqueadas.data
-            print(f'raw_bloqueados: {raw_bloqueados}')
 
-            # 2. Converte em uma lista real de Python, removendo espaços e tratando vazios
-            lista_bloqueados = [codigo.strip() for codigo in raw_bloqueados.split(',')] if raw_bloqueados else []
+        # BOTÃO 1: APENAS GERA O MAPA (A lógica acima já cuida disso ao re-renderizar)
+        if 'botao_gerar_estrutura_enderecos' in request.form:
+            print('Botão Gerar Mapa acionado')
+            # O Flask apenas segue para o return render_template com o mapa_visual preenchido
 
-            # 3. Loops para gerar os endereços (conforme a regra do Admin)
-            prefixo = form_configuracao_layout_armazem.prefixo_rua.data
+        # BOTÃO 2: SALVA NO BANCO (DUAS TABELAS)
+        elif 'botao_submit' in request.form:
+            print('Botão Salvar acionado')
+            try:
+                prefixo = form_configuracao_layout_armazem.prefixo_rua.data
+                modulos = form_configuracao_layout_armazem.qtde_modulos.data
+                niveis = form_configuracao_layout_armazem.qtde_niveis.data
+                posicoes = form_configuracao_layout_armazem.qtde_posicoes.data
+                zona = form_configuracao_layout_armazem.tipo_zona.data
 
-            for m in range(1, form_configuracao_layout_armazem.qtde_modulos.data + 1):
-                for n in range(1, form_configuracao_layout_armazem.qtde_niveis.data + 1):
-                    for p in range(1, form_configuracao_layout_armazem.qtde_posicoes.data + 1):
+                # 1. Salva a Configuração (Cabeçalho)
+                salvar_cabecalho_layout(prefixo, modulos, niveis, posicoes, zona)
 
-                        # Monta o código para conferência
-                        codigo_gerado = f"{prefixo}-{str(m).zfill(2)}-{str(n).zfill(2)}-{str(p).zfill(2)}"
+                # 2. Prepara os Endereços Físicos (Linhas)
+                raw_bloqueados = form_configuracao_layout_armazem.posicoes_bloqueadas.data
+                lista_bloqueados = [c.strip() for c in raw_bloqueados.split(',')] if raw_bloqueados else []
 
-                        # O "PULO DO GATO": Verifica se o endereço não foi bloqueado no mapa
-                        # Note que o mapa visual só tem Rua-Módulo-Nível, então filtramos por essa base
-                        base_codigo = f"{prefixo}-{str(m).zfill(2)}-{str(n).zfill(2)}"
+                dados_para_estoque = []
+                for m in range(1, modulos + 1):
+                    for n in range(1, niveis + 1):
+                        for p in range(1, posicoes + 1):
+                            cod_gerado = f"{prefixo}-{str(m).zfill(2)}-{str(n).zfill(2)}-{str(p).zfill(2)}"
+                            base_mapa = f"{prefixo}-{str(m).zfill(2)}-{str(n).zfill(2)}"
 
-                        if base_codigo not in lista_bloqueados:
-                            salvar_no_banco_posicao_ativa(codigo_gerado)
-                            # print(f"Salvando: {codigo_gerado}")
-                        else:
-                            print(f"Bloqueado pelo Admin: {codigo_gerado}")
+                            if base_mapa not in lista_bloqueados:
+                                dados_para_estoque.append((cod_gerado, prefixo, m, n, p))
 
-            # flash("Estrutura do armazém gerada com sucesso!", "success")
+                # 3. Salva os Endereços
+                if dados_para_estoque:
+                    salvar_enderecos_estoque(dados_para_estoque)
+                    # flash(f"Sucesso! Rua {prefixo} criada com {len(dados_para_estoque)} posições.", "success")
 
-        except Exception as e:
-            print('Erro no processamento do layout:', e)
+            except Exception as e:
+                print(f"Erro no processo de salvamento: {e}")
+                # flash("Erro ao salvar no banco. Verifique se essa rua já existe.", "danger")
 
     return render_template('logistica/configuracao_layout_armazem.html',
                            form_configuracao_layout_armazem=form_configuracao_layout_armazem,
-                           mapa_visual=mapa_visual)  # Enviamos o mapa pronto
+                           mapa_visual=mapa_visual)

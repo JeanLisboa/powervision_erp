@@ -24,14 +24,22 @@
   </div>
   <div class="has-submenu">
     <a href="#news">Logistica</a>
-    <div class="submenu">
-      <a class="nav-link" href="{{ url_for('entrada_ordem_compra_por_nota')}}">Entrada por Nota Fiscal</a>
-      <a class="nav-link" href="{{ url_for('entrada_ordem_compra_manual')}}">Entrada Manual</a>
-      <a class="nav-link" href="{{ url_for('estoque')}}">Estoque</a>
-      <a href="#news2">Separar Pedidos</a>
-      <a href="#news3">Relatórios</a>
-      <a href="#news3">Cadastrar Transportador</a>
-    </div>
+      <div class="submenu">
+        <a class="nav-link" href="{{ url_for('entrada_ordem_compra_por_nota')}}">Entrada por Nota Fiscal</a>
+        <a class="nav-link" href="{{ url_for('entrada_ordem_compra_manual')}}">Entrada Manual</a>
+        <a class="nav-link" href="#news_separacao">Separar Pedidos</a>
+
+        <hr style="border: 0; border-top: 1px solid #444; margin: 8px 0; opacity: 0.3;">
+
+        <a class="nav-link" href="{{ url_for('estoque')}}">Estoque (Saldos)</a>
+        <a class="nav-link" href="#news_transportador">Cadastrar Transportador</a>
+        <a class="nav-link" href="#news_relatorios">Relatórios</a>
+
+        <hr style="border: 0; border-top: 1px solid #444; margin: 8px 0; opacity: 0.3;">
+
+        <a class="nav-link" href="{{ url_for ('configuracao_layout_armazem_view')}}" style="color: #ffca28;"><b>Layout do Armazém</b></a>
+        <a class="nav-link" href="#news_regras">Regras de Giro (FIFO/FEFO)</a>
+      </div>
   </div>
   <div class="has-submenu">
     <a href="#news">Comercial</a>
