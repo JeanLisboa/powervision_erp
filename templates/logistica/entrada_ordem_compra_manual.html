@@ -7,11 +7,9 @@
 
 <h5>Entrada por Ordem de Compra</h5>
 
-<div class="page">
     <form action="" method="POST">
         {{ form_entrada_ordem_compra_manual.csrf_token }}
-
-        <section class="top-left">
+        <div>
             <div class="col form-label btn btn-light">
                 {{ form_entrada_ordem_compra_manual.data.label }}
                 {{ form_entrada_ordem_compra_manual.data(class="form-control tam_campo_data", value=data) }}
@@ -22,132 +20,89 @@
             </div>
             {{ form_entrada_ordem_compra_manual.botao_pesquisar_ordem_compra(class="btn btn-primary") }}
             {{ form_entrada_ordem_compra_manual.botao_salvar_entrada(class="btn btn-success", id="botao_salvar_entrada") }}
-        </section>
+        </div>
 
-        <section class="box top-right">
-            <div style="max-height: 600px; overflow-y: auto; overflow-x: auto;">
-                <table class="table table-hover table-striped table-bordered tabela-padrao">
-                    <thead>
-                        <tr>
-                            <th style="width: 5%;">Item</th>
-                            <th>Descrição</th>
-                            <th>EAN</th>
-                            <th style="width: 8%;">Pend.</th>
-                            <th style="width: 20%;">Lote</th>
-                            <th style="width: 15%;">Validade</th>
-                            <th style="width: 10%;">Qtd Entrada</th>
-                            <th style="width: 200px;">Endereço Destino</th>
-                            <th style="width: 200px;">Automático</th>
-                            <th style="width: 200px;">Incluir Lote</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if resultado_pesquisa %}
-                            {% for i in resultado_pesquisa %}
-                                <tr>
-                                    <td>{{ i[2] }}</td>
-                                    <td>{{ i[3] }}</td>
-                                    <td>{{ i[7] }}</td>
-                                    <td>{{ i[11] }}</td>
-                                    <td>{{ form_entrada_ordem_compra_manual.lote }}</td>
-                                    <td>{{ form_entrada_ordem_compra_manual.data_validade }}</td>
-                                    <td>{{ form_entrada_ordem_compra_manual.quantidade }}</td>
-                                    <td>{{ form_entrada_ordem_compra_manual.endereco }}</td>
-                                    <td>{{ form_entrada_ordem_compra_manual.endereco_automatico }}</td>
-                                    <td>{{ form_entrada_ordem_compra_manual.incluir_lote }}</td>
+        <div class="page">
+            <section class="box top-left">
+                <div style="max-height: 400px; overflow-y: auto; overflow-x: auto;">
+                    <table class="table table-hover table-striped table-bordered tabela-padrao">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">Item</th>
+                                <th>Descrição</th>
+                                <th>EAN</th>
+                                <th style="width: 8%;">Pend.</th>
+                                <th style="width: 20%;">Lote</th>
+                                <th style="width: 15%;">Validade</th>
+                                <th style="width: 10%;">Qtd Entrada</th>
+                                <th style="width: 200px;">Endereço Destino</th>
+                                <th style="width: 200px;">Automático</th>
+                                <th style="width: 200px;">Incluir Lote</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if resultado_pesquisa %}
+                                {% for i in resultado_pesquisa %}
+                                    <tr>
+                                        <td>{{ i[2] }}</td>
+                                        <td>{{ i[3] }}</td>
+                                        <td>{{ i[7] }}</td>
+                                        <td>{{ i[11] }}</td>
+                                        <td>{{ form_entrada_ordem_compra_manual.lote }}</td>
+                                        <td>{{ form_entrada_ordem_compra_manual.data_validade }}</td>
+                                        <td>{{ form_entrada_ordem_compra_manual.quantidade(max=i[11]) }}</td>
+                                        <td>{{ form_entrada_ordem_compra_manual.endereco(class="form-control endereco-select", id="endereco_" ~ loop.index0) }}</td>
+                                        <td>{{ form_entrada_ordem_compra_manual.botao_endereco_automatico }}</td>
+                                        <td>{{ form_entrada_ordem_compra_manual.botao_incluir_lote }}</td>
 
+                                            <small id="motivo_{{ loop.index0 }}" class="text-muted" style="font-size: 10px;"></small>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr><td colspan="8" class="text-center">Nenhuma informação encontrada</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="box top-right">
+                <div>
+                    <table class="table table-hover table-striped table-bordered tabela-padrao">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Lote</th>
+                                <th>Validade</th>
+                                <th>Qtd Entrada</th>
+                                <th>Endereço</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if incluir_lote %}
+                                {% for i in incluir_lote %}
+                                    <tr>
+                                        <td>{{ loop.index}}</td>
+                                        <td>{{ i[0] }}</td>
+                                        <td>{{ i[1] }}</td>
+                                        <td>{{ i[2] }}</td>
+                                        <td>{{ i[3] }}</td>
+                                        <td>
+                                            <form method="POST" style="display:inline;">
+                                            {{ form_entrada_ordem_compra_manual.hidden_tag() }}
+                                                <button class="btn btn-sm btn-outline-danger" name="botao_remover_item" value="{{ loop.index }}">x</button>
+                                            </form>
+                                        </td>
+                                    </tr>
 
-
-                                        <small id="motivo_{{ loop.index0 }}" class="text-muted" style="font-size: 10px;"></small>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr><td colspan="8" class="text-center">Nenhuma informação encontrada</td></tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                                {% endfor %}
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
     </form>
-</div>
-
-<script>
-function buscarSugestao(index, ean) {
-    // Referência ao botão clicado
-    const btn = event.currentTarget;
-    const originalContent = btn.innerHTML;
-
-    // Feedback visual de carregamento
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
-    btn.disabled = true;
-
-    fetch(`/logistica/sugerir_endereco/${ean}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Erro na rede');
-            return response.json();
-        })
-        .then(data => {
-            if (data.codigo) {
-                const inputEnd = document.getElementById(`endereco_${index}`);
-                inputEnd.value = data.codigo;
-                document.getElementById(`motivo_${index}`).innerText = data.motivo;
-
-                // Efeito visual de confirmação (verde suave)
-                inputEnd.style.backgroundColor = '#d4edda';
-                setTimeout(() => { inputEnd.style.backgroundColor = '#fff'; }, 1000);
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Atenção',
-                    text: data.motivo || 'Nenhum endereço disponível no momento.',
-                });
-            }
-        })
-        .catch(err => {
-            console.error('Erro na requisição:', err);
-            Swal.fire('Erro', 'Não foi possível contatar o servidor de logística.', 'error');
-        })
-        .finally(() => {
-            btn.innerHTML = originalContent;
-            btn.disabled = false;
-        });
-}
-
-// Opcional: Impedir envio do formulário se houver campos vazios (validação extra)
-document.getElementById('botao_salvar_entrada').addEventListener('click', function(e) {
-    const inputsEnderecos = document.querySelectorAll('input[name^="endereco_destino"]');
-    let valid = true;
-
-    inputsEnderecos.forEach(input => {
-        // Se a quantidade for maior que zero, o endereço é obrigatório
-        const index = input.id.split('_')[1];
-        const qtd = document.getElementsByName(`campo_entrada_quantidade${index}`)[0].value;
-
-        if (parseFloat(qtd) > 0 && !input.value) {
-            valid = false;
-            input.classList.add('is-invalid');
-        } else {
-            input.classList.remove('is-invalid');
-        }
-    });
-
-    if (!valid) {
-        e.preventDefault();
-        Swal.fire('Campos Pendentes', 'Por favor, selecione um endereço para todos os itens com quantidade.', 'error');
-    }
-});
-</script>
-
-<style>
-    /* Estilo para destacar campos obrigatórios que faltam */
-    .is-invalid {
-        border-color: #dc3545 !important;
-        background-color: #f8d7da !important;
-    }
-    .altura_input_padrao {
-        height: 31px;
-    }
-</style>
 
 {% endblock %}

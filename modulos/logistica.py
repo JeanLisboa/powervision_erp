@@ -116,6 +116,7 @@ def entrada_ordem_compra_por_nota():
                 print("botao_pesquisar_NF ACIONADO")
             if nf is not None:
                 session['nf'] = nf
+
                 #  redefine as variáveis
                 nome_arquivo = Buscadores.Xml.buscar_arquivo(nf)
                 cnpj = Buscadores.Xml.buscar_cnpj(nome_arquivo)
@@ -759,9 +760,10 @@ def info_ordem_compra_atualizada(resultado_pesquisa):
 #  A entrada no estoque deve ter um padrão, por validade, ou por lote ?
 #  :
 
-
 def entrada_ordem_compra_manual():
     logging.info('Função entrada_ordem_compra_manual')
+    form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
+
     def atualizar_mov_estoque(values):
         print('subfunção atualizar_mov_estoque')  # PROCESSAMENTO DA FUNÇÃO entrada_ordem_compra_manual
         print(f'values: {values}')
@@ -807,15 +809,16 @@ def entrada_ordem_compra_manual():
             print("Registro inserido com sucesso.")
         except Exception as e:
             print(e)
-    form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
     entrada_qtde = 0
     resultado_pesquisa = []
 
     if request.method == "POST":
         try:
             if "botao_pesquisar_ordem_compra" in request.form:
+                session['incluir_lote'] = []  # limpa a session
                 print('botao_pesquisar_ordem_compra acionado')
                 ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
+
                 session['ordem_compra'] = ordem_compra
                 logging.info(f'ordem_compra: {ordem_compra}')
                 resultado_pesquisa = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
@@ -831,6 +834,80 @@ def entrada_ordem_compra_manual():
                     data=Formatadores.formatar_data(Formatadores.os_data()))
         except Exception as e:
             print(erro, e)
+
+        try:
+            lista_temp = []
+            if "botao_incluir_lote" in request.form:
+                incluir_lote = session.get('incluir_lote', [])
+                print('botao_incluir_lote acionado')
+                # todo: receber resultado_pesquisa já renderizdo, e acrescentar nova lista
+                resultado_pesquisa = session.get('resultado_pesquisa')
+                # incluir_lote = session('botao_incluir_lote')
+                lote = request.form.get('lote')
+                validade = request.form.get('data_validade')
+                quantidade = request.form.get('quantidade')
+                endereco = request.form.get('endereco')
+                lista_temp.append(lote)
+                lista_temp.append(validade)
+                lista_temp.append(quantidade)
+                lista_temp.append(endereco)
+                incluir_lote.append(lista_temp[:])
+                lista_temp.clear()
+
+
+                print(f'lote: {lote}')
+                print(f'validade: {validade}')
+                print(f'quantidade: {quantidade}')
+                print(f'endereco: {endereco}')
+                print(f'incluir_lote: {type(incluir_lote)}-{incluir_lote}')
+                for i in incluir_lote:
+                    print(i)
+                session['incluir_lote'] = incluir_lote
+                session['resultado_pesquisa'] = resultado_pesquisa
+                quantidade = lote = 0
+                # print('teste>>>')
+                # print(f'incluir_lote: {incluir_lote}')
+
+                return render_template(
+                    "logistica/entrada_ordem_compra_manual.html",
+                    form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+                    quantidade=quantidade,
+                    lote=lote,
+                    resultado_pesquisa=resultado_pesquisa,
+                    data=Formatadores.formatar_data(Formatadores.os_data()),
+                    incluir_lote=incluir_lote)
+        except Exception as e:
+            print(e)
+
+        try:
+            if "botao_remover_item" in request.form:
+
+                print('botao_remover_item acionado')
+
+                incluir_lote = session.get('incluir_lote', [])
+                resultado_pesquisa = session.get('resultado_pesquisa')
+
+                indice = int(request.form.get('botao_remover_item'))
+
+                print(f'indice para excluir: {indice}')
+
+                if 0 <= indice < len(incluir_lote):
+                    del incluir_lote[indice]
+
+                session['incluir_lote'] = incluir_lote
+
+                return render_template(
+                    "logistica/entrada_ordem_compra_manual.html",
+                    form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+                    resultado_pesquisa=resultado_pesquisa,
+                    incluir_lote=incluir_lote,
+                    data=Formatadores.formatar_data(Formatadores.os_data())
+                )
+
+        except Exception as e:
+            print('erro', e)
+
+
 
         try:
             if "botao_salvar_entrada" in request.form:
@@ -854,6 +931,13 @@ def entrada_ordem_compra_manual():
                         print(e)
                     contador_input_bd += 1
 
+                    # FIXME: ALTERAR HTML:
+                    #  1- INCLUIR UMA DIVISAO À DIREITA NA TELA
+                    #  2 - QUANDO O USUARIO CLICAR EM INCLUIR LOTE:
+                    #  2.1 - AS INFORMAÇÕES DEVERÃO APARECER NA TABELA À DIREITA.
+                    #  2.2 - O VALOR TOTAL PENDENTE DEVE SOFRE O DECREMENTO
+                    #  2.3 - DEVE HAVER UM BOTAO PARA EXCLUIR O ITEM DA TABELA À LATERAL DIREITA.
+
 
             return render_template(
                 "logistica/entrada_ordem_compra_manual.html",
@@ -864,12 +948,12 @@ def entrada_ordem_compra_manual():
 
         except Exception as e:
             logging.info(e)
-
+    session.get('incluir_lote',[])
+    # print(f'incluir_lote: {incluir_lote}')
     return render_template(
         "logistica/entrada_ordem_compra_manual.html",
         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
-        data=Formatadores.formatar_data(Formatadores.os_data())
-    )
+        data=Formatadores.formatar_data(Formatadores.os_data()))
 
 
 def configuracao_layout_armazem():

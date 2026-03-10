@@ -25,6 +25,8 @@ from wtforms.validators import (
     ReadOnly,
     NumberRange)
 
+import modulos
+
 os_date = date.today()
 
 
@@ -375,7 +377,6 @@ class ModGestaoCarteira:
         ordem_venda = StringField("Ordem de Venda", validators=[DataRequired()])
         botao_liberar_ov = SubmitField("Liberar Ordens Alocadas")
 
-
 class Mod_Logistica:
     class EntradaOrdemCompra(FlaskForm):
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
@@ -392,6 +393,8 @@ class Mod_Logistica:
         botao_limpar_pesquisa = SubmitField("Limpar")
 
     class EntradaOrdemCompraManual(FlaskForm):
+        buscar_endereco = geral.Buscadores.Logistica.buscar_endereco()
+        # buscar_endereco = modulos.logistica.entrada_ordem_compra_manual().buscar_endereco()
         data = StringField("Data", validators=[DataRequired(), ReadOnly()])
         nf = IntegerField("NF", validators=[NumberRange(min=1)])
         razao_social = StringField("Nome Fantasia")
@@ -400,10 +403,14 @@ class Mod_Logistica:
         cnpj = IntegerField("CNPJ", validators=[Length(14, 14)])
         lote = StringField("Lote")
         data_validade = DateField("Data_Validade")
-        endereco = SelectField('Endereço🔍')
-        endereco_automatico = BooleanField('Endereço Automático')
-        incluir_lote = SubmitField('Incluir Lote')
+        botao_endereco_automatico = SubmitField('Sugerir')
+        botao_incluir_lote = SubmitField('Incluir Lote')
+        botao_remover_item = SubmitField("x")
+        endereco = SelectField("Endereço🔍",
+                               choices=["Sel. Endereço"] + [f[1] for f in buscar_endereco],
+                               validators=[DataRequired()])
 
+        # endereco = SelectField("Endereço🔍", choices=["Selecionar"], validators=[DataRequired()])
         botao_pesquisar_ordem_compra = SubmitField("Pesquisar Ordem")
         botao_salvar_entrada = SubmitField("Salvar")
         botao_finalizar_conferencia = SubmitField("Finalizar Conferência")
