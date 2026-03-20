@@ -47,7 +47,11 @@
                                         <td>{{ i[2] }}</td>
                                         <td>{{ i[3] }}</td>
                                         <td>{{ i[7] }}</td>
-                                        <td>{{ i[11] }}</td>
+                                        <td>
+                                            <label for="quantidade_original">{{ i[11] }}</label>
+                                            <input type="hidden" name="quantidade_original" value="{{ i[11] }}">
+
+                                        </td>
                                         <td>{{ form_entrada_ordem_compra_manual.lote }}</td>
                                         <td>{{ form_entrada_ordem_compra_manual.data_validade }}</td>
                                         <td>{{ form_entrada_ordem_compra_manual.quantidade(max=i[11]) }}</td>
@@ -104,5 +108,37 @@
             </section>
         </div>
     </form>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div id="flash-container-exclusivo" style="position: fixed; top: 10px; right: 10px; z-index: 9999; min-width: 250px;">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show p-1 px-3 mb-2 custom-alert" role="alert" style="font-size: 0.9rem; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+          <small><strong>Aviso:</strong> {{ message }}</small>
+          <button type="button" class="btn-close p-2" data-bs-dismiss="alert" aria-label="Close" style="font-size: 0.6rem;"></button>
+        </div>
+      {% endfor %}
+    </div>
 
+    <script>
+      (function() {
+        // 1. Remove qualquer outro alerta que já esteja na tela fora deste container
+        document.querySelectorAll('.alert').forEach(function(alert) {
+          if (!alert.closest('#flash-container-exclusivo')) {
+            alert.remove();
+          }
+        });
+
+        // 2. Timer para sumir com o alerta atual
+        setTimeout(function() {
+          let container = document.getElementById('flash-container-exclusivo');
+          if (container) {
+            container.style.transition = "opacity 0.6s ease";
+            container.style.opacity = "0";
+            setTimeout(() => container.remove(), 600);
+          }
+        }, 3000);
+      })();
+    </script>
+  {% endif %}
+{% endwith %}
 {% endblock %}

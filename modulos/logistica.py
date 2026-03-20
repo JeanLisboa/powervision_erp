@@ -2,7 +2,7 @@ import datetime
 import logging
 import mysql.connector
 import flash
-from flask import render_template, request, session, redirect
+from flask import render_template, request, session, redirect, flash
 import geral
 import modulos.admin
 from forms import Mod_Logistica
@@ -837,47 +837,56 @@ def entrada_ordem_compra_manual():
 
         try:
             lista_temp = []
+
             if "botao_incluir_lote" in request.form:
-                incluir_lote = session.get('incluir_lote', [])
-                print('botao_incluir_lote acionado')
-                # todo: receber resultado_pesquisa já renderizdo, e acrescentar nova lista
-                resultado_pesquisa = session.get('resultado_pesquisa')
-                # incluir_lote = session('botao_incluir_lote')
-                lote = request.form.get('lote')
-                validade = request.form.get('data_validade')
-                quantidade = request.form.get('quantidade')
-                endereco = request.form.get('endereco')
-                lista_temp.append(lote)
-                lista_temp.append(validade)
-                lista_temp.append(quantidade)
-                lista_temp.append(endereco)
-                incluir_lote.append(lista_temp[:])
-                lista_temp.clear()
+                try:
+                    print('botao_incluir_lote acionado')
+                    resultado_pesquisa = session.get('resultado_pesquisa')
+                    incluir_lote = session.get('incluir_lote', [])
 
+                    # Conversão segura para int
+                    quantidade_original = int(request.form.get('quantidade_original', 0))
+                    quantidade_nova = int(request.form.get('quantidade', 0))
+                    validade = request.form.get('data_validade')
+                    endereco = request.form.get('endereco')
+                    lote = request.form.get('lote')
 
-                print(f'lote: {lote}')
-                print(f'validade: {validade}')
-                print(f'quantidade: {quantidade}')
-                print(f'endereco: {endereco}')
-                print(f'incluir_lote: {type(incluir_lote)}-{incluir_lote}')
-                for i in incluir_lote:
-                    print(i)
-                session['incluir_lote'] = incluir_lote
-                session['resultado_pesquisa'] = resultado_pesquisa
-                quantidade = lote = 0
-                # print('teste>>>')
-                # print(f'incluir_lote: {incluir_lote}')
+                    # Calcular quanto já foi alocado
+                    total_ja_alocado = sum(int(item[2]) for item in incluir_lote)
 
-                return render_template(
-                    "logistica/entrada_ordem_compra_manual.html",
-                    form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
-                    quantidade=quantidade,
-                    lote=lote,
-                    resultado_pesquisa=resultado_pesquisa,
-                    data=Formatadores.formatar_data(Formatadores.os_data()),
-                    incluir_lote=incluir_lote)
+                    # VALIDAÇÃO COM POP-UP
+                    if (total_ja_alocado + quantidade_nova) > quantidade_original:
+                        excesso = (total_ja_alocado + quantidade_nova) - quantidade_original
+                        # O Flash envia a mensagem para o próximo carregamento de página
+                        flash(f"Erro: Quantidade excedida em {excesso} unidades! O limite é {quantidade_original}.",
+                              "danger")
+                        quantidade_pendente = quantidade_original - total_ja_alocado
+                    else:
+                        # Se estiver dentro do limite, processa normalmente
+                        novo_item = [lote, validade, quantidade_nova, endereco]
+                        incluir_lote.append(novo_item)
+                        session['incluir_lote'] = incluir_lote
+                        total_ja_alocado += quantidade_nova
+                        quantidade_pendente = quantidade_original - total_ja_alocado
+                        flash("Lote incluído com sucesso!", "success")  # Opcional: alerta de sucesso
+
+                    session['resultado_pesquisa'] = resultado_pesquisa
+
+                    return render_template(
+                        "logistica/entrada_ordem_compra_manual.html",
+                        form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+                        quantidade=quantidade_pendente,
+                        lote=0,
+                        resultado_pesquisa=resultado_pesquisa,
+                        data=Formatadores.formatar_data(Formatadores.os_data()),
+                        incluir_lote=incluir_lote
+                    )
+
+                except Exception as e:
+                    flash(f"Erro no processamento: {str(e)}", "danger")
+                    print(f"Erro: {e}")
         except Exception as e:
-            print(e)
+            print(f"Erro geral")
 
         try:
             if "botao_remover_item" in request.form:
