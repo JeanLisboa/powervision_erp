@@ -760,211 +760,364 @@ def info_ordem_compra_atualizada(resultado_pesquisa):
 #  A entrada no estoque deve ter um padrão, por validade, ou por lote ?
 #  :
 
+# def entrada_ordem_compra_manual():
+#     logging.info('Função entrada_ordem_compra_manual')
+#     form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
+#
+#     def atualizar_mov_estoque(values):
+#         print('subfunção atualizar_mov_estoque')  # PROCESSAMENTO DA FUNÇÃO entrada_ordem_compra_manual
+#         print(f'values: {values}')
+#         pos_tupla = 0
+#         mydb.connect()
+#         mycursor = mydb.cursor()
+#         values = list(values)
+#         data_entrada = str(datetime.date.today())
+#         values.insert(0, data_entrada)
+#         del values[9]
+#         del values[9]
+#         del values[9]
+#         del values[11]
+#         values[9] = int(values[9])
+#         values.insert(-1, '15122030')
+#         values.insert(-1, '999999L')
+#         values.insert(-1, 'ENTRADA')
+#         logging.info(f'values: {values}')
+#         try:
+#             query = """
+#                             INSERT INTO ESTOQUE (
+#                                 DATA_ENTRADA,
+#                                 DATA_ORDEM,
+#                                 ORDEM_COMPRA,
+#                                 ITEM,
+#                                 DESCRICAO,
+#                                 UNIDADE,
+#                                 CATEGORIA,
+#                                 CODIGO,
+#                                 EAN,
+#                                 QTDE,
+#                                 VALOR,
+#                                 DATA_VALIDADE,
+#                                 LOTE,
+#                                 TIPO_MOV,
+#                                 USER
+#                             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+#                         """
+#
+#             mycursor.execute(query, values)  # DESCOMENTAR PARA PRODUCAO
+#             mydb.commit()  # DESCOMENTAR PARA PRODUCAO
+#             print(f'query: {query}\n values: {values}')
+#             print("Registro inserido com sucesso.")
+#         except Exception as e:
+#             print(e)
+#     entrada_qtde = 0
+#     resultado_pesquisa = []
+#
+#     if request.method == "POST":
+#         try:
+#             if "botao_pesquisar_ordem_compra" in request.form:
+#                 session['incluir_lote'] = []  # limpa a session
+#                 print('botao_pesquisar_ordem_compra acionado')
+#                 ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
+#
+#                 session['ordem_compra'] = ordem_compra
+#                 logging.info(f'ordem_compra: {ordem_compra}')
+#                 resultado_pesquisa = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
+#                 resultado_pesquisa = Logistica.valida_ordem_compra_pesquisada(ordem_compra, resultado_pesquisa)
+#                 print(f'resultado_pesquisa: {resultado_pesquisa}')
+#                 # pesquisar se o item já foi recebido em estoque
+#                 session['resultado_pesquisa'] = resultado_pesquisa
+#                 logging.info(f'resultado_pesquisa: {resultado_pesquisa}')
+#                 return render_template(
+#                     "logistica/entrada_ordem_compra_manual.html",
+#                     form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+#                     resultado_pesquisa=resultado_pesquisa,
+#                     data=Formatadores.formatar_data(Formatadores.os_data()))
+#         except Exception as e:
+#             print(erro, e)
+#
+#         try:
+#             lista_temp = []
+#
+#             if "botao_incluir_lote" in request.form:
+#                 try:
+#                     print('botao_incluir_lote acionado')
+#                     resultado_pesquisa = session.get('resultado_pesquisa')
+#                     incluir_lote = session.get('incluir_lote', [])
+#
+#                     # Conversão segura para int
+#                     quantidade_original = int(request.form.get('quantidade_original', 0))
+#                     quantidade_nova = int(request.form.get('quantidade', 0))
+#                     validade = request.form.get('data_validade')
+#                     endereco = request.form.get('endereco')
+#                     lote = request.form.get('lote')
+#
+#                     # Calcular quanto já foi alocado para saber o saldo real disponível
+#                     total_ja_alocado = sum(int(item[2]) for item in incluir_lote)
+#                     saldo_disponivel = quantidade_original - total_ja_alocado
+#
+#                     # 1. VALIDAÇÃO: Se o saldo já for 0, nem tenta processar
+#                     if saldo_disponivel <= 0:
+#                         flash("Erro: Este item já não possui saldo pendente para entrada.", "danger")
+#                         quantidade_pendente = 0
+#
+#                     # 2. VALIDAÇÃO: Se o usuário digitou 0 ou negativo
+#                     elif quantidade_nova <= 0:
+#                         flash("Erro: A quantidade de entrada deve ser maior que zero.", "warning")
+#                         quantidade_pendente = saldo_disponivel
+#
+#                     # 3. VALIDAÇÃO: Se a quantidade nova excede o que falta
+#                     elif (total_ja_alocado + quantidade_nova) > quantidade_original:
+#                         excesso = (total_ja_alocado + quantidade_nova) - quantidade_original
+#                         flash(f"Erro: Quantidade excedida em {excesso} unidades! O saldo atual é {saldo_disponivel}.",
+#                               "danger")
+#                         quantidade_pendente = saldo_disponivel
+#
+#                     # 4. SUCESSO: Processa a inclusão
+#                     else:
+#                         novo_item = [lote, validade, quantidade_nova, endereco]
+#                         incluir_lote.append(novo_item)
+#                         session['incluir_lote'] = incluir_lote
+#
+#                         # Recalcula o pendente após a inserção para atualizar a tela
+#                         total_ja_alocado += quantidade_nova
+#                         quantidade_pendente = quantidade_original - total_ja_alocado
+#                         flash("Lote incluído com sucesso!", "success")
+#
+#                     session['resultado_pesquisa'] = resultado_pesquisa
+#
+#                     return render_template(
+#                         "logistica/entrada_ordem_compra_manual.html",
+#                         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+#                         quantidade=quantidade_pendente,
+#                         lote=0,
+#                         resultado_pesquisa=resultado_pesquisa,
+#                         data=Formatadores.formatar_data(Formatadores.os_data()),
+#                         incluir_lote=incluir_lote
+#                     )
+#
+#                 except Exception as e:
+#                     flash(f"Erro no processamento: {str(e)}", "danger")
+#                     print(f"Erro: {e}")
+#         except Exception as e:
+#             print(f"Erro geral")
+#
+#         try:
+#             if "botao_remover_item" in request.form:
+#
+#                 print('botao_remover_item acionado')
+#
+#                 incluir_lote = session.get('incluir_lote', [])
+#                 resultado_pesquisa = session.get('resultado_pesquisa')
+#
+#                 indice = int(request.form.get('botao_remover_item'))
+#
+#                 print(f'indice para excluir: {indice}')
+#
+#                 if 0 <= indice < len(incluir_lote):
+#                     del incluir_lote[indice]
+#
+#                 session['incluir_lote'] = incluir_lote
+#
+#                 return render_template(
+#                     "logistica/entrada_ordem_compra_manual.html",
+#                     form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+#                     resultado_pesquisa=resultado_pesquisa,
+#                     incluir_lote=incluir_lote,
+#                     data=Formatadores.formatar_data(Formatadores.os_data())
+#                 )
+#
+#         except Exception as e:
+#             print('erro', e)
+#
+#
+#
+#         try:
+#             if "botao_salvar_entrada" in request.form:
+#                 print('botao_salvar_entrada acionado')
+#                 ordem_compra = session.get('ordem_compra')
+#                 resultado_pesquisa = session.get('resultado_pesquisa')
+#                 prep_atualizar_estoque = info_ordem_compra_atualizada(resultado_pesquisa)
+#                 contador_input_bd = 0
+#                 for i in prep_atualizar_estoque:
+#                     print(f'prep_atualizar_estoque: {prep_atualizar_estoque}')
+#                     print(f'linha {contador_input_bd} |i = {i}')
+#                     try:
+#                         print('descomentar linha para atualizar bd')
+#                         # atualizar_mov_estoque(i)
+#
+#                         sugerir_endereco_entrada(i)
+#                         rota_sugerir_endereco(i[7])
+#
+#                     except Exception as e:
+#                         print(f'erro na função atualizar_mov_estoque {i} ')
+#                         print(e)
+#                     contador_input_bd += 1
+#
+#                     # FIXME: ALTERAR HTML:
+#                     #  1- INCLUIR UMA DIVISAO À DIREITA NA TELA
+#                     #  2 - QUANDO O USUARIO CLICAR EM INCLUIR LOTE:
+#                     #  2.1 - AS INFORMAÇÕES DEVERÃO APARECER NA TABELA À DIREITA.
+#                     #  2.2 - O VALOR TOTAL PENDENTE DEVE SOFRE O DECREMENTO
+#                     #  2.3 - DEVE HAVER UM BOTAO PARA EXCLUIR O ITEM DA TABELA À LATERAL DIREITA.
+#
+#
+#             return render_template(
+#                 "logistica/entrada_ordem_compra_manual.html",
+#                 form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+#                 data=Formatadores.formatar_data(Formatadores.os_data())
+#             )
+#
+#
+#         except Exception as e:
+#             logging.info(e)
+#     session.get('incluir_lote',[])
+#     # print(f'incluir_lote: {incluir_lote}')
+#     return render_template(
+#         "logistica/entrada_ordem_compra_manual.html",
+#         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
+#         data=Formatadores.formatar_data(Formatadores.os_data()))
+
+
 def entrada_ordem_compra_manual():
     logging.info('Função entrada_ordem_compra_manual')
     form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
 
-    def atualizar_mov_estoque(values):
-        print('subfunção atualizar_mov_estoque')  # PROCESSAMENTO DA FUNÇÃO entrada_ordem_compra_manual
-        print(f'values: {values}')
-        pos_tupla = 0
-        mydb.connect()
-        mycursor = mydb.cursor()
-        values = list(values)
-        data_entrada = str(datetime.date.today())
-        values.insert(0, data_entrada)
-        del values[9]
-        del values[9]
-        del values[9]
-        del values[11]
-        values[9] = int(values[9])
-        values.insert(-1, '15122030')
-        values.insert(-1, '999999L')
-        values.insert(-1, 'ENTRADA')
-        logging.info(f'values: {values}')
-        try:
-            query = """
-                            INSERT INTO ESTOQUE (
-                                DATA_ENTRADA,
-                                DATA_ORDEM,
-                                ORDEM_COMPRA,
-                                ITEM,
-                                DESCRICAO,
-                                UNIDADE,
-                                CATEGORIA,
-                                CODIGO,
-                                EAN,
-                                QTDE,
-                                VALOR,
-                                DATA_VALIDADE,
-                                LOTE,
-                                TIPO_MOV,
-                                USER
-                            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        """
+    session.pop('_flashes', None)
 
-            mycursor.execute(query, values)  # DESCOMENTAR PARA PRODUCAO
-            mydb.commit()  # DESCOMENTAR PARA PRODUCAO
-            print(f'query: {query}\n values: {values}')
-            print("Registro inserido com sucesso.")
-        except Exception as e:
-            print(e)
-    entrada_qtde = 0
+    # Recupera dados da sessão
+    resultado_pesquisa = session.get('resultado_pesquisa', [])
+    incluir_lote = session.get('incluir_lote', [])
+    # resultado_pesquisa = session.get('resultado_pesquisa', [])
     resultado_pesquisa = []
+    ordem_compra = session.get('ordem_compra', '')
 
     if request.method == "POST":
-        try:
-            if "botao_pesquisar_ordem_compra" in request.form:
-                session['incluir_lote'] = []  # limpa a session
-                print('botao_pesquisar_ordem_compra acionado')
-                ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
 
-                session['ordem_compra'] = ordem_compra
-                logging.info(f'ordem_compra: {ordem_compra}')
-                resultado_pesquisa = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
-                resultado_pesquisa = Logistica.valida_ordem_compra_pesquisada(ordem_compra, resultado_pesquisa)
-                print(f'resultado_pesquisa: {resultado_pesquisa}')
-                # pesquisar se o item já foi recebido em estoque
-                session['resultado_pesquisa'] = resultado_pesquisa
-                logging.info(f'resultado_pesquisa: {resultado_pesquisa}')
-                return render_template(
-                    "logistica/entrada_ordem_compra_manual.html",
-                    form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
-                    resultado_pesquisa=resultado_pesquisa,
-                    data=Formatadores.formatar_data(Formatadores.os_data()))
-        except Exception as e:
-            print(erro, e)
+        # --- BUSCA DE ORDEM ---
+        if "botao_pesquisar_ordem_compra" in request.form:
+            print(f'request.form:{request.form.keys()}')
+            print('botao_pesquisar_ordem_compra acionado')
+            session['incluir_lote'] = []
 
-        try:
-            lista_temp = []
+            ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
+            session['ordem_compra'] = ordem_compra
+            res = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
+            resultado_pesquisa = Logistica.valida_ordem_compra_pesquisada(ordem_compra, res)
+            session['resultado_pesquisa'] = resultado_pesquisa
 
-            if "botao_incluir_lote" in request.form:
-                try:
-                    print('botao_incluir_lote acionado')
-                    resultado_pesquisa = session.get('resultado_pesquisa')
-                    incluir_lote = session.get('incluir_lote', [])
 
-                    # Conversão segura para int
-                    quantidade_original = int(request.form.get('quantidade_original', 0))
-                    quantidade_nova = int(request.form.get('quantidade', 0))
-                    validade = request.form.get('data_validade')
-                    endereco = request.form.get('endereco')
-                    lote = request.form.get('lote')
+        if "botao_incluir_lote" in request.form.keys():
+            print(f'request.form.keys: {request.form.keys}')
+            print('botao_incluir_lote acionado')
+            idx_str = request.form.get('botao_incluir_lote')
+            # Pegamos o índice da linha clicada
+            try:
+                # 1. Pegamos o índice da linha que o usuário clicou
+                idx = request.form.get('botao_incluir_lote')
+                print(f'Botão incluir da linha {idx} acionado')
 
-                    # Calcular quanto já foi alocado
-                    total_ja_alocado = sum(int(item[2]) for item in incluir_lote)
-
-                    # VALIDAÇÃO COM POP-UP
-                    if (total_ja_alocado + quantidade_nova) > quantidade_original:
-                        excesso = (total_ja_alocado + quantidade_nova) - quantidade_original
-                        # O Flash envia a mensagem para o próximo carregamento de página
-                        flash(f"Erro: Quantidade excedida em {excesso} unidades! O limite é {quantidade_original}.",
-                              "danger")
-                        quantidade_pendente = quantidade_original - total_ja_alocado
-                    else:
-                        # Se estiver dentro do limite, processa normalmente
-                        novo_item = [lote, validade, quantidade_nova, endereco]
-                        incluir_lote.append(novo_item)
-                        session['incluir_lote'] = incluir_lote
-                        total_ja_alocado += quantidade_nova
-                        quantidade_pendente = quantidade_original - total_ja_alocado
-                        flash("Lote incluído com sucesso!", "success")  # Opcional: alerta de sucesso
-
-                    session['resultado_pesquisa'] = resultado_pesquisa
-
-                    return render_template(
-                        "logistica/entrada_ordem_compra_manual.html",
-                        form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
-                        quantidade=quantidade_pendente,
-                        lote=0,
-                        resultado_pesquisa=resultado_pesquisa,
-                        data=Formatadores.formatar_data(Formatadores.os_data()),
-                        incluir_lote=incluir_lote
-                    )
-
-                except Exception as e:
-                    flash(f"Erro no processamento: {str(e)}", "danger")
-                    print(f"Erro: {e}")
-        except Exception as e:
-            print(f"Erro geral")
-
-        try:
-            if "botao_remover_item" in request.form:
-
-                print('botao_remover_item acionado')
-
+                resultado_pesquisa = session.get('resultado_pesquisa', [])
                 incluir_lote = session.get('incluir_lote', [])
-                resultado_pesquisa = session.get('resultado_pesquisa')
 
-                indice = int(request.form.get('botao_remover_item'))
+                # Converte o índice para inteiro para acessar a lista original
+                idx_int = int(idx)
+                item_data = resultado_pesquisa[idx_int]
+                id_item = item_data[2]  # Código/ID do item
 
-                print(f'indice para excluir: {indice}')
+                # 2. Captura os inputs específicos dessa linha usando o sufixo _{idx}
+                # No HTML os nomes estão como quantidade_0, lote_0, etc.
+                quantidade_nova = int(request.form.get(f'quantidade_{idx}', 0))
+                lote = request.form.get(f'lote_{idx}', '')
+                validade = request.form.get(f'data_validade_{idx}', '')
+                endereco = request.form.get(f'endereco_{idx}', 'a-01-01-01')
 
-                if 0 <= indice < len(incluir_lote):
-                    del incluir_lote[indice]
+                # 3. Validação de Saldo para este item específico
+                quantidade_original = int(item_data[11])
+                ja_alocado = sum(int(it['qtd']) for it in incluir_lote if it.get('id_item') == id_item)
+                saldo_disponivel = quantidade_original - ja_alocado
 
+                if quantidade_nova <= 0:
+                    flash(f"Erro: A quantidade deve ser maior que zero.", "warning")
+                elif quantidade_nova > saldo_disponivel:
+                    flash(f"Erro: Quantidade excedida! Saldo atual: {saldo_disponivel}", "danger")
+                else:
+                    # 4. SUCESSO: Adiciona como dicionário (conforme novo layout)
+                    novo_item = {
+                        'lote': lote,
+                        'validade': validade,
+                        'qtd': quantidade_nova,
+                        'endereco': endereco,
+                        'id_item': id_item,
+                        'descricao': item_data[3]
+                    }
+                    incluir_lote.append(novo_item)
+                    session['incluir_lote'] = incluir_lote
+                    flash(f"Lote do item {id_item} incluído com sucesso!", "success")
+
+                # Recalcula as variáveis para o template não dar erro de undefined
+                # (Chame a lógica de cálculo de saldos/status que vimos antes)
+                # return redirect(url_for('entrada_ordem_compra_manual'))
+
+            except Exception as e:
+                print(f"Erro ao incluir lote: {e}")
+                flash("Erro interno ao processar inclusão.", "danger")
+        # --- REMOVER ITEM ---
+        if "botao_remover_item" in request.form:
+            indice = int(request.form.get('botao_remover_item'))
+            if 0 <= indice < len(incluir_lote):
+                del incluir_lote[indice]
                 session['incluir_lote'] = incluir_lote
 
-                return render_template(
-                    "logistica/entrada_ordem_compra_manual.html",
-                    form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
-                    resultado_pesquisa=resultado_pesquisa,
-                    incluir_lote=incluir_lote,
-                    data=Formatadores.formatar_data(Formatadores.os_data())
-                )
+        # --- SALVAR NO BANCO ---
+        if "botao_salvar_entrada" in request.form:
+            # Aqui você percorre a lista da DIREITA (incluir_lote)
+            print('botao_salvar_entrada acionado')
+            for item in incluir_lote:
+                # Lógica de salvar: atualizar_mov_estoque(item)
+                pass
+            session['incluir_lote'] = []
+            flash("Todas as entradas foram processadas!", "success")
 
-        except Exception as e:
-            print('erro', e)
+    # --- CÁLCULOS PARA O LAYOUT (STATUS BARS) ---
 
-
-
-        try:
-            if "botao_salvar_entrada" in request.form:
-                print('botao_salvar_entrada acionado')
-                ordem_compra = session.get('ordem_compra')
-                resultado_pesquisa = session.get('resultado_pesquisa')
-                prep_atualizar_estoque = info_ordem_compra_atualizada(resultado_pesquisa)
-                contador_input_bd = 0
-                for i in prep_atualizar_estoque:
-                    print(f'prep_atualizar_estoque: {prep_atualizar_estoque}')
-                    print(f'linha {contador_input_bd} |i = {i}')
-                    try:
-                        print('descomentar linha para atualizar bd')
-                        # atualizar_mov_estoque(i)
-
-                        sugerir_endereco_entrada(i)
-                        rota_sugerir_endereco(i[7])
-
-                    except Exception as e:
-                        print(f'erro na função atualizar_mov_estoque {i} ')
-                        print(e)
-                    contador_input_bd += 1
-
-                    # FIXME: ALTERAR HTML:
-                    #  1- INCLUIR UMA DIVISAO À DIREITA NA TELA
-                    #  2 - QUANDO O USUARIO CLICAR EM INCLUIR LOTE:
-                    #  2.1 - AS INFORMAÇÕES DEVERÃO APARECER NA TABELA À DIREITA.
-                    #  2.2 - O VALOR TOTAL PENDENTE DEVE SOFRE O DECREMENTO
-                    #  2.3 - DEVE HAVER UM BOTAO PARA EXCLUIR O ITEM DA TABELA À LATERAL DIREITA.
+    saldos_pendentes = {}
+    total_qtd_ordem = 0
+    total_qtd_alocada = 0
+    itens_concluidos = 0
 
 
-            return render_template(
-                "logistica/entrada_ordem_compra_manual.html",
-                form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
-                data=Formatadores.formatar_data(Formatadores.os_data())
-            )
+    for i in resultado_pesquisa:
+        id_it = i[2]
+        qtd_orig = int(i[11])
+        total_qtd_ordem += qtd_orig
+
+        # Busca segura: verifica se o item é dicionário e tem a chave
+        alocado_este_item = sum(int(it['qtd']) for it in incluir_lote
+                                if isinstance(it, dict) and it.get('id_item') == id_it)
+
+        total_qtd_alocada += alocado_este_item
+        saldo = qtd_orig - alocado_este_item
+        saldos_pendentes[id_it] = saldo
+        if saldo <= 0: itens_concluidos += 1
 
 
-        except Exception as e:
-            logging.info(e)
-    session.get('incluir_lote',[])
-    # print(f'incluir_lote: {incluir_lote}')
+    # Porcentagens para as barras de progresso
+    prog_itens = (itens_concluidos / len(resultado_pesquisa) * 100) if resultado_pesquisa else 0
+    prog_qtd = (total_qtd_alocada / total_qtd_ordem * 100) if total_qtd_ordem > 0 else 0
+
     return render_template(
         "logistica/entrada_ordem_compra_manual.html",
         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
-        data=Formatadores.formatar_data(Formatadores.os_data()))
-
-
+        resultado_pesquisa=resultado_pesquisa,
+        incluir_lote=incluir_lote,
+        saldos=saldos_pendentes,  # Enviamos os saldos calculados
+        total_itens_processados=f"{itens_concluidos}/{len(resultado_pesquisa)}",
+        progresso_itens_perc=prog_itens,
+        total_qtd_processada=f"{total_qtd_alocada}/{total_qtd_ordem}",
+        progresso_qtd_perc=prog_qtd,
+        total_lotes_adicionados=len(incluir_lote),
+        data=Formatadores.formatar_data(Formatadores.os_data())
+    )
 def configuracao_layout_armazem():
     print(CorFonte.fonte_amarela() + 'função configuracao_layout_armazem' + CorFonte.reset_cor())
     form_configuracao_layout_armazem = Mod_Logistica.ConfiguracaoLayoutArmazem()
