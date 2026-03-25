@@ -101,9 +101,14 @@
                                                                {% if pendente <= 0 %} disabled {% endif %}>
                                                     </div>
                                                     <div style="flex: 3;">
-                                                        <label class="small text-muted">Endereço Destino</label>
-                                                        <input type="text" name="endereco_{{ loop.index0 }}" class="form-control form-control-sm"
-                                                               value="a-01-01-01" {% if pendente <= 0 %} disabled {% endif %}>
+                                                        {{ form_entrada_ordem_compra_manual.endereco(
+                                                            class="form-control form-control-sm endereco-select",
+                                                            id="endereco_" ~ loop.index0
+
+                                                        ) }}
+
+
+
                                                     </div>
 
                                                     {% set disabled_attr = 'disabled' if pendente <= 0 else '' %}
@@ -147,6 +152,7 @@
                                     <tr>
                                         <th>Item/Lote</th>
                                         <th class="text-center">Qtd</th>
+                                        <th class="text-center">Endereço</th>
                                         <th class="text-end">Ação</th>
                                     </tr>
                                 </thead>
@@ -159,6 +165,7 @@
                                                     <div class="text-muted">Lote: {{ item.lote }}</div>
                                                 </td>
                                                 <td class="text-center fw-bold">{{ item.qtd }}</td>
+                                                <td class="text-center fw-bold">{{ item.endereco }}</td>
                                                 <td class="text-end">
                                                     <button type="submit" name="botao_remover_item" value="{{ loop.index0 }}" class="btn btn-link text-danger p-0">
                                                         <i class="bi bi-x-circle-fill"></i>
