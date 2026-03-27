@@ -754,12 +754,6 @@ def info_ordem_compra_atualizada(resultado_pesquisa):
 
     return resultado_pesquisa_atualizado
 
-
-# fixme: atualizar a tela de entrada de ordem de compra para receber lotes e validade
-#  Qual é a melhor forma de receber os lotes e validades ?
-#  A entrada no estoque deve ter um padrão, por validade, ou por lote ?
-#  :
-
 def entrada_ordem_compra_manual():
     logging.info('Função entrada_ordem_compra_manual')
     form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
@@ -787,33 +781,26 @@ def entrada_ordem_compra_manual():
             resultado_pesquisa = Logistica.valida_ordem_compra_pesquisada(ordem_compra, res)
             session['resultado_pesquisa'] = resultado_pesquisa
 
-
         if "botao_incluir_lote" in request.form.keys():
-            print(f'request.form.keys: {request.form.keys}')
-            print('botao_incluir_lote acionado')
-            idx_str = request.form.get('botao_incluir_lote')
-            # Pegamos o índice da linha clicada
-            try:
-                # 1. Pegamos o índice da linha que o usuário clicou
-                idx = request.form.get('botao_incluir_lote')
-                print(f'Botão incluir da linha {idx} acionado')
+            idx = request.form.get('botao_incluir_lote')
 
+            try:
+                # Carrega dados da sessão
                 resultado_pesquisa = session.get('resultado_pesquisa', [])
                 incluir_lote = session.get('incluir_lote', [])
+                posicoes_ocupadas = [it['endereco'] for it in incluir_lote]  # rastrear endereços já digitados nesta sessão
+                print(f'posicoes ocupadas: {posicoes_ocupadas}')
 
-                # Converte o índice para inteiro para acessar a lista original
                 idx_int = int(idx)
                 item_data = resultado_pesquisa[idx_int]
-                id_item = item_data[2]  # Código/ID do item
+                id_item = item_data[2]
 
-                # 2. Captura os inputs específicos dessa linha usando o sufixo _{idx}
-                # No HTML os nomes estão como quantidade_0, lote_0, etc.
                 quantidade_nova = int(request.form.get(f'quantidade_{idx}', 0))
                 lote = request.form.get(f'lote_{idx}', '')
                 validade = request.form.get(f'data_validade_{idx}', '')
-                endereco = request.form.get(f'endereco_{idx}', 'a-01-01-01')
+                endereco = form_entrada_ordem_compra_manual.endereco.data  # Pegando do campo do form
 
-                # 3. Validação de Saldo para este item específico
+                # --- VALIDAÇÕES ---
                 quantidade_original = int(item_data[11])
                 ja_alocado = sum(int(it['qtd']) for it in incluir_lote if it.get('id_item') == id_item)
                 saldo_disponivel = quantidade_original - ja_alocado
@@ -822,8 +809,11 @@ def entrada_ordem_compra_manual():
                     flash(f"Erro: A quantidade deve ser maior que zero.", "warning")
                 elif quantidade_nova > saldo_disponivel:
                     flash(f"Erro: Quantidade excedida! Saldo atual: {saldo_disponivel}", "danger")
+                elif endereco in posicoes_ocupadas:
+                    # VALIDANDO SE O ENDEREÇO JÁ ESTÁ NA LISTA DA DIREITA
+                    flash(f"Erro: O endereço {endereco} já foi selecionado para outro item nesta operação.", "danger")
                 else:
-                    # 4. SUCESSO: Adiciona como dicionário (conforme novo layout)
+                    # SUCESSO
                     novo_item = {
                         'lote': lote,
                         'validade': validade,
@@ -834,11 +824,7 @@ def entrada_ordem_compra_manual():
                     }
                     incluir_lote.append(novo_item)
                     session['incluir_lote'] = incluir_lote
-                    flash(f"Lote do item {id_item} incluído com sucesso!", "success")
-
-                # Recalcula as variáveis para o template não dar erro de undefined
-                # (Chame a lógica de cálculo de saldos/status que vimos antes)
-                # return redirect(url_for('entrada_ordem_compra_manual'))
+                    flash(f"Lote incluído no endereço {endereco}!", "success")
 
             except Exception as e:
                 print(f"Erro ao incluir lote: {e}")
@@ -846,12 +832,37 @@ def entrada_ordem_compra_manual():
         # --- REMOVER ITEM ---
         if "botao_remover_item" in request.form:
             indice = int(request.form.get('botao_remover_item'))
+            incluir_lote = session.get('incluir_lote', [])
+
             if 0 <= indice < len(incluir_lote):
-                del incluir_lote[indice]
+                item_removido = incluir_lote.pop(indice)
                 session['incluir_lote'] = incluir_lote
+                flash(f"Item do lote {item_removido['lote']} removido.", "info")
 
         # --- SALVAR NO BANCO ---
         if "botao_salvar_entrada" in request.form:
+            """
+            ORDEM DE SALVAMENTO:
+            1 - atualizar a tabela sql 'estoque_movimentacao' > id, id_endereco, codigo_produto, lote, data_validade, quantidade, data_ultima_movimentacao
+            INSERT INTO estoque_movimentacoes (x,x,x,x,) values (1,1,1,1);
+            
+            2 - atualizar 'estoque_saldo'  exemplo: 
+            INSERT INTO estoque_saldo (id_produto, id_endereco, lote, quantidade)
+            VALUES (1, 10, 'ABC', 100)
+            ON DUPLICATE KEY UPDATE
+            quantidade = quantidade + 100;            
+            
+            resumo:
+            BEGIN;
+            INSERT movimentacao;
+            UPDATE saldo;
+            COMMIT;
+            ROLLBACK SE DER ERRO
+            
+            OPÇÃO >>> TRIGGER NO BANCO
+            Script SQL com constraints (UNIQUE + FK + proteção contra saldo negativo)
+            """
+
             # Aqui você percorre a lista da DIREITA (incluir_lote)
             print('botao_salvar_entrada acionado')
             for item in incluir_lote:

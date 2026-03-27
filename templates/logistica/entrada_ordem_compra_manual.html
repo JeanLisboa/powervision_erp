@@ -21,24 +21,24 @@
 <div class="container-fluid mt-3">
     <h5 class="mb-4 text-secondary">Entrada por Ordem de Compra Manual</h5>
 
-    <form method="POST" class="row g-3 mb-4 align-items-end bg-light p-3 rounded border shadow-sm">
+    <form method="POST" class="row g-3 mb-4 align-items-end bg-light p-5 rounded border shadow-sm">
         {{ form_entrada_ordem_compra_manual.csrf_token }}
-        <div class="col-md-2">
+        <div class="col-md-1 mt-2">
             <label class="form-label fw-bold">Data Entrada</label>
             <input type="text" class="form-control" value="{{ data }}" readonly>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             {{ form_entrada_ordem_compra_manual.ordem_compra.label(class="form-label fw-bold") }}
             {{ form_entrada_ordem_compra_manual.ordem_compra(class="form-control", placeholder="Digite a OC...") }}
         </div>
-        <div class="col-md-auto">
-            <button type="submit" name="botao_pesquisar_ordem_compra" class="btn btn-primary px-4">
+        <div class="col-md-auto mb-2 mb-3">
+            <button type="submit" name="botao_pesquisar_ordem_compra" class="btn btn-primary px-2">
                 <i class="bi bi-search"></i> Pesquisar Ordem
             </button>
         </div>
         <div class="col-md-auto ms-auto">
             <button type="submit"
-                    name="botao_salvar_entrada" class="btn btn-success px-4 fw-bold">
+                    name="botao_salvar_entrada" class="btn btn-success px-3 fw-bold">
                 <i class="bi bi-check-circle"></i> Salvar Entrada
             </button>
         </div>
@@ -116,7 +116,7 @@
                                                     <button type="submit"
                                                             name="botao_incluir_lote"
                                                             value="{{ loop.index0 }}"
-                                                            class="btn btn-sm btn-info fw-bold"
+                                                            class="btn btn-sm btn-info fw-bold mb-3"
                                                                {{ disabled_attr }}
 
                                                     >
