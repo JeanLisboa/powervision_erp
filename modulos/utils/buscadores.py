@@ -1512,7 +1512,7 @@ class Logistica:
 
                 print(f'len de resultado = {len(resultado)} |resultado > {resultado}')
                 if len(resultado) == 0:
-                    print('dentro do if')
+
                     i = list(i)
                     i[13] = 'ABERTO'
                     resultado_pesquisa_tmp.append(i[:])

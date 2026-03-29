@@ -23,7 +23,8 @@ from wtforms.validators import (
     Disabled,
     Length,
     ReadOnly,
-    NumberRange)
+    NumberRange,
+    Optional)
 
 import modulos
 
@@ -108,28 +109,61 @@ class ModCompras:
 
     class CadProduto(FlaskForm):
         buscar_fornecedor = geral.Buscadores.OrdemCompra.buscar_fornecedor()
-        cod_produto = StringField("Código: ", validators=[Disabled()])
-        data = StringField("Data", validators=[DataRequired(), ReadOnly()])
-        ean = StringField("EAN", validators=[Length(13)])
-        descricao = StringField("Descrição")
-        fornecedor = SelectField(
-            "Fornecedor", choices=["Selecionar um fornecedor"] +[]  + [f[0] for f in buscar_fornecedor], validators=[DataRequired()])
-        unidade = SelectField(
-            coerce=str, choices=["", "KG", "G", "CX", "UN", "L", "M", "CM"], validators=[ReadOnly()])
+        # --- 🆔 IDENTIFICAÇÃO E RASTREIO ---
+        cod_produto = StringField("🆔 Código Interno", validators=[DataRequired(), ReadOnly()])
+        ean = StringField("🏷️ EAN-13", validators=[Length(min=13, max=13)], render_kw={"placeholder": "789..."})
+        descricao = StringField("📝 Descrição do Produto", validators=[DataRequired()])
+        data = StringField("📅 Data de Cadastro", validators=[DataRequired(), ReadOnly()])
 
-        valor = FloatField("Valor", validators=[NumberRange(min=0.01)])
-        categoria = SelectField(
-            coerce=str,
-            choices=["", "VESTUARIO", "BEBIDAS", "ALIMENTOS", "HIGIENE", "OUTROS"])
-        botao_incluir_item = SubmitField("Incluir Item")
-        botao_baixar_planilha = SubmitField("Baixar Arquivo Excel")
-        botao_submit_cad_prod = SubmitField("Cadastrar")
-        botao_cancelar_cad_prod = SubmitField("cancelar")
-        botao_excluir_cad_prod = SubmitField("❌️")
+        # --- 🤝 FORNECEDOR E FINANCEIRO ---
+        # Nota: A lista de escolhas deve ser populada na View para evitar erros de contexto
+        fornecedor = SelectField("Fornecedor", choices=["Selecionar um fornecedor"] + [f[0] for f in buscar_fornecedor],
+                                 validators=[DataRequired()])
+        valor = FloatField("💰 Preço de Custo (R$)", validators=[NumberRange(min=0.01)])
+        valor_produto = HiddenField("Valor Oculto")  # Para controle de edição
 
-        # esta linha serve para armazenar o valor do produto para utilizar no botao editar linha do cadastro produto
-        botao_editar_cad_prod = SubmitField("✏️")
-        valor_produto = HiddenField("Valor do Produto")
+        # --- 📊 INTELIGÊNCIA LOGÍSTICA (Baseado no seu Fluxograma) ---
+        categoria = SelectField("🗂️ Categoria", choices=[
+            ("", "Selecione..."), ("VESTUARIO", "👕 VESTUÁRIO"), ("BEBIDAS", "🥤 BEBIDAS"),
+            ("ALIMENTOS", "🍎 ALIMENTOS"), ("HIGIENE", "🧼 HIGIENE"), ("OUTROS", "📦 OUTROS")
+        ])
+
+        unidade = SelectField("⚖️ Unidade Medida", choices=[
+            ("", ""), ("UN", "UN"), ("CX", "CX"), ("KG", "KG"), ("G", "G"), ("L", "L"), ("M", "M")
+        ])
+
+        curva_abc = SelectField("📈 Curva ABC", choices=[
+            ("A", "⭐ Curva A (Alto Giro)"),
+            ("B", "Curva B (Médio Giro)"),
+            ("C", "Curva C (Baixo Giro)")
+        ])
+
+        # --- 📐 DIMENSÕES E OCUPAÇÃO (Para o cálculo de Escore de Endereço) ---
+        comprimento_caixa = FloatField('📐Comprimento Caixa ', validators=[Optional(), DataRequired()])
+        altura_caixa = FloatField('📐Altura Caixa ', validators=[Optional(), DataRequired()])
+        largura_caixa = FloatField('📐Largura Caixa ', validators=[Optional(), DataRequired()])
+        peso_unidade = FloatField('⚖️ Peso Unitário (kg)', validators=[Optional(), DataRequired()])
+        peso_caixa = FloatField('📦 Peso Caixa (kg)', validators=[Optional(), DataRequired()])
+        qtde_lastro = IntegerField('🧱 Qtd. Caixas por Lastro', description="Caixas por camada",validators=[DataRequired()] )
+        qtde_pallet = IntegerField('🏁 Qtd. Caixas por Pallet', description="Total de itens no pallet", validators=[DataRequired()])
+
+        # --- ⚠️ REGRAS DE ARMAZENAGEM (O "Pulo do Gato" do seu WMS) ---
+        is_perigoso = BooleanField("🔥 Produto Perigoso / Inflamável")
+        temp_controlada = SelectField("❄️ Controle Temperatura", choices=[
+            ("AMB", "🌡️ Ambiente"),
+            ("REF", "🧊 Resfriado"),
+            ("CON", "❄️ Congelado")
+        ])
+
+        # --- ⚙️ BOTÕES DE AÇÃO ---
+        botao_submit_cad_prod = SubmitField("💾 Cadastrar")
+        botao_incluir_item = SubmitField('➕ Incluir Item')
+        botao_editar_cad_prod = SubmitField("✏️ Editar")
+        botao_baixar_planilha = SubmitField("📊 Baixar Excel")
+        botao_cancelar_cad_prod = SubmitField("🚫 Cancelar")
+        botao_excluir_cad_prod = SubmitField("❌ Excluir")
+
+
 
     class GerarOrdemCompra(FlaskForm):
 
