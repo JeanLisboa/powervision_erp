@@ -188,7 +188,7 @@ class ModCompras:
         botao_pesquisar_item = SubmitField("Pesquisar Código")
         botao_pesquisar_fornecedor = SubmitField("Pesquisar\n Fornecedor")
         botao_incluir_item = SubmitField("Incluir Item")
-        botao_selecionar_item = SubmitField("+")
+        botao_selecionar_item = SubmitField("")
         botao_submit_compra = SubmitField("Gerar Ordem de Compra")
 
     class AdicionarItemOrdemCompra(FlaskForm):

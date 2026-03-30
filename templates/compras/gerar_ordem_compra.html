@@ -9,8 +9,8 @@
 <body>
     <form action="" method="POST">
         {{form_gerar_ordem_compra.csrf_token}}
-        <div class="page">
 
+        <div class="page">
             <section class="box top-left">
                 <div class="col form-label btn btn-light">
                         {{form_gerar_ordem_compra.data.label}}
@@ -40,7 +40,7 @@
                 </div>
                 <div class="col form-label btn btn-light">
                     {{form_gerar_ordem_compra.ean.label}}
-                    {{form_gerar_ordem_compra.ean(class="form-control tam_campo_ean" ,  value=linha_selecionada[3])}}
+                    {{form_gerar_ordem_compra.ean(class="form-control tam_campo_ean",  value=linha_selecionada[3])}}
                 </div>
                 <div class="col form-label btn btn-light">
                     {{form_gerar_ordem_compra.descricao.label}}
@@ -52,7 +52,7 @@
                 </div>
                 <div class="col form-label btn btn-light">
                     {{form_gerar_ordem_compra.preco_unitario.label}}
-                    {{form_gerar_ordem_compra.preco_unitario(class="form-control tam_campo_codigo", value=linha_selecionada[7], id="preco_unitario")}}
+                    {{form_gerar_ordem_compra.preco_unitario(class="form-control tam_campo_codigo", value=linha_selecionada[8], id="preco_unitario")}}
                 </div>
                 <div class="btn">
                     {{form_gerar_ordem_compra.botao_incluir_item(class="btn btn-primary mt-3")}}
@@ -64,32 +64,42 @@
                 <script src="static/js/pesquisa_produto.js" defer></script>
             </section>
             <section class="box top-right">
-                <div style="max-height: 320px; overflow-y: auto; overflow-x: auto;">
+                <div style="max-height: 320px; overflow-y: auto; overflow-x: auto vertical-align: middle;">
                     <table class="table table-hover table-striped table-bordered" >
                         <thead style="position: sticky; top: 0; background: white; z-index: 2;">
                             <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-                <th style="width: 10%;"></th>
-                <th >Descrição</th>
-                <th>EAN</th>
-                <th style="width: 10%;">Un</th>
-                <th>Valor</th>
-            </tr>
+                                <th style="width: 10%;"></th>
+                                <th >Descrição</th>
+                                <th>EAN</th>
+                                <th style="width: 10%;">Un</th>
+                                <th>Valor</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {% if result_pesq_forn %}
                             {% for i in result_pesq_forn %}
                         <tr class="width: 50%  height:50% table table-hover table-bordered table-striped table-sm table-layout:fixed ">
-            <td>
-                <form method="POST">
-                    {{form_gerar_ordem_compra.hidden_tag()}}
-                    <input class="" type="hidden" name="incluir_item" value="{{i[3]}}">
-                    {{form_gerar_ordem_compra.botao_selecionar_item(class='btn btn-sm btn-outline-primary p-0 pe-1 ps-1 m-0')}}
-                </form>
-            </td>'
+            <td class="text-center" style="width: 50px;">
+    {% set is_selected = (i[3]|string == form_gerar_ordem_compra.ean.data|string) %}
+
+    <form method="POST" style="margin: 0;">
+        {{form_gerar_ordem_compra.hidden_tag()}}
+        <input type="hidden" name="incluir_item" value="{{i[3]}}">
+
+        <button type="submit" name="botao_selecionar_item"
+                class="btn btn-sm rounded-circle shadow-sm {{ 'btn-primary' if is_selected else 'btn-outline-secondary' }}"
+                style="width: 24px; height: 24px; padding: 0; display: flex; align-items: center; justify-content: center;"
+                title="Selecionar Produto">
+            {% if is_selected %}
+                <i class="fas fa-check" style="font-size: 10px;"></i>
+            {% endif %}
+        </button>
+    </form>
+</td>
             <td>{{i[4]}}</td>
             <td>{{i[3]}}</td>
             <td>{{i[5]}}</td>
-            <td>{{i[7]}}</td>
+            <td>{{i[8]}}</td>
         </tr>
         {% endfor %}
         {% else %}
@@ -101,7 +111,7 @@
     </table>
     </div>
 </section>
-            <section class="box bottom">
+<section class="box bottom">
       <h2>Parte inferior</h2>
         <div style="max-height: 320px; overflow-y: auto; overflow-x: auto;">
             <table class="table table-hover table-striped table-bordered" id="tabela-itens">
@@ -116,8 +126,9 @@
                         <th>Código</th>
                         <th>EAN</th>
                         <th>Quantidade</th>
-                        <th>Preço Unitário</th>
-                        <th>Total Item</th>
+                        <th>Preço Un</th>
+                        <th>Preço Total</th>
+                        <th style="width: 100px;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -142,6 +153,12 @@
                         <td>{{i[7]}}</td> <!--quantidade -->
                         <td>{{i[8]}}</td> <!--preco unitario -->
                         <td>{{total_item}}</td> <!--total item -->
+                        <td>
+                        <div class="btn-group">
+                            <button type="submit" name="editar_item" value="{{ loop.index0 }}" formnovalidate class="btn btn-outline-warning btn-sm border-0 p-0 px-1" title="Editar">✏️<i class="fas fa-edit"></i></button>
+                            <button type="submit" name="excluir_item" value="{{ loop.index0 }}" formnovalidate class="btn btn-outline-danger btn-sm border-0 p-0 px-1" title="Editar">❌<i class="fas fa-edit"></i></button>
+                        </div>
+                    </td>
 
                     </tr>
                     {% endfor %}

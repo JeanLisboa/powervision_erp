@@ -411,7 +411,7 @@ def gerar_ordem_compra():
             f"quantidade: {quantidade} |\n"
             f"preco_unitario: {preco_unitario} |\n"
             f"total_item: {total_item}")
-
+        dicionario_ordem_compra = []
         total_ordem_compra = 0
         lista_contador_item_compra.append(contador_item)
         item_ordem_compra.append(Formatadores.data_formato_db(data))
@@ -457,7 +457,6 @@ def gerar_ordem_compra():
     ean = form_gerar_ordem_compra.ean.data
     quantidade = form_gerar_ordem_compra.quantidade.data
     preco_unitario = form_gerar_ordem_compra.preco_unitario.data
-
     # preco_medio = form_gerar_ordem_compra.preco_medio.data
     ultimo_preco = form_gerar_ordem_compra.ultimo_preco.data
     alert = AlertaMsg.cad_fornecedor_realizado()
@@ -555,7 +554,7 @@ def gerar_ordem_compra():
 
             if "botao_incluir_item" in request.form:
                 print("botao_incluir_item ACIONADO")
-
+                print(f'result_pesquisa_forn: {result_pesq_forn} ')
                 fornecedor = session.get("fornecedor")
                 # fornecedor = form_gerar_ordem_compra.fornecedor
                 ean_ja_digitado = any(i[6] == ean for i in lista_ordem_compra)
@@ -580,9 +579,13 @@ def gerar_ordem_compra():
                     print(f"Item {contador_item} incluído")
                     total_ordem_compra = atualizar_lista_ordem_compra()
 
+
+                    print(f'total_ordem_compra: {total_ordem_compra}')
+
         except Exception as e:
             print("Erro no botao_incluir_item")
             print(e)
+
         try:
             if "botao_consulta" in request.form:
                 fornecedor = session.get("fornecedor")
@@ -680,10 +683,56 @@ def gerar_ordem_compra():
             print("erro no botao_limpar_ordem")
             print(e)
 
-        alert = session.pop("alert", None)
-        preco_medio = session.get("preco_medio")
-        if result_pesq_forn is None:
-            result_pesq_forn = 0
+        try:
+            if "excluir_item" in request.form:
+                print(f'Botao excluir_item acionado')
+                print(f'lista_ordem_compra: {lista_ordem_compra}')
+
+                # # 1 - recupera o dicionario_ordem_compra ( lista_ordem_compra
+                # total_ordem_compra = session.get("total_ordem_compra")
+
+                index = int(request.form.get("excluir_item"))
+                print(f'index: {index}')
+                # if 0 <= index < len(lista_ordem_compra):
+                item_removido = lista_ordem_compra.pop(index)
+                print(f"Item {item_removido} removido da fila.")
+                # # Recalcula o total após excluir
+                # session["total_ordem_compra"] = sum(float(item[10]) for item in lista_ordem_compra)
+
+        except Exception as e:
+            print('erro', e)
+
+        try:
+            # --- LÓGICA DE EDIÇÃO (CARREGAR CAMPOS) ---
+            if "editar_item" in request.form:
+                print(f'Botao editar_item acionado')
+                index = int(request.form.get("editar_item"))
+                print(f'index: {index}')
+
+                if 0 <= index < len(lista_ordem_compra):
+                    item = lista_ordem_compra.pop(index)  # Remove da lista para "re-incluir" após editar
+                    # Preenche a linha_selecionada para que o Jinja injete nos inputs
+                    # O formato deve bater com o que seu HTML espera (linha_selecionada[1], [2], etc)
+                    linha_selecionada = [
+                        None,  # 0
+                        item[1],  # 1 - Código
+                        session.get("fornecedor"),  # 2 - Fornecedor
+                        item[6],  # 3 - EAN
+                        item[2],  # 4 - Descrição
+                        item[3],  # 5 - Unidade
+                        item[5],  # 6 - Categoria
+                        None,  # 7
+                        item[8]  # 8 - Preço Unitário
+                    ]
+        #             # O campo quantidade pode ser injetado via variável separada ou direto no form
+        #
+        # alert = session.pop("alert", None)
+        # preco_medio = session.get("preco_medio")
+        # if result_pesq_forn is None:
+        #     result_pesq_forn = 0
+
+        except Exception as e:
+            print('erro', e)
 
     return render_template(
         "compras/gerar_ordem_compra.html",
