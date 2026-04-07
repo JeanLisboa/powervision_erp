@@ -4,59 +4,88 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 
 <style>
-    .card-header { background-color: #f8f9fa; border-bottom: 2px solid #e9ecef; }
-    .table-middle align-middle td { vertical-align: middle; }
+    /* Estilos para compactar a interface */
+    .card-header { background-color: #f8f9fa; border-bottom: 1px solid #e9ecef; padding: 0.4rem 0.8rem; }
     .status-card { border-left: 4px solid #0d6efd; }
-    .progress { background-color: #e9ecef; border-radius: 10px; }
-    .badge-pendente { font-size: 0.9rem; padding: 0.5em 0.7em; }
-    #flash-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1050;
-        min-width: 300px;
+    .progress { background-color: #e9ecef; border-radius: 10px; height: 6px !important; }
+
+    /* Reduzindo o padding das células para aproximar as linhas */
+    .table > :not(caption) > * > * { padding: 0.3rem 0.5rem; }
+
+    /* CONFIGURAÇÃO DA BARRA DE ROLAGEM LATERAL (Horizontal e Vertical) */
+    .table-responsive {
+        overflow-x: auto; /* Ativa a rolagem lateral */
+        overflow-y: auto;
+        scrollbar-width: thin; /* Firefox */
+        scrollbar-color: #ced4da #f8f9fa; /* Firefox */
     }
+
+    /* Estilização da Scrollbar para Chrome, Edge e Safari */
+    .table-responsive::-webkit-scrollbar {
+        height: 6px; /* Altura da barra horizontal */
+        width: 6px;  /* Largura da barra vertical */
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f8f9fa;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background-color: #ced4da;
+        border-radius: 10px;
+    }
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background-color: #adb5bd;
+    }
+}
+
+    /* Garante que os inputs não fiquem muito espremidos na rolagem */
+    .min-w-600 { min-width: 700px; }
+
+
+
 </style>
 
-<div class="container-fluid mt-3">
-    <h5 class="mb-4 text-secondary">Entrada por Ordem de Compra Manual</h5>
+<div class="container-fluid mt-n4"> <div class="d-flex justify-content-between align-items-center mb-1">
+        <small class="text-secondary fw-bold">Entrada por Ordem de Compra Manual</small>
+    </div>
 
-    <form method="POST" class="row g-3 mb-4 align-items-end bg-light p-5 rounded border shadow-sm">
+    <form method="POST" class="row g-2 mb-2 align-items-end bg-light p-2 rounded border shadow-sm">
         {{ form_entrada_ordem_compra_manual.csrf_token }}
-        <div class="col-md-1 mt-2">
-            <label class="form-label fw-bold">Data Entrada</label>
-            <input type="text" class="form-control" value="{{ data }}" readonly>
+
+        <div class="col-md-1">
+            <label class="small fw-bold mb-0" style="font-size: 0.75rem;">Data</label>
+            <input type="text" class="form-control form-control-sm bg-white" value="{{ data }}" readonly>
         </div>
+
         <div class="col-md-2">
-            {{ form_entrada_ordem_compra_manual.ordem_compra.label(class="form-label fw-bold") }}
-            {{ form_entrada_ordem_compra_manual.ordem_compra(class="form-control", placeholder="Digite a OC...") }}
+            <label class="small fw-bold mb-0" style="font-size: 0.75rem;">Ordem de Compra</label>
+            {{ form_entrada_ordem_compra_manual.ordem_compra(class="form-control form-control-sm", placeholder="OC...") }}
         </div>
-        <div class="col-md-auto mb-2 mb-3">
-            <button type="submit" name="botao_pesquisar_ordem_compra" class="btn btn-primary px-2">
-                <i class="bi bi-search"></i> Pesquisar Ordem
+
+        <div class="col-md-auto">
+            <button type="submit" name="botao_pesquisar_ordem_compra" class="btn btn-sm btn-primary px-3">
+                <i class="bi bi-search"></i> Pesquisar
             </button>
         </div>
+
         <div class="col-md-auto ms-auto">
-            <button type="submit"
-                    name="botao_salvar_entrada" class="btn btn-success px-3 fw-bold">
+            <button type="submit" name="botao_salvar_entrada" class="btn btn-sm btn-success px-4 fw-bold">
                 <i class="bi bi-check-circle"></i> Salvar Entrada
             </button>
         </div>
 
-
-    <div class="row g-4">
+    <div class="row g-2">
         <div class="col-lg-8">
             <div class="card shadow-sm border-0">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0 fw-bold"><i class="bi bi-list-task me-2"></i>Itens da Ordem de Compra</h6>
-                    <span class="badge bg-dark">Itens: {{ resultado_pesquisa|length }}</span>
+                    <h6 class="mb-0 fw-bold small">Itens da OC</h6>
+                    <span class="badge bg-dark" style="font-size: 0.7rem;">Total: {{ resultado_pesquisa|length }}</span>
                 </div>
                 <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 600px;">
-                        <table class="table table-hover align-middle mb-0">
+                    <div class="table-responsive" style="max-height: 450px;">
+                        <table class="table table-hover align-middle mb-0 min-w-600" style="font-size: 0.85rem;">
                             <thead class="table-light text-muted">
                                 <tr>
-                                    <th style="width: 80px;">Item</th>
+                                    <th style="width: 50px;">Item</th>
                                     <th>Descrição / EAN</th>
                                     <th class="text-center">Total</th>
                                     <th class="text-center">Pendente</th>
@@ -68,67 +97,41 @@
                                         {% set id_item = i[2] %}
                                         {% set pendente = saldos[id_item] if saldos else 0 %}
 
-                                        <tr class="table-white">
+                                        <tr class="table-white border-top">
                                             <td class="fw-bold">{{ id_item }}</td>
                                             <td>
                                                 <div class="fw-bold text-dark">{{ i[3] }}</div>
-                                                <small class="text-muted">EAN: {{ i[7] }}</small>
+                                                <small class="text-muted" style="font-size: 0.7rem;">EAN: {{ i[7] }}</small>
+                                                <input type="hidden" name="ean_{{ loop.index0 }}" value="{{ i[7] }}">
                                             </td>
-                                            <td class="text-center text-muted">{{ i[11] }}</td>
+                                            <td class="text-center">{{ i[11] }}</td>
                                             <td class="text-center">
-                                                <span class="badge badge-pendente {% if pendente > 0 %}bg-primary{% else %}bg-secondary{% endif %}">
+                                                <span class="badge {% if pendente > 0 %}bg-primary{% else %}bg-secondary{% endif %}" style="font-size: 0.75rem;">
                                                     {{ pendente }}
                                                 </span>
                                             </td>
                                         </tr>
-                                        <tr class="{% if pendente <= 0 %}bg-light text-muted{% endif %}">
-                                            <td colspan="4" class="p-3 border-bottom-3">
-                                                <div class="d-flex gap-2 align-items-end">
-                                                    <div style="flex: 2;">
-                                                        <label class="small text-muted">Qtd Entrada</label>
-                                                        <input type="number" name="quantidade_{{ loop.index0 }}" class="form-control form-control-sm"
-                                                               value="{{ pendente }}" min="1" max="{{ pendente }}"
-                                                               {% if pendente <= 0 %} disabled {% endif %}>
-                                                    </div>
-                                                    <div style="flex: 2;">
-                                                        <label class="small text-muted">Lote</label>
-                                                        <input type="text" name="lote_{{ loop.index0 }}" class="form-control form-control-sm"
-                                                               placeholder="Lote" {% if pendente <= 0 %} disabled {% endif %}>
-                                                    </div>
-                                                    <div style="flex: 2;">
-                                                        <label class="small text-muted">Validade</label>
-                                                        <input type="date" name="data_validade_{{ loop.index0 }}" class="form-control form-control-sm"
-                                                               {% if pendente <= 0 %} disabled {% endif %}>
-                                                    </div>
-                                                    <div style="flex: 3;">
-                                                        {{ form_entrada_ordem_compra_manual.endereco(
-                                                            class="form-control form-control-sm endereco-select",
-                                                            id="endereco_" ~ loop.index0
-
-                                                        ) }}
-
-
-
-                                                    </div>
-
-                                                    {% set disabled_attr = 'disabled' if pendente <= 0 else '' %}
-
-                                                    <button type="submit"
-                                                            name="botao_incluir_lote"
-                                                            value="{{ loop.index0 }}"
-                                                            class="btn btn-sm btn-info fw-bold mb-3"
-                                                               {{ disabled_attr }}
-
-                                                    >
-                                                        Incluir Lote
+                                        <tr>
+                                            <td colspan="4" class="p-2 bg-light-subtle">
+                                                <div class="d-flex gap-1 align-items-center">
+                                                    <input type="number" name="quantidade_{{ loop.index0 }}" class="form-control form-control-sm" placeholder="Qtd" value="{{ pendente }}" style="width: 80px;" {% if pendente <= 0 %} disabled {% endif %}>
+                                                    <input type="text" name="lote_{{ loop.index0 }}" class="form-control form-control-sm" placeholder="Lote" {% if pendente <= 0 %} disabled {% endif %}>
+                                                    <input type="date" name="data_validade_{{ loop.index0 }}" class="form-control form-control-sm" style="width: 130px;" {% if pendente <= 0 %} disabled {% endif %}>
+                                                    <select name="endereco_{{ loop.index0 }}" class="form-select form-select-sm" {% if pendente <= 0 %} disabled {% endif %}>
+                                                        <option value="">Endereço...</option>
+                                                        {% for e in buscar_endereco %}
+                                                        <option value="{{ e[1] }}">{{ e[1] }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <button type="submit" name="botao_incluir_lote" value="{{ loop.index0 }}" class="btn btn-sm btn-info text-white fw-bold" {% if pendente <= 0 %} disabled {% endif %}>
+                                                        Incluir
                                                     </button>
-
                                                 </div>
                                             </td>
                                         </tr>
                                     {% endfor %}
                                 {% else %}
-                                    <tr><td colspan="4" class="text-center p-5 text-muted">Pesquise uma Ordem de Compra para começar.</td></tr>
+                                    <tr><td colspan="4" class="text-center p-4 text-muted">Aguardando pesquisa...</td></tr>
                                 {% endif %}
                             </tbody>
                         </table>
@@ -138,94 +141,65 @@
         </div>
 
         <div class="col-lg-4">
-            <div class="d-flex flex-column gap-4">
-
-                <div class="card shadow-sm border-0">
-                    <div class="card-header d-flex justify-content-between align-items-center bg-white">
-                        <h6 class="mb-0 fw-bold text-dark"><i class="bi bi-box-seam me-2"></i>Lotes Incluídos</h6>
-                        <span class="badge bg-info text-dark">{{ incluir_lote|length }}</span>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive" style="max-height: 350px;">
-                            <table class="table table-sm table-striped hover align-middle mb-0">
-                                <thead class="table-light small">
-                                    <tr>
-                                        <th>Item/Lote</th>
-                                        <th class="text-center">Qtd</th>
-                                        <th class="text-center">Endereço</th>
-                                        <th class="text-end">Ação</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% if incluir_lote %}
-                                        {% for item in incluir_lote %}
-                                            <tr class="small">
-                                                <td>
-                                                    <div class="fw-bold">{{ item.id_item }}</div>
-                                                    <div class="text-muted">Lote: {{ item.lote }}</div>
-                                                </td>
-                                                <td class="text-center fw-bold">{{ item.qtd }}</td>
-                                                <td class="text-center fw-bold">{{ item.endereco }}</td>
-                                                <td class="text-end">
-                                                    <button type="submit" name="botao_remover_item" value="{{ loop.index0 }}" class="btn btn-link text-danger p-0">
-                                                        <i class="bi bi-x-circle-fill"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% else %}
-                                        <tr><td colspan="3" class="text-center p-4 text-muted small">Nenhum lote preparado.</td></tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
-                        </div>
+            <div class="card shadow-sm border-0 mb-2">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold small">Lotes Incluídos</h6>
+                    <span class="badge bg-info text-dark">{{ incluir_lote|length }}</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive" style="max-height: 200px;">
+                        <table class="table table-sm mb-0" style="font-size: 0.8rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Lote</th>
+                                    <th>Endereço</th>
+                                    <th>Qtd</th>
+                                    <th class="text-end">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if incluir_lote %}
+                                    {% for item in incluir_lote %}
+                                        <tr>
+                                            <td><b>{{ item.id_item }}</b><br><small>{{ item.lote }}</small></td>
+                                            <td>{{ item.lote }}</td>
+                                            <td>{{ item.endereco }}</td>
+                                            <td>{{ item.qtd }}</td>
+                                            <td class="text-end">
+                                                <button type="submit" name="botao_remover_item" value="{{ loop.index0 }}" class="btn btn-link text-danger p-0"><i class="bi bi-x-circle"></i></button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="3" class="text-center p-3 text-muted">Vazio</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+            </div>
 
-                <div class="card shadow-sm border-0 status-card">
-                    <div class="card-body">
-                        <h6 class="fw-bold mb-3">Status de Processamento</h6>
-
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span>Itens Processados</span>
-                                <span class="fw-bold">{{ total_itens_processados }}</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-success" style="width: {{ progresso_itens_perc }}%"></div>
-                            </div>
-                        </div>
-
-                        <div class="mb-1">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span>Quantidade Total</span>
-                                <span class="fw-bold">{{ total_qtd_processada }}</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-primary" style="width: {{ progresso_qtd_perc }}%"></div>
-                            </div>
-                        </div>
+            <div class="card shadow-sm border-0 status-card">
+                <div class="card-body py-2">
+                    <div class="mb-1 d-flex justify-content-between small">
+                        <span>Itens</span>
+                        <span class="fw-bold">{{ total_itens_processados }}</span>
+                    </div>
+                    <div class="progress mb-2">
+                        <div class="progress-bar bg-success" style="width: {{ progresso_itens_perc }}%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                        <span>Qtd Total</span>
+                        <span class="fw-bold">{{ total_qtd_processada }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" style="width: {{ progresso_qtd_perc }}%"></div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
     </form>
 </div>
-
-<script>
-        setTimeout(() => {
-            const alert = document.querySelector('.alert');
-            if(alert) { new bootstrap.Alert(alert).close(); }
-        }, 4000);
-</script>
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div id="flash-container">
-
-    </div>
-
-  {% endif %}
-{% endwith %}
 {% endblock %}

@@ -1,7 +1,6 @@
 import datetime
 import logging
 import mysql.connector
-import flash
 from flask import render_template, request, session, redirect, flash
 import geral
 import modulos.admin
@@ -619,7 +618,6 @@ def estoque():
         estoque_processado=estoque_processado
     )
 
-# FIXME: ALOCAR FUNÇÃO NA PASTA CORRETA
 def busca_estoque_por_ordem_compra(ordem_compra, ean):
     # PROCESSAMENTO DA FUNÇÃO 'entrada_ordem_compra_manual'
     logging.info('função busca_estoque_por_ordem_compra FORA da função principal')
@@ -699,8 +697,6 @@ def sugerir_endereco_entrada(entrada_estoque):
             if mydb.is_connected():
                 cursor.close()
 
-
-# FiXME: ALOCAR FUNÇÃO NA PASTA CORRETA
 def buscar_qtde_recebida(ordem_compra, ean):
     print('def buscar_qtde_recebida(ordem_compra, ean):')
     query = """
@@ -754,147 +750,177 @@ def info_ordem_compra_atualizada(resultado_pesquisa):
 
     return resultado_pesquisa_atualizado
 
+
 def entrada_ordem_compra_manual():
     logging.info('Função entrada_ordem_compra_manual')
     form_entrada_ordem_compra_manual = Mod_Logistica.EntradaOrdemCompraManual()
-
+    buscar_endereco = geral.Buscadores.Logistica.buscar_endereco()
     session.pop('_flashes', None)
 
-    # Recupera dados da sessão
+    # 1. Recuperação Segura da Sessão
     resultado_pesquisa = session.get('resultado_pesquisa', [])
-    incluir_lote = []
-    # resultado_pesquisa = session.get('resultado_pesquisa', [])
-    resultado_pesquisa = []
+    incluir_lote = session.get('incluir_lote', [])
     ordem_compra = session.get('ordem_compra', '')
 
     if request.method == "POST":
 
         # --- BUSCA DE ORDEM ---
         if "botao_pesquisar_ordem_compra" in request.form:
-            print(f'request.form:{request.form.keys()}')
-            print('botao_pesquisar_ordem_compra acionado')
-            session['incluir_lote'] = []
-
             ordem_compra = form_entrada_ordem_compra_manual.ordem_compra.data
-            session['ordem_compra'] = ordem_compra
-            res = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
-            resultado_pesquisa = Logistica.valida_ordem_compra_pesquisada(ordem_compra, res)
-            session['resultado_pesquisa'] = resultado_pesquisa
+            if not ordem_compra:
+                flash("Digite o número da Ordem de Compra.", "warning")
+            else:
+                session['ordem_compra'] = ordem_compra
+                session['incluir_lote'] = []
+                incluir_lote = []
+                res = geral.Buscadores.OrdemCompra.buscar_ordem_compra(ordem_compra)
+                resultado_pesquisa = Logistica.valida_ordem_compra_pesquisada(ordem_compra, res)
+                session['resultado_pesquisa'] = resultado_pesquisa
 
-        if "botao_incluir_lote" in request.form.keys():
+        # --- INCLUIR LOTE (CORREÇÃO DOS ERROS DE TIPO) ---
+        if "botao_incluir_lote" in request.form:
             idx = request.form.get('botao_incluir_lote')
-
             try:
-                # Carrega dados da sessão
-                resultado_pesquisa = session.get('resultado_pesquisa', [])
-                incluir_lote = session.get('incluir_lote', [])
-                posicoes_ocupadas = [it['endereco'] for it in incluir_lote]  # rastrear endereços já digitados nesta sessão
-                print(f'posicoes ocupadas: {posicoes_ocupadas}')
-
                 idx_int = int(idx)
                 item_data = resultado_pesquisa[idx_int]
-                id_item = item_data[2]
 
-                quantidade_nova = int(request.form.get(f'quantidade_{idx}', 0))
+                # Coleta de formulário com fallback para zero
+                raw_qtd = request.form.get(f'quantidade_{idx}') or '0'
+                quantidade_nova = int(float(raw_qtd))  # Converte '10.0' -> 10.0 -> 10
+
                 lote = request.form.get(f'lote_{idx}', '')
                 validade = request.form.get(f'data_validade_{idx}', '')
-                endereco = form_entrada_ordem_compra_manual.endereco.data  # Pegando do campo do form
+                endereco = request.form.get(f'endereco_{idx}')
 
-                # --- VALIDAÇÕES ---
-                quantidade_original = int(item_data[11])
-                ja_alocado = sum(int(it['qtd']) for it in incluir_lote if it.get('id_item') == id_item)
+                # --- TRATAMENTO DE ERRO DE TIPO (VALORES DO BANCO) ---
+                # Garante que se o banco retornar None, vire 0.0
+                def safe_float(valor):
+                    try:
+                        return float(valor) if valor is not None else 0.0
+                    except:
+                        return 0.0
+
+                quantidade_original = safe_float(item_data[11])
+                preco_unitario = safe_float(item_data[13]) if len(item_data) > 13 else 0.0
+
+                id_item = item_data[2]
+                # ja_alocado = sum(int(it['qtd']) for it in incluir_lote if it.get('id_item') == id_item)
+                ja_alocado = sum(int(float(it['qtd'])) for it in incluir_lote if it.get('id_item') == id_it)
                 saldo_disponivel = quantidade_original - ja_alocado
 
                 if quantidade_nova <= 0:
-                    flash(f"Erro: A quantidade deve ser maior que zero.", "warning")
+                    flash("A quantidade deve ser maior que zero.", "warning")
                 elif quantidade_nova > saldo_disponivel:
-                    flash(f"Erro: Quantidade excedida! Saldo atual: {saldo_disponivel}", "danger")
-                elif endereco in posicoes_ocupadas:
-                    # VALIDANDO SE O ENDEREÇO JÁ ESTÁ NA LISTA DA DIREITA
-                    flash(f"Erro: O endereço {endereco} já foi selecionado para outro item nesta operação.", "danger")
+                    flash(f"Erro: Quantidade excedida! Saldo disponível: {saldo_disponivel}", "danger")
                 else:
-                    # SUCESSO
-                    novo_item = {
-                        'lote': lote,
-                        'validade': validade,
-                        'qtd': quantidade_nova,
-                        'endereco': endereco,
-                        'id_item': id_item,
-                        'descricao': item_data[3]
-                    }
-                    incluir_lote.append(novo_item)
-                    session['incluir_lote'] = incluir_lote
-                    flash(f"Lote incluído no endereço {endereco}!", "success")
+                    # Verifica conflito de endereço
+                    item_conflitante = next((it for it in incluir_lote if it['endereco'] == endereco), None)
+
+                    if item_conflitante and item_conflitante['ean'] != item_data[7]:
+                        flash(f"Endereço {endereco} ocupado por outro produto.", "danger")
+                    else:
+                        novo_item = {
+                            'ean': item_data[7],
+                            'lote': lote,
+                            'validade': validade,
+                            'qtd': quantidade_nova,
+                            'endereco': endereco,
+                            'id_item': id_item,
+                            'descricao': item_data[3],
+                            'valor': preco_unitario  # Salva o preço para a query de movimentação
+                        }
+                        incluir_lote.append(novo_item)
+                        session['incluir_lote'] = incluir_lote
+                        flash(f"Lote incluído no endereço {endereco}!", "success")
 
             except Exception as e:
-                print(f"Erro ao incluir lote: {e}")
-                flash("Erro interno ao processar inclusão.", "danger")
-        # --- REMOVER ITEM ---
-        if "botao_remover_item" in request.form:
-            indice = int(request.form.get('botao_remover_item'))
-            incluir_lote = session.get('incluir_lote', [])
-
-            if 0 <= indice < len(incluir_lote):
-                item_removido = incluir_lote.pop(indice)
-                session['incluir_lote'] = incluir_lote
-                flash(f"Item do lote {item_removido['lote']} removido.", "info")
+                logging.error(f"Erro ao incluir lote: {e}")
+                flash(f"Erro ao processar dados: {e}", "danger")
 
         # --- SALVAR NO BANCO ---
         if "botao_salvar_entrada" in request.form:
-            """
-            ORDEM DE SALVAMENTO:
-            1 - atualizar a tabela sql 'estoque_movimentacao' > id, id_endereco, codigo_produto, lote, data_validade, quantidade, data_ultima_movimentacao
-            INSERT INTO estoque_movimentacoes (x,x,x,x,) values (1,1,1,1);
-            
-            2 - atualizar 'estoque_saldo'  exemplo: 
-            INSERT INTO estoque_saldo (id_produto, id_endereco, lote, quantidade)
-            VALUES (1, 10, 'ABC', 100)
-            ON DUPLICATE KEY UPDATE
-            quantidade = quantidade + 100;            
-            
-            resumo:
-            BEGIN;
-            INSERT movimentacao;
-            UPDATE saldo;
-            COMMIT;
-            ROLLBACK SE DER ERRO
-            
-            OPÇÃO >>> TRIGGER NO BANCO
-            Script SQL com constraints (UNIQUE + FK + proteção contra saldo negativo)
-            """
+            if not incluir_lote:
+                flash("Nenhum item para salvar.", "warning")
+            else:
+                cursor = mydb.cursor(dictionary=True)
+                try:
+                    if not mydb.in_transaction:
+                        mydb.start_transaction()
 
-            # Aqui você percorre a lista da DIREITA (incluir_lote)
-            print('botao_salvar_entrada acionado')
-            for item in incluir_lote:
-                # Lógica de salvar: atualizar_mov_estoque(item)
-                pass
-            session['incluir_lote'] = []
-            flash("Todas as entradas foram processadas!", "success")
+                    id_usuario_logado = session.get('user_id', 1)
+                    numero_oc = session.get('ordem_compra', 'OC_MANUAL')
 
-    # --- CÁLCULOS PARA O LAYOUT (STATUS BARS) ---
+                    for item in incluir_lote:
+                        # 1. Buscar ID Endereço
+                        cursor.execute("SELECT id FROM estoque_enderecos WHERE codigo_completo = %s",
+                                       (item['endereco'],))
+                        res_end = cursor.fetchone()
+                        if not res_end: raise Exception(f"Endereço {item['endereco']} não existe.")
+                        id_end = res_end['id']
 
+                        # 2. Update/Insert Saldo
+                        cursor.execute(
+                            "SELECT id FROM estoque_saldo WHERE id_endereco=%s AND codigo_produto=%s AND lote=%s",
+                            (id_end, item['ean'], item['lote']))
+                        if cursor.fetchone():
+                            cursor.execute(
+                                "UPDATE estoque_saldo SET quantidade=quantidade+%s WHERE id_endereco=%s AND codigo_produto=%s AND lote=%s",
+                                (item['qtd'], id_end, item['ean'], item['lote']))
+                        else:
+                            cursor.execute(
+                                "INSERT INTO estoque_saldo (id_endereco, codigo_produto, lote, data_validade, quantidade) VALUES (%s,%s,%s,%s,%s)",
+                                (id_end, item['ean'], item['lote'], item['validade'], item['qtd']))
+
+                        # 3. Log Movimentação
+                        query_mov = """INSERT INTO mov_estoque (data_hora, id_item, id_ordem_compra, quantidade, valor, lote, data_validade, id_endereco, tipo_movimentacao, id_usuario) 
+                                       VALUES (CURRENT_TIMESTAMP, %s, %s, %s, %s, %s, %s, %s, 'ENTRADA', %s)"""
+                        cursor.execute(query_mov, (item['id_item'], numero_oc, item['qtd'], item['valor'], item['lote'],
+                                                   item['validade'], id_end, id_usuario_logado))
+
+                        # 4. Update Ordem Compra
+                        query_upd_oc = """UPDATE ordem_compra SET SALDO_QTD = SALDO_QTD - %s, SALDO_TOTAL_ITEM = SALDO_TOTAL_ITEM - (%s * PRECO),
+                                          STATUS = CASE WHEN (SALDO_QTD - %s) <= 0 THEN 'CONCLUIDO' ELSE 'PARCIAL' END
+                                          WHERE ORDEM_COMPRA = %s AND ITEM = %s"""
+                        cursor.execute(query_upd_oc,
+                                       (item['qtd'], item['qtd'], item['qtd'], numero_oc, item['id_item']))
+                    # AJUSTAR BOTAO REMOVER, PARA ATUALIZAR SOMENTE O QUADRO DEVIDO.
+                    #
+                    mydb.commit()
+                    session.pop('incluir_lote', None)
+                    session.pop('resultado_pesquisa', None)
+                    resultado_pesquisa = []
+                    incluir_lote = []
+                    flash("Entrada realizada com sucesso!", "success")
+                except Exception as e:
+                    mydb.rollback()
+                    flash(f"Erro ao salvar: {e}", "danger")
+                finally:
+                    cursor.close()
+
+    # --- CÁLCULOS DAS BARRAS (CORREÇÃO DO ERRO DE TIPO) ---
     saldos_pendentes = {}
-    total_qtd_ordem = 0
-    total_qtd_alocada = 0
+    total_qtd_ordem = 0.0
+    total_qtd_alocada = 0.0
     itens_concluidos = 0
 
-
     for i in resultado_pesquisa:
-        id_it = i[2]
-        qtd_orig = int(i[11])
-        total_qtd_ordem += qtd_orig
+        try:
+            id_it = i[2]
+            # Uso de float() seguro para evitar erro caso i[11] seja None ou texto
+            valor_original = i[11] if i[11] is not None else 0
+            qtd_orig = float(valor_original)
 
-        # Busca segura: verifica se o item é dicionário e tem a chave
-        alocado_este_item = sum(int(it['qtd']) for it in incluir_lote
-                                if isinstance(it, dict) and it.get('id_item') == id_it)
+            total_qtd_ordem += qtd_orig
+            alocado_no_item = sum(int(it['qtd']) for it in incluir_lote if it.get('id_item') == id_it)
+            total_qtd_alocada += alocado_no_item
 
-        total_qtd_alocada += alocado_este_item
-        saldo = qtd_orig - alocado_este_item
-        saldos_pendentes[id_it] = saldo
-        if saldo <= 0: itens_concluidos += 1
+            saldo = qtd_orig - alocado_no_item
+            saldos_pendentes[id_it] = saldo
+            if saldo <= 0 and qtd_orig > 0:
+                itens_concluidos += 1
+        except:
+            continue
 
-
-    # Porcentagens para as barras de progresso
     prog_itens = (itens_concluidos / len(resultado_pesquisa) * 100) if resultado_pesquisa else 0
     prog_qtd = (total_qtd_alocada / total_qtd_ordem * 100) if total_qtd_ordem > 0 else 0
 
@@ -902,8 +928,9 @@ def entrada_ordem_compra_manual():
         "logistica/entrada_ordem_compra_manual.html",
         form_entrada_ordem_compra_manual=form_entrada_ordem_compra_manual,
         resultado_pesquisa=resultado_pesquisa,
+        buscar_endereco=buscar_endereco,
         incluir_lote=incluir_lote,
-        saldos=saldos_pendentes,  # Enviamos os saldos calculados
+        saldos=saldos_pendentes,
         total_itens_processados=f"{itens_concluidos}/{len(resultado_pesquisa)}",
         progresso_itens_perc=prog_itens,
         total_qtd_processada=f"{total_qtd_alocada}/{total_qtd_ordem}",
@@ -911,6 +938,7 @@ def entrada_ordem_compra_manual():
         total_lotes_adicionados=len(incluir_lote),
         data=Formatadores.formatar_data(Formatadores.os_data())
     )
+
 def configuracao_layout_armazem():
     print(CorFonte.fonte_amarela() + 'função configuracao_layout_armazem' + CorFonte.reset_cor())
     form_configuracao_layout_armazem = Mod_Logistica.ConfiguracaoLayoutArmazem()

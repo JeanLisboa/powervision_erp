@@ -1507,12 +1507,10 @@ class Logistica:
         try:
             contador_item_pesquisa = 0
             for i in resultado_pesquisa:
-                print(f'linha {contador_item_pesquisa} | itens da pesquisa: ordem_compra: {i[1]} |ean: {i[7]}')
+                # print(f'linha {contador_item_pesquisa} | itens da pesquisa: ordem_compra: {i[1]} |ean: {i[7]}')
                 resultado = Logistica.busca_estoque_por_ordem_compra(ordem_compra=i[1], ean=i[7])
-
-                print(f'len de resultado = {len(resultado)} |resultado > {resultado}')
+                # print(f'len de resultado = {len(resultado)} |resultado > {resultado}')
                 if len(resultado) == 0:
-
                     i = list(i)
                     i[13] = 'ABERTO'
                     resultado_pesquisa_tmp.append(i[:])
