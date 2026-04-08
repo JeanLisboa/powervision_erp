@@ -777,7 +777,7 @@ def entrada_ordem_compra_manual():
                 resultado_pesquisa = Logistica.valida_ordem_compra_pesquisada(ordem_compra, res)
                 session['resultado_pesquisa'] = resultado_pesquisa
 
-        # --- INCLUIR LOTE (CORREÇÃO DOS ERROS DE TIPO) ---
+        # --- INCLUIR LOTE ---
         if "botao_incluir_lote" in request.form:
             idx = request.form.get('botao_incluir_lote')
             try:
@@ -786,14 +786,13 @@ def entrada_ordem_compra_manual():
 
                 # Coleta de formulário com fallback para zero
                 raw_qtd = request.form.get(f'quantidade_{idx}') or '0'
-                quantidade_nova = int(float(raw_qtd))  # Converte '10.0' -> 10.0 -> 10
+                quantidade_nova = int(float(raw_qtd))
 
                 lote = request.form.get(f'lote_{idx}', '')
                 validade = request.form.get(f'data_validade_{idx}', '')
                 endereco = request.form.get(f'endereco_{idx}')
 
-                # --- TRATAMENTO DE ERRO DE TIPO (VALORES DO BANCO) ---
-                # Garante que se o banco retornar None, vire 0.0
+                # Helper para conversão segura
                 def safe_float(valor):
                     try:
                         return float(valor) if valor is not None else 0.0
@@ -802,10 +801,11 @@ def entrada_ordem_compra_manual():
 
                 quantidade_original = safe_float(item_data[11])
                 preco_unitario = safe_float(item_data[13]) if len(item_data) > 13 else 0.0
+                id_item = item_data[2]  # Definido como id_item
 
-                id_item = item_data[2]
-                # ja_alocado = sum(int(it['qtd']) for it in incluir_lote if it.get('id_item') == id_item)
-                ja_alocado = sum(int(float(it['qtd'])) for it in incluir_lote if it.get('id_item') == id_it)
+                # CORREÇÃO: Alterado de id_it para id_item para evitar o erro de escopo
+                ja_alocado = sum(int(float(it['qtd'])) for it in incluir_lote if it.get('id_item') == id_item)
+
                 saldo_disponivel = quantidade_original - ja_alocado
 
                 if quantidade_nova <= 0:
@@ -816,6 +816,7 @@ def entrada_ordem_compra_manual():
                     # Verifica conflito de endereço
                     item_conflitante = next((it for it in incluir_lote if it['endereco'] == endereco), None)
 
+                    # CORREÇÃO: Removido o print que tentava acessar 'it' fora do escopo do next()
                     if item_conflitante and item_conflitante['ean'] != item_data[7]:
                         flash(f"Endereço {endereco} ocupado por outro produto.", "danger")
                     else:
@@ -827,7 +828,7 @@ def entrada_ordem_compra_manual():
                             'endereco': endereco,
                             'id_item': id_item,
                             'descricao': item_data[3],
-                            'valor': preco_unitario  # Salva o preço para a query de movimentação
+                            'valor': preco_unitario
                         }
                         incluir_lote.append(novo_item)
                         session['incluir_lote'] = incluir_lote
@@ -883,8 +884,7 @@ def entrada_ordem_compra_manual():
                                           WHERE ORDEM_COMPRA = %s AND ITEM = %s"""
                         cursor.execute(query_upd_oc,
                                        (item['qtd'], item['qtd'], item['qtd'], numero_oc, item['id_item']))
-                    # AJUSTAR BOTAO REMOVER, PARA ATUALIZAR SOMENTE O QUADRO DEVIDO.
-                    #
+
                     mydb.commit()
                     session.pop('incluir_lote', None)
                     session.pop('resultado_pesquisa', None)
@@ -897,7 +897,7 @@ def entrada_ordem_compra_manual():
                 finally:
                     cursor.close()
 
-    # --- CÁLCULOS DAS BARRAS (CORREÇÃO DO ERRO DE TIPO) ---
+    # --- CÁLCULOS DAS BARRAS ---
     saldos_pendentes = {}
     total_qtd_ordem = 0.0
     total_qtd_alocada = 0.0
@@ -905,17 +905,16 @@ def entrada_ordem_compra_manual():
 
     for i in resultado_pesquisa:
         try:
-            id_it = i[2]
-            # Uso de float() seguro para evitar erro caso i[11] seja None ou texto
+            id_item_loop = i[2]  # Padronizado para evitar confusão com o escopo do POST
             valor_original = i[11] if i[11] is not None else 0
             qtd_orig = float(valor_original)
 
             total_qtd_ordem += qtd_orig
-            alocado_no_item = sum(int(it['qtd']) for it in incluir_lote if it.get('id_item') == id_it)
+            alocado_no_item = sum(int(it['qtd']) for it in incluir_lote if it.get('id_item') == id_item_loop)
             total_qtd_alocada += alocado_no_item
 
             saldo = qtd_orig - alocado_no_item
-            saldos_pendentes[id_it] = saldo
+            saldos_pendentes[id_item_loop] = saldo
             if saldo <= 0 and qtd_orig > 0:
                 itens_concluidos += 1
         except:
