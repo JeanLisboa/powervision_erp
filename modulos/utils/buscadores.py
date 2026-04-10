@@ -341,8 +341,12 @@ class Buscadores:
         @staticmethod
         def buscar_pedidos():
             print(CorFonte.fonte_amarela() + "Função buscar_pedidos" + CorFonte.reset_cor())
+            if not mydb.is_connected():
+                mydb.reconnect(attempts=3, delay=2)
 
-            query = """
+            cursor = mydb.cursor(buffered=True)
+            try:
+                query = """
             SELECT 
                 ordem_venda,
                 DATA,
@@ -366,24 +370,24 @@ class Buscadores:
                 COD_CLIENTE,
                 CLIENTE,
                 STATUS_PEDIDO;
-             
             
             """
-            cursor = mydb.cursor()
-            cursor.execute(query)
-            return cursor.fetchall()
+                cursor.execute(query)
+                resultado = cursor.fetchall()
+                return resultado
+
+            finally:
+                cursor.close()
+
+
 
         @staticmethod
         def buscar_itens(ordem_venda):
-            """
-                BUSCA OS ITENS DE UMA ORDEM DE VENDA QUE NÃO SEJAM RAS
-            """
             print(CorFonte.fonte_amarela() + "Buscadores.OrdemVenda.buscar_itens" + CorFonte.reset_cor())
-
             query = """
                 SELECT 
                     ov.status_pedido,
-                    ov.item,
+                    ov.item,    
                     ov.codigo_produto,
                     ov.descricao,
                     ov.ean,
@@ -392,11 +396,11 @@ class Buscadores:
                     ov.preco_venda,
                     ov.quantidade,
                     ov.total_pedido,
-                    COALESCE(SUM(e.qtde), 0) AS estoque_livre
+                    COALESCE(SUM(me.quantidade), 0) AS estoque_livre
                 FROM ordem_venda ov
-                LEFT JOIN estoque e 
-                       ON e.ean = ov.ean
-                WHERE ov.ordem_venda = %s and status_pedido <> 'RASCUNHO'
+                LEFT JOIN mov_estoque me 
+                       ON me.id_item = ov.codigo_produto
+                WHERE ov.ordem_venda = %s AND ov.status_pedido <> 'RASCUNHO'
                 GROUP BY
                     ov.status_pedido,
                     ov.item,
@@ -411,17 +415,22 @@ class Buscadores:
             """
 
             try:
-                mydb.connect()
-                cursor = mydb.cursor()
+                if not mydb.is_connected():
+                    mydb.reconnect()
+
+                # Usando buffered=True para evitar o erro de "Unread result found"
+                cursor = mydb.cursor(buffered=True)
+
                 cursor.execute(query, (ordem_venda,))
                 resultado = cursor.fetchall()
-                # mydb.close()
+
+                cursor.close()  # Sempre feche o cursor
                 return resultado
 
             except Exception as e:
                 print("Erro ao buscar itens da ordem:", e)
-                mydb.close()
                 return []
+
 
         @staticmethod
         def pesquisar_produtos(descricao: str, ean: str, categoria: str, fornecedor: str):
@@ -1357,19 +1366,45 @@ class Pricing:
 
     @staticmethod
     def relato_custos(ean, fornecedor, unidade, descricao):
+        """
+        colunas da tabela produtos ( atualizado em 09/04/2026 )
+        FIELD       TYPE                    NULL
+        data	            varchar(45)	    NO
+        codigo	            varchar(45)	    NO
+        fornecedor	        varchar(45)	    NO
+        ean	                varchar(45)	    NO
+        descricao	        varchar(100)	NO
+        unidade	            varchar(45)	    NO
+        categoria	        varchar(45)	    NO
+        curva_abc	        char(1)	        YES		C
+        valor	            varchar(45)	    NO
+        comprimento_caixa	decimal(10,2)	YES		0.00
+        altura_caixa	    decimal(10,2)	YES		0.00
+        largura_caixa	    decimal(10,2)	YES		0.00
+        cubagem_caixa	    decimal(10,2)	YES		0.00
+        peso_unidade	    decimal(10,3)	YES		0.000
+        peso_caixa	        decimal(10,3)	YES		0.000
+        qtde_lastro	        int	            YES		0
+        qtde_pallet	        int	            YES		0
+        is_perigoso	        tinyint(1)      YES		0
+        temp_controlada	    varchar(50)	    YES		Ambiente
+        usuario	            varchar(45)	    NO
+        """
         logging.info(
             CorFonte.fonte_amarela()
             + "class Pricing | metodo custos" + CorFonte.reset_cor())
         try:
-            query = (f"SELECT * FROM PRODUTOS WHERE 1=1 and "
-                     f"ean like '%{ean}%' "
-                     f"and fornecedor like '%{fornecedor}%' "
-                     f"and UNIDADE like '%{unidade}%' "
-                     f"and DESCRICAO like '%{descricao}%';")
+            query = ("SELECT * FROM PRODUTOS WHERE 1=1 "
+                     "AND ean LIKE %s "
+                     "AND fornecedor LIKE %s "
+                     "AND unidade LIKE %s "
+                     "AND descricao LIKE %s;")
+
+            params = (f'%{ean}%', f'%{fornecedor}%', f'%{unidade}%', f'%{descricao}%')
 
             logging.debug(query)
             mydb.connect()
-            mycursor.execute(query)
+            mycursor.execute(query, params)
             myresult = mycursor.fetchall()
             mydb.commit()
             mydb.close()
@@ -1377,8 +1412,7 @@ class Pricing:
 
         except Exception as e:
             logging.error(e)
-            # AlertaMsg.cadastro_inexistente()
-            pass
+            return []
 
 
     @staticmethod

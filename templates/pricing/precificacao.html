@@ -65,11 +65,11 @@ TELA PRECIFICACAO
                             <th>EAN</th>
                             <th>UN</th>
                             <th>VALOR</th>
-                            <th>MARGEM LUCRO(%)</th>
+                            <th>MARGEM S/ VENDA(%)</th>
                             <th>CUSTOS($)</th>
                             <th>ACRESCIMO(%)</th>
                             <th>DESCONTO(%)</th>
-                            <th>PREÇO DE VENDA</th>
+                            <th>PREÇO DE VENDA SUGERIDO</th>
                         </tr>
                     </thead>
                 <tbody>
@@ -88,7 +88,7 @@ TELA PRECIFICACAO
                                        name="margem_{{ loop.index0 }}"
                                        value="{{ i[4] if i[4] is not none or i[4] != '' else 0.00 }}"
                                        min="0.00"
-                                       max="100.00"
+                                       max="98.00"
                                        step="0.01" />
                             </td>
                             <td>
@@ -122,7 +122,16 @@ TELA PRECIFICACAO
                                 </label>
                             </td>
                             <td>
-                                    {{ i[8] }}
+                                <label>
+                                    <input class="form-control tabela_precificacao"
+                                       type="number"
+                                       name="preco_final_{{ loop.index0 }}"
+                                       value="{{ i[8] if i[8] is not none or i[8] != '' else 0.00 }}"
+                                       min="0.00"
+
+                                       step="0.01" />
+                                </label>
+
                                 <!--                             <td>
                                 <label>
                                     {{ i[8] }}

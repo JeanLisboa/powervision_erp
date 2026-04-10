@@ -47,61 +47,61 @@ def precificacao():
     if request.method == 'POST':
 
         if 'botao_pesquisar' in request.form:
-                print(CorFonte.fonte_verde()+ 'Botão pesquisar pressionado' + CorFonte.reset_cor())
+                logging.debug(CorFonte.fonte_verde()+ 'Botão pesquisar pressionado' + CorFonte.reset_cor())
                 try:
                     fornecedor = form_precificacao.fornecedor.data or ''
 
                     # LISTA DE PRODUTOS CADASTRADOS
                     relatorio_precificacao = Pricing.relato_custos(ean, fornecedor, unidade, descricao)
-                    print(f'0 - relatorio_precificacao: {relatorio_precificacao}')
+                    logging.debug(f'0 - relatorio_precificacao: {relatorio_precificacao}')
 
                     # PESQUISA SE O(S) PRODUTO(S) EXISTE NA TABELA PRECIFICAÇÃO
                     relato_pesquisa = Pricing.relato_bd_precificacao(ean)
-                    print(f'1 - relato_pesquisa: {relato_pesquisa}')
+                    logging.debug(f'1 - relato_pesquisa: {relato_pesquisa}')
                     session['relatorio_precificacao'] = relatorio_precificacao
 
                     relatorio_temp = []
 
                     # AJUSTA 'relatorio_precificacao' PARA RENDERiZAR
                     for i in relatorio_precificacao:
-                        print(f'2 - relatorio_precificacao: {i}')
+                        logging.debug(f'2 - relatorio_precificacao: {i}')
                         i_atualizado = (i[4], i[3], i[5], i[8])
                         i = i_atualizado
-                        print(f'2.1 - i = i_atualizado: {i}')
+                        logging.debug(f'2.1 - i = i_atualizado: {i}')
 
                         # INCLUI AS INFORMAÇÕES DA TABELA PRECIFICAÇÃO
-                        print(f'3 - relatorio_precificacao_atualizado: {i}')
+                        logging.debug(f'3 - relatorio_precificacao_atualizado: {i}')
                         for ean_ in relato_pesquisa:
-                            print(f'4 - dentro do for de relato_pesquisa')
-                            print(f'4.1 - busca {i[1]} na tabela precificação')
-                            print(f'5 - ean_[1]:{ean_[1]} i[3]:{i[1]}')
+                            logging.debug(f'4 - dentro do for de relato_pesquisa')
+                            logging.debug(f'4.1 - busca {i[1]} na tabela precificação')
+                            logging.debug(f'5 - ean_[1]:{ean_[1]} i[3]:{i[1]}')
                             if ean_[1] == i[1]:
-                                print(f'{i[1]} localizado no bd, tabela precificação')
+                                logging.debug(f'{i[1]} localizado no bd, tabela precificação')
                                 try:
-                                    print(f'5.1 dentro do try')
+                                    logging.debug(f'5.1 dentro do try')
                                     temp = (i, ean_[3], ean_[4], ean_[5], ean_[6], ean_[7])
-                                    print(f'6 - temp: {temp}')
+                                    logging.debug(f'6 - temp: {temp}')
                                 except Exception as e:
-                                    print('7 - Erro', e)
+                                    logging.debug('7 - Erro', e)
                                 relatorio_temp.append(temp[:])
                                 break  # achou, não precisa verificar mais
                             else:
-                                print(f'ean {i[1]} não localizado no bd')
+                                logging.debug(f'ean {i[1]} não localizado no bd')
                         else:
                             # CASO NÃO HAJA INFORMAÇÃO CADASTRADA NA TABELA PRECIFICAÇÃO
-                            print(f'8 - relatorio_precificacao(i): {i}')
-                            print('9 - Ajustando "i" para renderizar')
+                            logging.debug(f'8 - relatorio_precificacao(i): {i}')
+                            logging.debug('9 - Ajustando "i" para renderizar')
                             temp = (i, 0.0, 0.0, 0.0, 0.0, 0.0)
                             relatorio_temp.append(temp[:])
 
                     relatorio_precificacao = relatorio_temp
                     session['relatorio_temp'] = relatorio_temp
-                    print(f'10 - relatorio_temp: {relatorio_temp}')
+                    logging.debug(f'10 - relatorio_temp: {relatorio_temp}')
                     relatorio_precificacao_ajustado = [i[0] + i[1:] for i in relatorio_precificacao]
                     relatorio_precificacao = relatorio_precificacao_ajustado  #organiza a tupla
                     session['relatorio_precificacao'] = relatorio_precificacao
-                    print('11 - relatorio_precificacao_final')
-                    print(relatorio_precificacao)
+                    logging.debug('11 - relatorio_precificacao_final')
+                    logging.debug(relatorio_precificacao)
                     session['relato_pesquisa'] = relato_pesquisa
                     return render_template('pricing/precificacao.html',form_precificacao=form_precificacao,
                                            relatorio_precificacao=relatorio_precificacao)
@@ -110,7 +110,7 @@ def precificacao():
                     logging.error(f'Erro ',e)
 
         if 'botao_calcular' in request.form:
-                print(CorFonte.fonte_verde()+'Botão calcular pressionado' + CorFonte.reset_cor())
+                logging.debug(CorFonte.fonte_verde()+'Botão calcular pressionado' + CorFonte.reset_cor())
 
 
                 # RECUPERA 'relatorio_precificacao' DO ACIONAMENTO DO BOTÃO PESQUISAR
@@ -119,7 +119,7 @@ def precificacao():
                 relatorio_temp = session.get('relatorio_temp')
                 try:
                     item_selecionado = request.form.getlist("incluir_item")
-                    print(f'item_selecionado >>> {item_selecionado}')
+                    logging.debug(f'item_selecionado >>> {item_selecionado}')
                     lista_final = []
                     lista_temp = []
                     margens = []
@@ -138,76 +138,76 @@ def precificacao():
                     # IDENTIFICA O NUMERO DE LINHAS ( TUPLAS ) DA LISTA relatorio_precificacao
                     num_linhas = len(relatorio_precificacao)
 
-                    # print('num_linhas de relatorio_precificacao >>> ', num_linhas)
+                    # logging.debug('num_linhas de relatorio_precificacao >>> ', num_linhas)
                     for i in range(num_linhas):
                         # RECUPERA OS INPUTS DO USUARIO
 
                         margem = request.form.get(f"margem_{i}") # RECUPERA MARGEM
                         if margem == '' or margem is None:
                             margem = 0.0
-                        print(f'margem >>> {margem} | type(margem) >>> {type(margem)}')
+                        logging.debug(f'margem >>> {margem} | type(margem) >>> {type(margem)}')
 
                         custo_total = request.form.get(f"custo_total_{i}")
                         if custo_total == '' or custo_total is None:
                             custo_total = 0.0
-                        print(f'custo_total >>> {custo_total} | type(custo_total) >>> {type(custo_total)}')
+                        logging.debug(f'custo_total >>> {custo_total} | type(custo_total) >>> {type(custo_total)}')
 
                         try:
-                            print(f'validacao_preco_final {validacao_preco_final}')
+                            logging.debug(f'validacao_preco_final {validacao_preco_final}')
                             if preco_final == validacao_preco_final:
-                                print('preco_final não alterado')
+                                logging.debug('preco_final não alterado')
                             else:
-                                print('preco_alterado')
+                                logging.debug('preco_alterado')
 
 
                         except Exception as e:
-                            print(f'Erro na validacao de preco_final ', e)
+                            logging.debug(f'Erro na validacao de preco_final ', e)
 
                         preco_final = request.form.get(f"preco_final_{i}")
                         if preco_final == '' or preco_final is None:
                             preco_final = 0.0
-                        print(f'preco_final >>> {preco_final} | type(preco_final) >>> {type(preco_final)}')
+                        logging.debug(f'preco_final >>> {preco_final} | type(preco_final) >>> {type(preco_final)}')
 
                         validacao_preco_final = preco_final[:]
-                        print(f'validacao_preco_final >>> {validacao_preco_final}')
+                        logging.debug(f'validacao_preco_final >>> {validacao_preco_final}')
 
                         try:
-                            print(f'validacao_preco_final {validacao_preco_final}')
+                            logging.debug(f'validacao_preco_final {validacao_preco_final}')
                             if preco_final == validacao_preco_final:
-                                print('preco_final não alterado')
+                                logging.debug('preco_final não alterado')
                             else:
-                                print('preco_alterado')
+                                logging.debug('preco_alterado')
 
 
                         except Exception as e:
-                            print(f'Erro na validacao de preco_final ', e)
+                            logging.debug(f'Erro na validacao de preco_final ', e)
 
 
 
                         acrescimo = request.form.get(f"acrescimo_{i}")
                         if acrescimo == '' or acrescimo is None:
                             acrescimo = 0.0
-                        print(f'acrescimo: {acrescimo} | type(acrescimo) >>> {type(acrescimo)}')
+                        logging.debug(f'acrescimo: {acrescimo} | type(acrescimo) >>> {type(acrescimo)}')
 
                         desconto = request.form.get(f"desconto_{i}")
                         if desconto == '' or desconto is None:
                             desconto = 0.0
-                        print(f'desconto: {desconto} | type(desconto) >>> {type(desconto)}')
+                        logging.debug(f'desconto: {desconto} | type(desconto) >>> {type(desconto)}')
 
                         margens.append(float(margem))
-                        print(f'lista margens: {margens}')
+                        logging.debug(f'lista margens: {margens}')
 
                         custos.append(float(custo_total))
-                        print(f'lista custos: {custos}')
+                        logging.debug(f'lista custos: {custos}')
 
                         precos.append(float(preco_final))
-                        print(f'lista precos: {precos}')
+                        logging.debug(f'lista precos: {precos}')
 
                         acrescimos.append(float(acrescimo))
-                        print(f'lista acrescimos: {acrescimos}')
+                        logging.debug(f'lista acrescimos: {acrescimos}')
 
                         descontos.append(float(desconto))
-                        print(f'lista descontos: {descontos}')
+                        logging.debug(f'lista descontos: {descontos}')
 
 
 
@@ -232,75 +232,75 @@ def precificacao():
                     cont = 0
                     relatorio_temp = session.get('relatorio_temp')
 
-                    print(f'relatorio_precificacao >>> {relatorio_precificacao}')
-                    print(f'relatorio_temp >>> {relatorio_temp}')
-                    print(f'lista_final >>> {lista_final}')
-                    print('for i in relatorio_precificacao:')
+                    logging.debug(f'relatorio_precificacao >>> {relatorio_precificacao}')
+                    logging.debug(f'relatorio_temp >>> {relatorio_temp}')
+                    logging.debug(f'lista_final >>> {lista_final}')
+                    logging.debug('for i in relatorio_precificacao:')
                     for i in relatorio_precificacao:
-                        print(i)
+                        logging.debug(i)
                         m = lista_final[cont][0]  # converte a margem para decimal
-                        print(f'm: {m}')
+                        logging.debug(f'm: {m}')
                         custo_produto = float(lista_final[cont][1])
                         custo_variavel = float(i[8])
-                        print(f'custo_produto >>> {custo_produto} | type {type(custo_produto)}')
-                        print(f'custo_variavel >>> {custo_variavel} | type {type(custo_variavel)}')
+                        logging.debug(f'custo_produto >>> {custo_produto} | type {type(custo_produto)}')
+                        logging.debug(f'custo_variavel >>> {custo_variavel} | type {type(custo_variavel)}')
 
                         c = custo_produto + custo_variavel    # soma o custo do produto ao custo variável
-                        print(f'c: {c}')
+                        logging.debug(f'c: {c}')
 
                         a = lista_final[cont][2] / 100  # converte o acrescimo para decimal
-                        print(f'a: {a}')
+                        logging.debug(f'a: {a}')
 
                         try:
                             d = lista_final[cont][3] / 100  # converte o desconto para decimal
-                            print(f'd: {d}')
+                            logging.debug(f'd: {d}')
                         except Exception as e:
-                            print('Erro', e)
+                            logging.debug('Erro', e)
                             d = 0.0
-                        print(f'p: {p}')
+                        logging.debug(f'p: {p}')
                         try:
-                            print(f'm: {m} >>> {1-m}')
-                            print(f'c: {c}')
-                            print(f'a: {a}')
-                            print(f'd: {d}')
-                            print(f'cálculo do preco_final(p):  {c} / (1 - ({m}/100)) ')
+                            logging.debug(f'm: {m} >>> {1-m}')
+                            logging.debug(f'c: {c}')
+                            logging.debug(f'a: {a}')
+                            logging.debug(f'd: {d}')
+                            logging.debug(f'cálculo do preco_final(p):  {c} / (1 - ({m}/100)) ')
                             p = c / (1 - (m/100))  # PRECO FINAL = CUSTO DO PRODUTO - (MARGEM/100))
 
                             p = p + (p * a) - (p * d)
-                            print(f'preco_final: {p}')
+                            logging.debug(f'preco_final: {p}')
 
                         except Exception as e:
-                            print(f'erro, {e}')
+                            logging.debug(f'erro, {e}')
 
                         # converte a margem para porcentagem para enviar para o template
-                        print('Converte a margem para porcentagem para enviar para o template')
+                        logging.debug('Converte a margem para porcentagem para enviar para o template')
 
                         a = a * 100 # converte o acrescimo para porcentagem para enviar para o template
-                        print(f'a: {a}')
+                        logging.debug(f'a: {a}')
 
                         c = lista_final[cont][1] # retorna o custo conforme informado pelo usuario
-                        print(f'c: {c}')
+                        logging.debug(f'c: {c}')
 
                         d = d * 100 # converte o desconto para porcentagem para enviar para o template
-                        print(f'd: {d}')
+                        logging.debug(f'd: {d}')
 
-                        print(f'i[0]{i[0]}')
-                        print(f'round(m, 1) {round(m, 1)}')
-                        print(f'round(c, 2) {round(c, 2)}')
-                        print(f'round(a, 1) {round(a, 1)}')
-                        print(f'round(d, 1) {round(d, 1)}')
-                        print(f'round(p, 2) {round(p, 2)}')
+                        logging.debug(f'i[0]{i[0]}')
+                        logging.debug(f'round(m, 1) {round(m, 1)}')
+                        logging.debug(f'round(c, 2) {round(c, 2)}')
+                        logging.debug(f'round(a, 1) {round(a, 1)}')
+                        logging.debug(f'round(d, 1) {round(d, 1)}')
+                        logging.debug(f'round(p, 2) {round(p, 2)}')
                         try:
                             calculos = (i[0], round(m, 1),round(c, 2) , round(a, 1), round(d, 1), round(p, 2))  # casas decimais
-                            print(f'calculos: {calculos}')
+                            logging.debug(f'calculos: {calculos}')
                         except Exception as e:
-                            print(f'Erro ',e)
-                        print(f'relatorio_precificacao_novo antes do append: {relatorio_precificacao_novo}')
+                            logging.debug(f'Erro ',e)
+                        logging.debug(f'relatorio_precificacao_novo antes do append: {relatorio_precificacao_novo}')
                         try:
-                            print(f'i: {i}')
+                            logging.debug(f'i: {i}')
                             data_retorno = data_hoje
                             ean_retorno = i[3]
-                            valor_retorno = i[7]
+                            valor_retorno = i[8]
                             margem_retorno = round(m, 1)
                             custo_retorno = round(c, 2)
                             acrescimo_retorno = round(a, 1)
@@ -322,17 +322,17 @@ def precificacao():
                             ]
                             relatorio_precificacao_novo.append(linha)
                         except Exception as e:
-                            print(f'Erro ',e)
+                            logging.debug(f'Erro ',e)
 
-                        print('relatorio_precificacao_novo, após o append')
-                        print(relatorio_precificacao_novo)
+                        logging.debug('relatorio_precificacao_novo, após o append')
+                        logging.debug(relatorio_precificacao_novo)
                         cont += 1
                     relatorio_precificacao = relatorio_precificacao_novo  # renomeia a lista para a lista original, depois do calculo, com o valor preco_final
 
-                    print('relatorio_precificacao final')
-                    print(relatorio_precificacao)
+                    logging.debug('relatorio_precificacao final')
+                    logging.debug(relatorio_precificacao)
                     for i in relatorio_precificacao:
-                        print(i)
+                        logging.debug(i)
 
 
                     session['relatorio_precificacao'] = relatorio_precificacao  # salva o relatorio
@@ -341,37 +341,37 @@ def precificacao():
                                            relatorio_precificacao=relatorio_precificacao)
 
                 except Exception as e:
-                    print(f'Erro ',e)
+                    logging.debug(f'Erro ',e)
 
                     # logging.error(f'Erro no try dentro da função calcular ',e)
 
         try:
             if 'botao_salvar' in request.form:
                 tupla_ean_bd = ()
-                print(CorFonte.fonte_verde() + 'Botão salvar pressionado' + CorFonte.reset_cor())
+                logging.debug(CorFonte.fonte_verde() + 'Botão salvar pressionado' + CorFonte.reset_cor())
                 relato_pesquisa = session.get('relato_pesquisa')
-                print(f'1 - relato_pesquisa: {relato_pesquisa}')
-                print(f'2 - len(relato_pesquisa): {len(relato_pesquisa)}')
+                logging.debug(f'1 - relato_pesquisa: {relato_pesquisa}')
+                logging.debug(f'2 - len(relato_pesquisa): {len(relato_pesquisa)}')
                 relatorio_precificacao = session.get('relatorio_precificacao')
                 busca_ean_tabela = Pricing.relato_bd_precificacao(ean)
-                print(f'busca_ean_tabela: {busca_ean_tabela}')
-                print('processamento de atualização / salvamento dos registros')
-                print(Pricing.relato_geral_bd_precificacao())
+                logging.debug(f'busca_ean_tabela: {busca_ean_tabela}')
+                logging.debug('processamento de atualização / salvamento dos registros')
+                logging.debug(Pricing.relato_geral_bd_precificacao())
                 for i in relatorio_precificacao:
                     if i[1] in Pricing.relato_geral_bd_precificacao():
-                        print(f'ean {i[1]} localizado no bd ATUALIZAR REGISTRO')
+                        logging.debug(f'ean {i[1]} localizado no bd ATUALIZAR REGISTRO')
                         Pricing.update_precificacao(relatorio_precificacao, usuario)
                     else:
-                        print(f'ean {i[1]} NÃO localizado no bd CRIAR NOVO REGISTRO')
+                        logging.debug(f'ean {i[1]} NÃO localizado no bd CRIAR NOVO REGISTRO')
                         Pricing.salvar_precificacao(relatorio_precificacao, usuario)
-                    print('-----------------------------------------------')
+                    logging.debug('-----------------------------------------------')
 
         except Exception as e:
-            print(f'Erro no try do botao_salvar ',e)
+            logging.debug(f'Erro no try do botao_salvar ',e)
 
         try:
             if 'botao_cancelar' in request.form:
-                print('Botão cancelar pressionado')
+                logging.debug('Botão cancelar pressionado')
                 return render_template('pricing/precificacao.html', form_precificacao=form_precificacao)
         except Exception as e:
             logging.error(f'Erro',e)
